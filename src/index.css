@@ -11,7 +11,16 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  
 }
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active {
+    transition: background-color 10000s ease-in-out 0s; 
+    -webkit-text-fill-color: black !important; 
+}
+
 
 a {
   font-weight: 500;

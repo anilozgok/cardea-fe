@@ -2,10 +2,6 @@ import * as React from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
@@ -14,17 +10,16 @@ import {useUser} from "../context/UserContext.tsx";
 import {useNavigate} from "react-router-dom";
 import logo from '../assets/CardeaLogo.png';
 
-type loginRequest = {
-    email: string,
-    password: string
+type forgotPwRequest = {
+    email: string
 }
 
-export default function SignIn() {
+export default function ForgotPassword() {
     const user = useUser()
     const navigate = useNavigate()
 
-    async function request(loginRequest: loginRequest) {
-        const res = await axios.post("http://localhost:8080/api/v1/auth/login", loginRequest, {withCredentials: true})
+    async function request(forgotPwRequest: forgotPwRequest) {
+        const res = await axios.post("http://localhost:8080/api/v1/auth/login", forgotPwRequest, {withCredentials: true})
 
         if (res.status === 200) {
             await user.refetchAfterLogin()
@@ -32,23 +27,19 @@ export default function SignIn() {
         }
 
     }
-    const handleForgotPw = () => {
-        navigate('/forgot-password');
-    }
-
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
-        const loginRequest: loginRequest = {
+        const forgotPwRequest: forgotPwRequest = {
             email: data.get('email') as string,
-            password: data.get('password') as string
         }
-        request(loginRequest)
+        navigateTo()
     };
-    const handleSignUpClick = () => {
-        navigate('/register');
-    };
+    const navigateTo = ()=> {
+        navigate('/reset-password')
+    }
+
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline/>
@@ -64,9 +55,12 @@ export default function SignIn() {
                     <img src={logo} alt="Logo" style={{ width: 100, height: 100, borderRadius: '50%' }} />
                 </div>
                 <Typography component="h1" variant="h5">
-                    Sign In
+                    Reset Password
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                <Typography variant="body1" sx={{ mt: 2, textAlign: 'center' }}>
+                    Please enter the e-mail address that you used to register, and we will send you a link to reset your password via e-mail.
+                </Typography>
+                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
                         required
@@ -77,40 +71,14 @@ export default function SignIn() {
                         autoComplete="email"
                         autoFocus
                     />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Password"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                    />
-                    <FormControlLabel
-                        control={<Checkbox value="remember" color="primary"/>}
-                        label="Remember me"
-                    />
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
-                        sx={{mt: 3, mb: 2}}
+                        sx={{ mt: 3, mb: 2 }}
                     >
-                        Sign In
+                        Proceed 
                     </Button>
-                    <Grid container>
-                        <Grid item xs>
-                            <Link href="#" variant="body2" onClick={handleForgotPw}>
-                                Forgot password?
-                            </Link>
-                        </Grid>
-                        <Grid item>
-                            <Link href="#" variant="body2" onClick={handleSignUpClick}>
-                                {"Don't have an account? Sign Up"}
-                            </Link>
-                        </Grid>
-                    </Grid>
                 </Box>
             </Box>
         </Container>

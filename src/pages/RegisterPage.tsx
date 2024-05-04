@@ -1,19 +1,16 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
+import logo from '../assets/CardeaLogo.png';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from "axios";
-import {useUser} from "../context/UserContext.tsx";
-import {useNavigate} from "react-router-dom";
+import { useUser } from "../context/UserContext.tsx";
+import { useNavigate } from "react-router-dom";
 
 type registerRequest = {
     firstName: string,
@@ -24,7 +21,7 @@ type registerRequest = {
     weight: number,
     gender: 'male' | 'female',
     dateOfBirth: Date,
-    role : string
+    role: 'coach' | 'user'
 }
 
 export default function Register() {
@@ -33,9 +30,8 @@ export default function Register() {
 
     async function request(registerRequest: registerRequest) {
         const res = await axios.post(
-            "http://localhost:8080/api/v1/auth/register", registerRequest,{ withCredentials: true}
-          );
-          
+            "http://localhost:8080/api/v1/auth/register", registerRequest, { withCredentials: true }
+        );
 
         if (res.status === 200) {
             await user.refetchAfterLogin()
@@ -44,7 +40,9 @@ export default function Register() {
 
     }
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const registerRequest: registerRequest = {
@@ -56,16 +54,14 @@ export default function Register() {
             weight: parseInt(formData.get('weight') as string),
             gender: formData.get('gender') as 'male' | 'female',
             dateOfBirth: new Date(formData.get('dateOfBirth') as string),
-            role: formData.get('role') as string,
-        };
-        try {
-            await request(registerRequest);
-        } catch (error) {
-            console.error("Error occurred while submitting the form:", error);
+            role: formData.get('role') as 'coach' | 'user',
         }
+        request(registerRequest)
     };
-    
 
+    const handleSignInClick = () => {
+        navigate('/sign-in');
+    };
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -77,11 +73,11 @@ export default function Register() {
                     alignItems: 'center',
                 }}
             >
-                <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-                    <LockOutlinedIcon />
-                </Avatar>
+                <div>
+                    <img src={logo} alt="Logo" style={{ width: 100, height: 100, borderRadius: '50%' }} />
+                </div>
                 <Typography component="h1" variant="h5">
-                    Sign up
+                    Sign up to Cardea
                 </Typography>
                 <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
                     <Grid container spacing={2}>
@@ -173,14 +169,19 @@ export default function Register() {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                        <TextField
+                            <TextField
                                 required
                                 fullWidth
                                 id="role"
                                 label="Role"
                                 name="role"
-                            />
-                            </Grid>
+                                select
+                                SelectProps={{ native: true }}
+                            >
+                                <option value="coach">Coach</option>
+                                <option value="user">Student</option>
+                            </TextField>
+                        </Grid>
                     </Grid>
                     <Button
                         type="submit"
@@ -192,7 +193,7 @@ export default function Register() {
                     </Button>
                     <Grid container justifyContent="flex-end">
                         <Grid item>
-                            <Link href="#" variant="body2">
+                            <Link onClick={handleSignInClick} variant="body2" style={{ cursor: 'pointer' }}>
                                 Already have an account? Sign in
                             </Link>
                         </Grid>
