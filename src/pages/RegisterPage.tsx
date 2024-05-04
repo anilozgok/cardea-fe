@@ -9,8 +9,9 @@ import logo from '../assets/CardeaLogo.png';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from "axios";
-import { useUser } from "../context/UserContext.tsx";
 import { useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 type registerRequest = {
     firstName: string,
@@ -25,8 +26,17 @@ type registerRequest = {
 }
 
 export default function Register() {
-    const user = useUser()
     const navigate = useNavigate()
+    const notify = () => toast.success('Succesfully Registered', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
 
     async function request(registerRequest: registerRequest) {
         const res = await axios.post(
@@ -34,13 +44,12 @@ export default function Register() {
         );
 
         if (res.status === 200) {
-            await user.refetchAfterLogin()
-            navigate('http://localhost:8080/api/v1/auth/login')
+            notify();
+            setTimeout(() => {
+                navigate('/sign-in'); 
+            }, 2000);
         }
-
     }
-
-
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -61,6 +70,7 @@ export default function Register() {
 
     const handleSignInClick = () => {
         navigate('/sign-in');
+
     };
     return (
         <Container component="main" maxWidth="xs">
@@ -76,6 +86,18 @@ export default function Register() {
                 <div>
                     <img src={logo} alt="Logo" style={{ width: 100, height: 100, borderRadius: '50%' }} />
                 </div>
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                />
                 <Typography component="h1" variant="h5">
                     Sign up to Cardea
                 </Typography>
