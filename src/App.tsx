@@ -7,6 +7,9 @@ import SignIn from "./pages/SignIn.tsx";
 import LandingPage from "./pages/LandingPage.tsx";
 import {UserContextProvider} from "./context/UserContextProvider.tsx";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
+import Register from './pages/RegisterPage.tsx';
+import ForgotPassword from './pages/ForgotPassword.tsx';
+import ResetPassword from './pages/ResetPassword.tsx';
 
 
 function App() {
@@ -19,7 +22,19 @@ function App() {
         {
             path: "/sign-in",
             element: <SignIn/>,
-        }
+        },
+        {
+            path: "/register",
+            element: <Register/>,
+        },
+        {
+            path: "/forgot-password",
+            element: <ForgotPassword/>,
+        },
+        {
+            path: "/reset-password",
+            element: <ResetPassword/>,
+        },
     ]);
 
     return (
