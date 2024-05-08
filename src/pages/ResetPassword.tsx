@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import { Box, Button, Container, CssBaseline, TextField, Typography } from '@mui/material';
-import { useUser } from "../context/UserContext.tsx";
+import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+
 import axios from "axios";
 import logo from '../assets/CardeaLogo.png';
+import { ToastContainer, toast } from 'react-toastify';
+
 interface PasswordValidation {
     isLengthValid: boolean;
     hasNumber: boolean;
     hasUpperCase: boolean;
     hasSpecialChar: boolean;
 }
+
 
 const validatePassword = (password: string): PasswordValidation => {
     return {
@@ -21,8 +25,11 @@ const validatePassword = (password: string): PasswordValidation => {
 };
 
 export default function ResetPassword() {
+    const navigate = useNavigate();
+    const { state } = useLocation();
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
+
     const [passwordValidation, setPasswordValidation] = useState<PasswordValidation>({
         isLengthValid: false,
         hasNumber: false,
@@ -30,8 +37,6 @@ export default function ResetPassword() {
         hasSpecialChar: false
     });
     const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
-    const user = useUser();
-    const navigate = useNavigate();
 
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newPassword = event.target.value;
@@ -54,27 +59,52 @@ export default function ResetPassword() {
             alert("Please ensure all password requirements are met and passwords match.");
             return;
         }
-
+    
         try {
-            const res = await axios.post("http://localhost:8080/api/v1/auth/reset-password", {
-                email: user.user.email,
+            const res = await axios.put("http://localhost:8080/api/v1/auth/update-password", {
+                email: state.email,
                 password: password
             }, { withCredentials: true });
-
+    
             if (res.status === 200) {
-                await user.refetchAfterLogin();
-                navigate('/sign-in');
+                notify();
+            setTimeout(() => {
+                navigate('/sign-in'); 
+            }, 2000);
             }
         } catch (error) {
             console.error('Failed to reset password', error);
         }
     };
 
+    const notify = () => toast.success('Succesfully changed', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
+
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
             <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <img src={logo} alt="Logo" style={{ width: 100, height: 100, borderRadius: '50%' }} />
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                />
                 <Typography component="h1" variant="h5">Enter your new password</Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                     <TextField

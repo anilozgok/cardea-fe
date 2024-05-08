@@ -10,6 +10,9 @@ import {createTheme, ThemeProvider} from "@mui/material/styles";
 import Register from './pages/RegisterPage.tsx';
 import ForgotPassword from './pages/ForgotPassword.tsx';
 import ResetPassword from './pages/ResetPassword.tsx';
+import OtpInputWithValidation from './pages/OTP.tsx';
+import { userContext } from './context/UserContext.tsx';
+import EmailVerification from './pages/OTP.tsx';
 
 
 function App() {
@@ -35,6 +38,11 @@ function App() {
             path: "/reset-password",
             element: <ResetPassword/>,
         },
+        {
+            path: "/Otp",
+            element: <EmailVerification/>,
+        },
+        
     ]);
 
     return (

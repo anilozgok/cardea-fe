@@ -18,27 +18,28 @@ export default function ForgotPassword() {
     const user = useUser()
     const navigate = useNavigate()
 
-    async function request(forgotPwRequest: forgotPwRequest) {
-        const res = await axios.post("http://localhost:8080/api/v1/auth/login", forgotPwRequest, {withCredentials: true})
+ 
 
-        if (res.status === 200) {
-            await user.refetchAfterLogin()
-            navigate('/')
-        }
-
-    }
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
-        const forgotPwRequest: forgotPwRequest = {
-            email: data.get('email') as string,
+        const formData = new FormData(event.currentTarget);
+        const email = formData.get('email') as string;
+    
+        if (email) {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/v1/auth/check-user?email=${email}`, { withCredentials: true });
+                if (response.status === 200) {
+                    navigate('/otp', { state: { email } }); 
+                }
+            } catch (error) {
+                alert('Failed to send reset email: ');
+            }
+        } else {
+            alert('Please provide an email address.');
         }
-        navigateTo()
     };
-    const navigateTo = ()=> {
-        navigate('/reset-password')
-    }
+    
+    
 
     return (
         <Container component="main" maxWidth="xs">
