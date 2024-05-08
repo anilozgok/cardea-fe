@@ -29,22 +29,28 @@ export default function EmailVerification() {
   }
   function verifyOTP() {
     const passcode = parseInt(OTPinput.join(""));
-    axios.post("http://localhost:8080/api/v1/auth/verify-passcode", {
-        passcode,
+    axios.put("http://localhost:8080/api/v1/auth/verify-passcode", {
+        passcode: passcode
       })
       .then((response) => {
         if (response.status === 200) {
           // Navigate to the reset password page upon successful OTP verification
-          navigate('/reset-password' ,{ state: { email } } );
+          navigate('/reset-password', { state: { email } });
         } else {
           // Handle other status codes if needed
           alert("Unexpected error occurred. Please try again.");
         }
       })
-      .catch(() => {
-        alert("The code you have entered is not correct, try again or resend the link");
+      .catch((error) => {
+        if (error.response && error.response.status === 400) {
+          alert("The code you have entered is not correct, try again or resend the link");
+        } else {
+          alert("An unexpected error occurred. Please try again later.");
+        }
       });
   }
+  
+  
   
 
   useEffect(() => {
