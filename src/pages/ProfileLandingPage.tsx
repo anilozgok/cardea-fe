@@ -1,4 +1,5 @@
-import * as React from 'react';
+import React, { useEffect } from 'react';
+import axios from 'axios';
 import { Button, PaletteMode } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
@@ -10,37 +11,47 @@ import UserProfile from './MyProfile';
 import MyProfileDetails from './MyProfileDetails';
 import PhotoUpload from './PhotoUpload';
 
-
 export default function LandingPage2() {
   const [mode, setMode] = React.useState<PaletteMode>('light');
   const defaultTheme = createTheme({ palette: { mode } });
 
   const [profileData, setProfileData] = React.useState({
-    firstName: 'Amelia',
-    lastName: 'Harper',
-    department: 'UI/UX',
-    position: 'Designer',
-    phone: '+1(213)555-4276',
-    email: 'ameliah@dx-email.com',
-    country: 'USA',
-    specialization:'ameliah@dx-email.com',
-    experience:'',
-    city: 'New York',
-    state: 'New York',
-    address: '405 E 42nd St',
-    zipCode: '90014',
-    height: '170',
-    weight: '70',
-    profilePicture: '/static/images/avatar/1.jpg',
-    bio : ''
+    firstName: '',
+    lastName: '',
+    department: '',
+    position: '',
+    phone: '',
+    email: '',
+    country: '',
+    specialization: '',
+    experience: '',
+    city: '',
+    state: '',
+    address: '',
+    zipCode: '',
+    height: '',
+    weight: '',
+    profilePicture: '',
+    bio: ''
   });
 
   const [editMode, setEditMode] = React.useState<boolean>(false);
+  const userId = "user_id"; // Bu değeri doğru kullanıcı ID'si ile değiştirmelisiniz
+
+  useEffect(() => {
+    // Backend'den profil verilerini almak için useEffect kullanın
+    axios.get(`/profile/${userId}`) // Profil verilerini almak için API endpoint'iniz
+      .then(response => {
+        setProfileData(response.data);
+      })
+      .catch(error => {
+        console.error('Profil verilerini alırken hata oluştu:', error);
+      });
+  }, [userId]);
 
   const toggleColorMode = () => {
     setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
-
 
   const handleEditModeToggle = () => {
     setEditMode(!editMode);
@@ -57,22 +68,37 @@ export default function LandingPage2() {
   const handleProfilePictureChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
+      const formData = new FormData();
+      formData.append('photo', file);
+
+      axios.post(`/profile/${userId}/photo`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(response => {
         setProfileData((prevData) => ({
           ...prevData,
-          profilePicture: reader.result as string,
+          profilePicture: response.data.photoUrl,
         }));
-      };
-      reader.readAsDataURL(file);
+      })
+      .catch(error => {
+        console.error('Fotoğraf yüklenirken hata oluştu:', error);
+      });
     }
   };
 
   const handleSave = () => {
-    // Make API call to save data
-    console.log('Saved data:', profileData);
-    setEditMode(false);
-    alert('Saved!');
+    // Profil verilerini kaydetmek için backend'e POST/PUT isteği gönderin
+    axios.put('/profile', profileData) // Profil verilerini kaydetmek için API endpoint'iniz
+      .then(response => {
+        console.log('Veriler kaydedildi:', response.data);
+        setEditMode(false);
+        alert('Profil başarıyla kaydedildi!');
+      })
+      .catch(error => {
+        console.error('Verileri kaydederken hata oluştu:', error);
+      });
   };
 
   return (
@@ -84,7 +110,7 @@ export default function LandingPage2() {
         profilePicture={profileData.profilePicture}
       />
       <Box sx={{ position: 'relative', bgcolor: 'background.default', p: 3, minHeight: '100vh' }}>
-        <Box sx={{ position: 'absolute', top: 16, right: 12, zIndex: 1, mt: 10}}>
+        <Box sx={{ position: 'absolute', top: 16, right: 12, zIndex: 1, mt: 10 }}>
           {editMode ? (
             <>
               <Button variant="contained" color="primary" onClick={handleSave}>
@@ -112,8 +138,7 @@ export default function LandingPage2() {
           editMode={editMode}
           onInputChange={handleInputChange}
         />
-        <PhotoUpload
-        />
+        <PhotoUpload />
       </Box>
     </ThemeProvider>
   );

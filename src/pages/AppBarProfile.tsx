@@ -10,17 +10,14 @@ import MenuItem from '@mui/material/MenuItem';
 import Avatar from '@mui/material/Avatar';
 import logo from '../assets/CardeaLogo.png';
 
-
 interface AppAppBarProps {
   mode: PaletteMode;
   toggleColorMode: () => void;
   profilePicture: string; 
 }
 
-function AppAppBar({ profilePicture }: AppAppBarProps) {
+function AppAppBar({ mode, toggleColorMode, profilePicture }: AppAppBarProps) {
   const [, setOpen] = React.useState(false);
-
- 
 
   const scrollToSection = (sectionId: string) => {
     const sectionElement = document.getElementById(sectionId);
