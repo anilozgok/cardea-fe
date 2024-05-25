@@ -103,7 +103,7 @@ function AppAppBar({ mode, toggleColorMode, profilePicture }: AppAppBarProps) {
                   </Typography>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => scrollToSection('uploadPhoto')}
+                  onClick={() => scrollToSection('photoUpload')}
                   sx={{ py: '6px', px: '16px' }} 
                 >
                   <Typography variant="body1" color="text.primary">

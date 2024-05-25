@@ -44,6 +44,7 @@ const MyProfileDetails: React.FC<MyProfileDetailsProps> = ({ profileData, editMo
           </Grid>
         </Grid>
       </Box>
+      <Box sx={{ borderBottom: '1px solid #ccc', mb: 3 }} />
     </Container>
   );
 };
