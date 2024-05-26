@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import { Grid, Card, CardContent, TextField, IconButton, Typography, Container, Stack, Checkbox, FormControlLabel, Button, Box } from '@mui/material';
+import { Grid, Card, CardContent, TextField, IconButton, Typography, Container, Stack, Checkbox, FormControlLabel, Button, Box, MenuItem, CircularProgress } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useExercises } from '../context/ExerciseContext';
+import { useUser } from '../context/UserContext';
+import useUsers from '../hooks/useUsers'; // Import the custom hook
 import logo from '../assets/CardeaLogo.png';
+import axios from 'axios';
 
 const ExerciseList: React.FC = () => {
     const { exercises } = useExercises();
+    const { user } = useUser();
+    const { users, loading, error } = useUsers(); // Use the custom hook
     const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
     const [workoutName, setWorkoutName] = useState('');
-    const [userId, setUserId] = useState('');
+    const [selectedUserId, setSelectedUserId] = useState('');
     const [showWorkoutForm, setShowWorkoutForm] = useState(false);
     const [showWorkoutDetails, setShowWorkoutDetails] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
@@ -20,16 +25,31 @@ const ExerciseList: React.FC = () => {
         );
     };
 
-    const handleCreateWorkout = () => {
-        if (workoutName && userId && selectedExercises.length > 0) {
-            setShowWorkoutDetails(true);
-            const workout = {
-                name: workoutName,
-                userId: userId,
-                exercises: selectedExercises,
-            };
-            console.log('Workout created:', workout);
-            // Here you can handle the workout creation logic, like sending it to the server
+    const handleCreateWorkout = async () => {
+        if (workoutName && selectedUserId && selectedExercises.length > 0) {
+            try {
+                for (const exerciseId of selectedExercises) {
+                    const workout = {
+                        name: workoutName,
+                        userId: parseInt(selectedUserId, 10), // Ensure userId is an integer
+                        exercise: parseInt(exerciseId, 10), // Ensure exerciseId is an integer
+                        description: 'Description', // Add appropriate description
+                        area: 'Area', // Add appropriate area
+                        rep: 10, // Add appropriate reps
+                        sets: 3 // Add appropriate sets
+                    };
+                    await axios.post('http://localhost:8080/api/v1/workout', workout, { withCredentials: true });
+                }
+                console.log('Workouts created successfully');
+                // Reset the form after successful creation
+                setWorkoutName('');
+                setSelectedUserId('');
+                setSelectedExercises([]);
+                setShowWorkoutForm(false);
+                setShowWorkoutDetails(false);
+            } catch (error) {
+                console.error('Error creating workout:', error);
+            }
         } else {
             alert('Please fill in all fields and select at least one exercise.');
         }
@@ -74,6 +94,7 @@ const ExerciseList: React.FC = () => {
                                             checked={selectedExercises.includes(exercise.exerciseId.toString())}
                                             onChange={() => handleExerciseSelect(exercise.exerciseId.toString())}
                                             color="primary"
+                                            disabled={user.role !== 'coach'}
                                         />
                                     }
                                     label={
@@ -91,32 +112,36 @@ const ExerciseList: React.FC = () => {
                                 <Typography variant="body2" color="text.secondary">
                                     Equipment: {exercise.equipment}
                                 </Typography>
-                                <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
-                                    <TextField
-                                        size="small"
-                                        type="number"
-                                        label="Reps"
-                                        defaultValue="10"
-                                        sx={{ width: '50%' }}
-                                    />
-                                    <TextField
-                                        size="small"
-                                        type="number"
-                                        label="Sets"
-                                        defaultValue="3"
-                                        sx={{ width: '50%' }}
-                                    />
-                                </Stack>
-                                <Stack direction="row" spacing={1} justifyContent="flex-end" sx={{ mt: 2 }}>
-                                    <IconButton color="primary"><EditIcon /></IconButton>
-                                    <IconButton color="secondary"><DeleteIcon /></IconButton>
-                                </Stack>
+                                {user.role === 'coach' && (
+                                    <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+                                        <TextField
+                                            size="small"
+                                            type="number"
+                                            label="Reps"
+                                            defaultValue="10"
+                                            sx={{ width: '50%' }}
+                                        />
+                                        <TextField
+                                            size="small"
+                                            type="number"
+                                            label="Sets"
+                                            defaultValue="3"
+                                            sx={{ width: '50%' }}
+                                        />
+                                    </Stack>
+                                )}
+                                {user.role === 'coach' && (
+                                    <Stack direction="row" spacing={1} justifyContent="flex-end" sx={{ mt: 2 }}>
+                                        <IconButton color="primary"><EditIcon /></IconButton>
+                                        <IconButton color="secondary"><DeleteIcon /></IconButton>
+                                    </Stack>
+                                )}
                             </CardContent>
                         </Card>
                     </Grid>
                 ))}
             </Grid>
-            {!showWorkoutForm && (
+            {user.role === 'coach' && !showWorkoutForm && (
                 <Box sx={{ mt: 4 }}>
                     <Button variant="contained" color="primary" onClick={() => setShowWorkoutForm(true)}>
                         New Workout
@@ -133,13 +158,29 @@ const ExerciseList: React.FC = () => {
                         onChange={(e) => setWorkoutName(e.target.value)}
                         sx={{ mb: 2 }}
                     />
-                    <TextField
-                        fullWidth
-                        label="User ID"
-                        value={userId}
-                        onChange={(e) => setUserId(e.target.value)}
-                        sx={{ mb: 2 }}
-                    />
+                    {loading ? (
+                        <CircularProgress />
+                    ) : (
+                        <TextField
+                            select
+                            fullWidth
+                            label="Select User"
+                            value={selectedUserId}
+                            onChange={(e) => setSelectedUserId(e.target.value)}
+                            sx={{ mb: 2 }}
+                        >
+                            {users.map((user) => (
+                                <MenuItem key={user.userId} value={user.userId}>
+                                    {user.firstName} {user.lastName}
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    )}
+                    {error && (
+                        <Typography color="error" variant="body2">
+                            Error loading users: {error}
+                        </Typography>
+                    )}
                     <Button variant="contained" color="primary" onClick={handleCreateWorkout}>
                         Create Workout
                     </Button>
@@ -148,7 +189,7 @@ const ExerciseList: React.FC = () => {
             {showWorkoutDetails && (
                 <Box sx={{ mt: 4 }}>
                     <Typography variant="h6">Workout Details</Typography>
-                    <Typography variant="body1">Username: {userId}</Typography>
+                    <Typography variant="body1">Username: {selectedUserId}</Typography>
                     <Typography variant="body1">Workout Name: {workoutName}</Typography>
                 </Box>
             )}
