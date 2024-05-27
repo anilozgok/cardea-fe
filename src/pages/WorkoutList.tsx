@@ -18,12 +18,18 @@ import {
   DialogTitle,
   DialogContent,
   Button,
+  Toolbar,
+  AppBar,
+  Avatar,
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import CloseIcon from '@mui/icons-material/Close';
 import useWorkouts from '../hooks/useWorkouts';
 import { useUser } from '../context/UserContext';
+import logo from '../assets/CardeaLogo.png';
+import { useNavigate } from "react-router-dom";
+import MenuItem from '@mui/material/MenuItem';
 
 const WorkoutsList: React.FC = () => {
   const { user } = useUser();
@@ -32,6 +38,8 @@ const WorkoutsList: React.FC = () => {
   const [open, setOpen] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedGif, setSelectedGif] = useState('');
+  const navigate = useNavigate()
+
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -62,19 +70,92 @@ const WorkoutsList: React.FC = () => {
     workoutName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  return (
-    <Container maxWidth="xl">
-      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2, justifyContent: 'space-between' }}>
-        <Typography variant="h5" color="black">My Workouts</Typography>
-        <TextField
-          variant="outlined"
-          placeholder="Search"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          sx={{ flex: 0.6, maxWidth: 300 }}
-        />
-      </Box>
+  const navigateTo = (url) => {
+    navigate(url)
+  };
 
+  return (
+    <Container maxWidth="xl" sx={{ mt: -20 }}>
+<AppBar
+        position="fixed"
+        sx={{
+          boxShadow: 0,
+          bgcolor: 'transparent',
+          backgroundImage: 'none',
+          mt: 2,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Toolbar
+            variant="regular"
+            sx={(theme) => ({
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              flexShrink: 0,
+              borderRadius: '999px',
+              bgcolor:
+                theme.palette.mode === 'light'
+                  ? 'rgba(255, 255, 255, 0.4)'
+                  : 'rgba(0, 0, 0, 0.4)',
+              backdropFilter: 'blur(24px)',
+              maxHeight: 56,
+              border: '1px solid',
+              borderColor: 'divider',
+              boxShadow:
+                theme.palette.mode === 'light'
+                  ? `0 0 1px rgba(85, 166, 246, 0.1), 1px 1.5px 2px -1px rgba(85, 166, 246, 0.15), 4px 4px 12px -2.5px rgba(85, 166, 246, 0.15)`
+                  : '0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)',
+            })}
+          >
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <img
+                src={logo}
+                alt="logo of Cardea"
+                style={{ width: 80, height: 80, borderRadius: '50%' }}
+                onClick={() => navigateTo('/')}
+              />
+            </Box>
+            <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center' }}>
+              <MenuItem onClick={() => navigateTo('/')} sx={{ py: '10px', px: '36px' }}>
+                <Typography variant="body1" color="text.primary">
+                  Home
+                </Typography>
+              </MenuItem>
+              <MenuItem onClick={() => navigateTo('/diets')} sx={{ py: '10px', px: '36px' }}>
+                <Typography variant="body1" color="text.primary">
+                  Diet Plans
+                </Typography>
+              </MenuItem>
+              <MenuItem onClick={() => navigateTo('/workouts')} sx={{ py: '10px', px: '36px' }}>
+                <Typography variant="body1" color="text.primary">
+                  Workouts
+                </Typography>
+              </MenuItem>
+            </Box>
+            <Box sx={{ display: 'flex', justifyContent: 'center', flexGrow: 1 }}>
+              <TextField
+                variant="outlined"
+                placeholder="Search Workouts"
+                value={searchTerm}
+                onChange={handleSearchChange}
+                sx={{ flex: 1, maxWidth: 300 }}
+              />
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigateTo('/profile')} />
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
+      <Box sx={{ mt: 10, mb: 2 }}>
+        <Typography variant="h5" color="black">{user.name ? `${user.name}'s` : 'My'} Workouts</Typography>
+      </Box>
       {loading && <CircularProgress />}
       {error && <Typography color="error">{error}</Typography>}
       {!loading && !error && filteredWorkoutNames.length === 0 && (
