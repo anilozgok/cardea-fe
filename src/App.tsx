@@ -13,6 +13,7 @@ import ResetPassword from './pages/ResetPassword';
 import EmailVerification from './pages/OTP';
 import LandingPage2 from './pages/ProfileLandingPage';
 import ExerciseList from "./pages/ExerciseList";
+import WorkoutsList from './pages/WorkoutList';
 
 function App() {
     const router = createBrowserRouter([
@@ -24,6 +25,7 @@ function App() {
         { path: "/otp", element: <EmailVerification/> },
         { path: "/profile", element: <LandingPage2/> },
         { path: "/exercise", element: <ExerciseList/> },
+        { path: "/workouts", element: <WorkoutsList/> }
     ]);
 
     return (
