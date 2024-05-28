@@ -1,23 +1,48 @@
 import React from 'react';
-import { Container, Typography, Button, Grid, Paper, Box, AppBar, Toolbar, CssBaseline, Link, TextField, Avatar, IconButton } from '@mui/material';
+import { Container, Typography, Button, Grid, Paper, Box, AppBar, Toolbar, CssBaseline, Link } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import SwipeableViews from 'react-swipeable-views';
 import { autoPlay } from 'react-swipeable-views-utils';
 import { useUser } from '../context/UserContext';
-import logo from '../assets/CardeaLogo.png';
-import '../App.css'; // Ensure this path is correct
+import logo from '../assets/CardeaLogo.png'; // Ensure the path is correct
+import heroVideo from '../assets/hero-video.mp4'; // Ensure the path is correct
+import '../App.css'; // Ensure the path is correct
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
 // Styled components using @mui/material/styles
 const HeroSection = styled(Box)(({ theme }) => ({
-    padding: theme.spacing(8, 0),
-    backgroundImage: 'url(/path/to/your/background.jpg)', // Update the path to your background image
-    backgroundSize: 'cover',
-    backgroundPosition: 'center',
+    position: 'relative',
+    height: '100vh',
     color: '#fff',
     textAlign: 'center',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    '& video': {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        zIndex: -1,
+    },
+    '&:before': {
+        content: '""',
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        zIndex: 0,
+    },
+    '& .content': {
+        position: 'relative',
+        zIndex: 1,
+    },
 }));
 
 const FeaturesSection = styled(Container)(({ theme }) => ({
@@ -27,9 +52,10 @@ const FeaturesSection = styled(Container)(({ theme }) => ({
 const FeatureItem = styled(Paper)(({ theme }) => ({
     padding: theme.spacing(2),
     textAlign: 'center',
+    transition: 'transform 0.3s, box-shadow 0.3s',
     '&:hover': {
         transform: 'scale(1.05)',
-        transition: 'transform 0.3s',
+        boxShadow: theme.shadows[4],
     },
 }));
 
@@ -64,6 +90,25 @@ const LandingPage = () => {
                     <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
                 </Toolbar>
             </AppBar>
+
+            {/* Hero Section */}
+            <HeroSection>
+                <video autoPlay loop muted playsInline>
+                    <source src={heroVideo} type="video/mp4" />
+                    Your browser does not support the video tag.
+                </video>
+                <Box className="content">
+                    <Typography variant="h2" component="h1" gutterBottom>
+                        Welcome to Cardea
+                    </Typography>
+                    <Typography variant="h5" component="p" gutterBottom>
+                        Your fitness journey starts here.
+                    </Typography>
+                    <Button variant="contained" color="primary" size="large">
+                        Get Started
+                    </Button>
+                </Box>
+            </HeroSection>
 
             {/* Features Section */}
             <FeaturesSection>
@@ -145,7 +190,6 @@ const LandingPage = () => {
                     Frequently Asked Questions
                 </Typography>
                 <div>
-                    {/* Replace with Material UI Accordion for FAQ */}
                     <Typography variant="h6" component="h3">
                         What is this product?
                     </Typography>

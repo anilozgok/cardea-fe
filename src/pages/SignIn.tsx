@@ -28,7 +28,7 @@ export default function SignIn() {
 
         if (res.status === 200) {
             await user.refetchAfterLogin()
-            navigate('/')
+            navigate('/profile')
         }
 
     }
