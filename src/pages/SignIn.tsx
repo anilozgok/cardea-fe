@@ -10,8 +10,8 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from "axios";
-import {useUser} from "../context/UserContext.tsx";
-import {useNavigate} from "react-router-dom";
+import { useUser } from "../context/UserContext.tsx";
+import { useNavigate } from "react-router-dom";
 import logo from '../assets/CardeaLogo.png';
 
 type loginRequest = {
@@ -24,18 +24,21 @@ export default function SignIn() {
     const navigate = useNavigate()
 
     async function request(loginRequest: loginRequest) {
-        const res = await axios.post("http://localhost:8080/api/v1/auth/login", loginRequest, {withCredentials: true})
+        const res = await axios.post("http://localhost:8080/api/v1/auth/login", loginRequest, { withCredentials: true })
 
         if (res.status === 200) {
             await user.refetchAfterLogin()
-            navigate('/')
+            const hasProfile: boolean = res.headers['has-profile'] === 'true';
+            if (!hasProfile) {
+                navigate('/profile');
+            } else {
+                navigate('/');
+            }
         }
-
     }
     const handleForgotPw = () => {
         navigate('/forgot-password');
     }
-
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -51,7 +54,7 @@ export default function SignIn() {
     };
     return (
         <Container component="main" maxWidth="xs">
-            <CssBaseline/>
+            <CssBaseline />
             <Box
                 sx={{
                     marginTop: 8,
@@ -66,7 +69,7 @@ export default function SignIn() {
                 <Typography component="h1" variant="h5">
                     Sign In
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                     <TextField
                         margin="normal"
                         required
@@ -88,14 +91,14 @@ export default function SignIn() {
                         autoComplete="current-password"
                     />
                     <FormControlLabel
-                        control={<Checkbox value="remember" color="primary"/>}
+                        control={<Checkbox value="remember" color="primary" />}
                         label="Remember me"
                     />
                     <Button
                         type="submit"
                         fullWidth
                         variant="contained"
-                        sx={{mt: 3, mb: 2}}
+                        sx={{ mt: 3, mb: 2 }}
                     >
                         Sign In
                     </Button>
