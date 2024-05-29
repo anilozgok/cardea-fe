@@ -52,6 +52,31 @@ export default function Register() {
         }
     };
 
+    const [password, setPassword] = useState('');
+    const [showValidation, setShowValidation] = useState(false);
+
+    const passwordValidation = {
+        isLengthValid: password.length >= 8,
+        hasNumber: /\d/.test(password),
+        hasUpperCase: /[A-Z]/.test(password),
+        hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password)
+    };
+
+    const handlePasswordChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+        setPassword(event.target.value);
+    };
+
+    const handleFocus = () => {
+        setShowValidation(true);
+    };
+
+    const handleBlur = () => {
+        // Hide validation only if all conditions are met
+        if (passwordValidation.isLengthValid && passwordValidation.hasNumber && passwordValidation.hasUpperCase && passwordValidation.hasSpecialChar) {
+            setShowValidation(false);
+        }
+    };
+
     async function request(registerRequest: registerRequest) {
         const res = await axios.post(
             "http://localhost:8080/api/v1/auth/register", registerRequest, { withCredentials: true }
@@ -150,15 +175,37 @@ export default function Register() {
                             />
                         </Grid>
                         <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
-                                name="password"
-                                label="Password"
-                                type="password"
-                                id="password"
-                                autoComplete="new-password"
-                            />
+                            <>
+                                <TextField
+                                    required
+                                    fullWidth
+                                    name="password"
+                                    label="Password"
+                                    type="password"
+                                    id="password"
+                                    autoComplete="new-password"
+                                    value={password}
+                                    onChange={handlePasswordChange}
+                                    onFocus={handleFocus}
+                                    onBlur={handleBlur}
+                                />
+                                {showValidation && (
+                                    <>
+                                        <div style={{ color: passwordValidation.isLengthValid ? 'green' : 'red', fontSize: '0.75rem' }}>
+                                            Password must be at least 8 characters: {passwordValidation.isLengthValid ? '✓' : '✗'}
+                                        </div>
+                                        <div style={{ color: passwordValidation.hasNumber ? 'green' : 'red', fontSize: '0.75rem' }}>
+                                            Password must contain at least one number: {passwordValidation.hasNumber ? '✓' : '✗'}
+                                        </div>
+                                        <div style={{ color: passwordValidation.hasUpperCase ? 'green' : 'red', fontSize: '0.75rem' }}>
+                                            Password must contain at least one uppercase letter: {passwordValidation.hasUpperCase ? '✓' : '✗'}
+                                        </div>
+                                        <div style={{ color: passwordValidation.hasSpecialChar ? 'green' : 'red', fontSize: '0.75rem' }}>
+                                            Password must contain at least one special character: {passwordValidation.hasSpecialChar ? '✓' : '✗'}
+                                        </div>
+                                    </>
+                                )}
+                            </>
                         </Grid>
                         <Grid item xs={12}>
                             <TextField
