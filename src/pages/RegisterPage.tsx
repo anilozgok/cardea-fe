@@ -12,14 +12,13 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useState } from 'react';
 
 type registerRequest = {
     firstName: string,
     lastName: string,
     email: string,
     password: string,
-    height: number,
-    weight: number,
     gender: 'male' | 'female',
     dateOfBirth: Date,
     role: 'coach' | 'user'
@@ -38,6 +37,21 @@ export default function Register() {
         theme: "light",
     });
 
+
+    const [date, setDate] = useState('');
+    const [error, setError] = useState(false);
+
+    const handleDateChange = (event: { target: { value: any; }; }) => {
+        const selectedDate = event.target.value;
+        if (new Date(selectedDate) >= new Date()) {
+            setError(true);
+            setDate('');
+        } else {
+            setError(false);
+            setDate(selectedDate);
+        }
+    };
+
     async function request(registerRequest: registerRequest) {
         const res = await axios.post(
             "http://localhost:8080/api/v1/auth/register", registerRequest, { withCredentials: true }
@@ -46,7 +60,7 @@ export default function Register() {
         if (res.status === 200) {
             notify();
             setTimeout(() => {
-                navigate('/sign-in'); 
+                navigate('/sign-in');
             }, 2000);
         }
     }
@@ -59,8 +73,6 @@ export default function Register() {
             lastName: formData.get('lastName') as string,
             email: formData.get('email') as string,
             password: formData.get('password') as string,
-            height: parseInt(formData.get('height') as string),
-            weight: parseInt(formData.get('weight') as string),
             gender: formData.get('gender') as 'male' | 'female',
             dateOfBirth: new Date(formData.get('dateOfBirth') as string),
             role: formData.get('role') as 'coach' | 'user',
@@ -72,6 +84,9 @@ export default function Register() {
         navigate('/sign-in');
 
     };
+
+    const today = new Date().toISOString().split('T')[0];
+
     return (
         <Container component="main" maxWidth="xs">
             <CssBaseline />
@@ -149,26 +164,6 @@ export default function Register() {
                             <TextField
                                 required
                                 fullWidth
-                                id="height"
-                                label="Height"
-                                name="height"
-                                type="number"
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
-                                id="weight"
-                                label="Weight"
-                                name="weight"
-                                type="number"
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                required
-                                fullWidth
                                 id="gender"
                                 label="Gender"
                                 name="gender"
@@ -188,6 +183,13 @@ export default function Register() {
                                 name="dateOfBirth"
                                 type="date"
                                 InputLabelProps={{ shrink: true }}
+                                inputProps={{
+                                    max: today,
+                                }}
+                                value={date}
+                                onChange={handleDateChange}
+                                error={error}
+                                helperText={error ? "Please enter a valid date." : ""}
                             />
                         </Grid>
                         <Grid item xs={12}>
