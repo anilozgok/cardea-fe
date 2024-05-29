@@ -6,53 +6,23 @@ import SwipeableViews from 'react-swipeable-views';
 import { autoPlay } from 'react-swipeable-views-utils';
 import { useUser } from '../context/UserContext';
 import logo from '../assets/CardeaLogo.png'; // Ensure the path is correct
-import heroVideo from '../assets/hero-video.mp4'; // Ensure the path is correct
 import '../App.css'; // Ensure the path is correct
 
 const AutoPlaySwipeableViews = autoPlay(SwipeableViews);
 
-// Styled components using @mui/material/styles
-const HeroSection = styled(Box)(({ theme }) => ({
-    position: 'relative',
-    height: '100vh',
-    color: '#fff',
-    textAlign: 'center',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    '& video': {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-        zIndex: -1,
-    },
-    '&:before': {
-        content: '""',
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        zIndex: 0,
-    },
-    '& .content': {
-        position: 'relative',
-        zIndex: 1,
-    },
-}));
-
 const FeaturesSection = styled(Container)(({ theme }) => ({
     padding: theme.spacing(8, 0),
-}));
+    backgroundColor: 'rgba(0, 0, 0, 0)', // No transparency
+    color: 'white', // Text color
+    '& .MuiTypography-root': {
+        fontWeight: 'bold', // Make all text bold
+    },}));
 
 const FeatureItem = styled(Paper)(({ theme }) => ({
-    padding: theme.spacing(2),
+    padding: theme.spacing(3),
     textAlign: 'center',
     transition: 'transform 0.3s, box-shadow 0.3s',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Light background for better readability
     '&:hover': {
         transform: 'scale(1.05)',
         boxShadow: theme.shadows[4],
@@ -61,24 +31,34 @@ const FeatureItem = styled(Paper)(({ theme }) => ({
 
 const TestimonialsSection = styled(Box)(({ theme }) => ({
     padding: theme.spacing(8, 0),
-    backgroundColor: theme.palette.background.paper,
-}));
+    backgroundColor: 'rgba(0, 0, 0, 0)', // No transparency
+    color: 'white', // Text color
+    '& .MuiTypography-root': {
+        fontWeight: 'bold', // Make all text bold
+    },}));
 
 const FaqSection = styled(Container)(({ theme }) => ({
     padding: theme.spacing(8, 0),
-}));
+    backgroundColor: 'rgba(0, 0, 0, 0)', // No transparency
+    color: 'white', // Text color
+    '& .MuiTypography-root': {
+        fontWeight: 'bold', // Make all text bold
+    },}));
 
 const Footer = styled(Box)(({ theme }) => ({
     padding: theme.spacing(6, 0),
-    backgroundColor: theme.palette.background.default,
-}));
+    backgroundColor: 'rgba(0, 0, 0, 0)', // No transparency
+    color: 'white', // Text color
+    '& .MuiTypography-root': {
+        fontWeight: 'bold', // Make all text bold
+    },}));
 
 const LandingPage = () => {
     const user = useUser();
     const navigate = useNavigate();
 
     return (
-        <div>
+        <div id="root">
             <CssBaseline />
             <AppBar position="static">
                 <Toolbar>
@@ -91,32 +71,13 @@ const LandingPage = () => {
                 </Toolbar>
             </AppBar>
 
-            {/* Hero Section */}
-            <HeroSection>
-                <video autoPlay loop muted playsInline>
-                    <source src={heroVideo} type="video/mp4" />
-                    Your browser does not support the video tag.
-                </video>
-                <Box className="content">
-                    <Typography variant="h2" component="h1" gutterBottom>
-                        Welcome to Cardea
-                    </Typography>
-                    <Typography variant="h5" component="p" gutterBottom>
-                        Your fitness journey starts here.
-                    </Typography>
-                    <Button variant="contained" color="primary" size="large">
-                        Get Started
-                    </Button>
-                </Box>
-            </HeroSection>
-
             {/* Features Section */}
             <FeaturesSection>
                 <Typography variant="h4" component="h2" gutterBottom align="center">
                     Features
                 </Typography>
-                <Grid container spacing={4}>
-                    <Grid item xs={12} sm={4}>
+                <Grid container spacing={4} justifyContent="center">
+                    <Grid item xs={12} sm={6} md={4}>
                         <FeatureItem>
                             <Typography variant="h6" component="h3">
                                 Personalized Training Plans
@@ -126,7 +87,7 @@ const LandingPage = () => {
                             </Typography>
                         </FeatureItem>
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} sm={6} md={4}>
                         <FeatureItem>
                             <Typography variant="h6" component="h3">
                                 Nutritional Guidance
@@ -136,7 +97,7 @@ const LandingPage = () => {
                             </Typography>
                         </FeatureItem>
                     </Grid>
-                    <Grid item xs={12} sm={4}>
+                    <Grid item xs={12} sm={6} md={4}>
                         <FeatureItem>
                             <Typography variant="h6" component="h3">
                                 Progress Tracking
@@ -189,31 +150,33 @@ const LandingPage = () => {
                 <Typography variant="h4" component="h2" gutterBottom align="center">
                     Frequently Asked Questions
                 </Typography>
-                <div>
-                    <Typography variant="h6" component="h3">
-                        What is this product?
-                    </Typography>
-                    <Typography>
-                        This product is a comprehensive solution for managing your workout and diet plans.
-                    </Typography>
-                </div>
-                <div>
-                    <Typography variant="h6" component="h3">
-                        How does it work?
-                    </Typography>
-                    <Typography>
-                        Simply sign up and start customizing your plans with our easy-to-use interface.
-                    </Typography>
-                </div>
+                <Grid container spacing={4} justifyContent="center">
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Typography variant="h6" component="h3">
+                            What is this product?
+                        </Typography>
+                        <Typography>
+                            This product is a comprehensive solution for managing your workout and diet plans.
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} sm={6} md={4}>
+                        <Typography variant="h6" component="h3">
+                            How does it work?
+                        </Typography>
+                        <Typography>
+                            Simply sign up and start customizing your plans with our easy-to-use interface.
+                        </Typography>
+                    </Grid>
+                </Grid>
             </FaqSection>
 
             {/* Footer */}
             <Footer>
                 <Container>
-                    <Typography variant="body1" color="textSecondary" align="center">
+                    <Typography variant="body1" color="white" align="center">
                         {'© '}
-                        <Link color="inherit" href="https://your-website.com/">
-                            Your Website
+                        <Link color="inherit" href="https://cardea.com/">
+                            Cardea
                         </Link>{' '}
                         {new Date().getFullYear()}
                         {'.'}
