@@ -14,6 +14,7 @@ import EmailVerification from './pages/OTP';
 import LandingPage2 from './pages/ProfileLandingPage';
 import ExerciseList from "./pages/ExerciseList";
 import WorkoutsList from './pages/WorkoutList';
+import UserProfiles from './pages/UserProfile';
 
 function App() {
     const router = createBrowserRouter([
@@ -25,7 +26,9 @@ function App() {
         { path: "/otp", element: <EmailVerification/> },
         { path: "/profile", element: <LandingPage2/> },
         { path: "/exercise", element: <ExerciseList/> },
-        { path: "/workouts", element: <WorkoutsList/> }
+        { path: "/workouts", element: <WorkoutsList/> },
+        { path: "/deneme", element: <UserProfiles/> },
+        
     ]);
 
     return (
