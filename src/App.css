@@ -1,38 +1,23 @@
-/* Root container adjustments */
 #root {
-  width: 100%;
+  max-width: 1280px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-  background-image: url('./assets/back.jpg'); /* Path to your background image */
-  background-size: cover;
-  background-position: left;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  min-height: 100vh; /* Ensures the background covers the full viewport height */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Ensures footer stays at the bottom */
-  color: white; /* Ensure text is readable over background */
 }
 
-/* Logo styles */
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
-
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
-
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
-/* Keyframes for spinning logo */
 @keyframes logo-spin {
   from {
     transform: rotate(0deg);
@@ -42,68 +27,16 @@
   }
 }
 
-/* Animation for the logo */
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
 }
 
-/* Card component styles */
 .card {
   padding: 2em;
 }
 
-/* Documentation link styles */
 .read-the-docs {
   color: #888;
-}
-
-/* Additional styles to ensure proper layout with the new background */
-body, html {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow-x: hidden; /* Prevent horizontal scrolling */
-}
-
-main {
-  padding-top: 60px; /* Adjust padding to ensure content is not hidden under the AppBar */
-}
-
-/* Hero section styles */
-.hero-section {
-  position: relative;
-  height: 100vh;
-  color: #fff;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero-section video {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  z-index: -1;
-}
-
-.hero-section:before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0); /* Removed black transparency */
-  z-index: 0;
-}
-
-.hero-section .content {
-  position: relative;
-  z-index: 1;
 }
