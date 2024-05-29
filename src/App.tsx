@@ -15,6 +15,8 @@ import LandingPage2 from './pages/ProfileLandingPage';
 import ExerciseList from "./pages/ExerciseList";
 import WorkoutsList from './pages/WorkoutList';
 import UserProfiles from './pages/UserProfile';
+import UpdatePassword from './pages/UpdatePassword';
+import PhotoUpload from './pages/UploadPhotos';
 
 function App() {
     const router = createBrowserRouter([
@@ -28,6 +30,8 @@ function App() {
         { path: "/exercise", element: <ExerciseList/> },
         { path: "/workouts", element: <WorkoutsList/> },
         { path: "/deneme", element: <UserProfiles/> },
+        { path: "/update-password", element: <UpdatePassword/> },
+        { path: "/upload-photos", element: <PhotoUpload/> },
         
     ]);
 

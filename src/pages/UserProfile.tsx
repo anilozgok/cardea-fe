@@ -3,21 +3,21 @@ import logo from '../assets/CardeaLogo.png';
 import { Container, Grid, TextField, Typography, Avatar, Box, MenuItem, AppBar, Button, Toolbar } from '@mui/material';
 import axios from 'axios';
 import { useUser } from '../context/UserContext';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 interface UserProfileProps {
   firstName: string;
   lastName: string;
-  specializations: string;
+  specialization: string;
   experience: string;
   profilePicture: string;
   bio: string;
   height: number;
   weight: number;
   phone: string;
-  email: string;
   country: string;
   city: string;
-  state: string;
+  stateProvince: string;
   address: string;
   zipCode: string;
 }
@@ -28,22 +28,30 @@ export default function UserProfiles() {
   const [profileData, setProfileData] = useState<UserProfileProps>({
     firstName: '',
     lastName: '',
-    specializations: '',
+    specialization: '',
     experience: '',
     profilePicture: '',
     bio: '',
     height: 0,
     weight: 0,
     phone: '',
-    email: '',
     country: '',
     city: '',
-    state: '',
+    stateProvince: '',
     address: '',
     zipCode: ''
   });
+  const [originalProfileData, setOriginalProfileData] = useState<UserProfileProps>(profileData);
+ 
+  const navigate = useNavigate()
 
+ 
   const handleEditModeToggle = () => {
+    if (editMode) {
+      setProfileData(originalProfileData);
+    } else {
+      setOriginalProfileData(profileData);
+    }
     setEditMode(!editMode);
   };
 
@@ -56,17 +64,21 @@ export default function UserProfiles() {
   };
 
   const handleSave = () => {
-    axios.post('http://localhost:8080/api/v1/profile', profileData, { withCredentials: true })
+    const apiUrl = 'http://localhost:8080/api/v1/profile';
+    const method = isProfileNew ? axios.post : axios.put;
+
+    method(apiUrl, profileData, { withCredentials: true })
       .then(response => {
-        console.log('Veriler kaydedildi:', response.data);
+        console.log('Profile saved:', response.data);
+        setIsProfileNew(false);
         setEditMode(false);
-        alert('Profil başarıyla kaydedildi!');
+        alert('Profile successfully saved!');
       })
       .catch(error => {
-        console.error('Verileri kaydederken hata oluştu:', error);
+        console.error('Error saving profile:', error);
       });
   };
-
+  const [isProfileNew, setIsProfileNew] = useState<boolean>(true);
   const [, setOpen] = useState(false);
   const scrollToSection = (sectionId: string) => {
     const sectionElement = document.getElementById(sectionId);
@@ -81,46 +93,49 @@ export default function UserProfiles() {
       setOpen(false);
     }
   };
-
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/v1/profile', { withCredentials: true });
-        if (response.status === 200) {
+        if (response.status === 200 && response.data) {
           setProfileData(response.data);
+          setOriginalProfileData(response.data);
+          setIsProfileNew(false); // Profile exists, so we are updating
         }
       } catch (error) {
-        console.log("No profile data found. Redirecting to setup profile.");
+        console.error("No profile data found. Attempting to fetch minimal user data.");
+        setIsProfileNew(true);
         try {
-          const response = await axios.get('http://localhost:8080/api/v1/user/get-user-info', { withCredentials: true });
-          if (response.status === 200) {
-            setProfileData({
-              firstName: response.data.firstName,
-              lastName: response.data.lastName,
-              specializations: '',
+          const userResponse = await axios.get('http://localhost:8080/api/v1/user/get-user-info', { withCredentials: true });
+          if (userResponse.status === 200) {
+            const userData = {
+              firstName: userResponse.data.firstName,
+              lastName: userResponse.data.lastName,
+              specialization: '',
               experience: '',
               profilePicture: '',
               bio: '',
               height: 0,
               weight: 0,
               phone: '',
-              email: response.data.email,
               country: '',
               city: '',
-              state: '',
+              stateProvince: '',
               address: '',
               zipCode: ''
-            });
+            };
+            setProfileData(userData);
+            setOriginalProfileData(userData);
           }
-          setEditMode(true);
         } catch (innerError) {
-          console.error("Error fetching user data: ", innerError);
+          console.error("Error fetching minimal user data: ", innerError);
         }
       }
     };
-  
+
     fetchProfileData();
   }, []);
+
   return (
     <>
       <div>
@@ -214,10 +229,10 @@ export default function UserProfiles() {
                 )}
               </Box>
               <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Button variant="outlined" sx={{ mr: 2 }}>
+                <Button variant="outlined" sx={{ mr: 2 }} onClick={() => navigate('/update-password')}>
                   Change Password
                 </Button>
-                <Avatar sx={{ width: 40, height: 40, mr: 2 }} />
+                <Avatar src={profileData.profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
               </Box>
             </Toolbar>
           </Container>
@@ -272,8 +287,8 @@ export default function UserProfiles() {
                     fullWidth
                     label="Specialization"
                     variant="outlined"
-                    name="specializations"
-                    value={profileData.specializations}
+                    name="specialization"
+                    value={profileData.specialization || ''}
                     onChange={handleInputChange}
                     select
                     sx={{ mb: 2 }}
@@ -347,7 +362,7 @@ export default function UserProfiles() {
                     label="Email"
                     variant="outlined"
                     name="email"
-                    value={profileData.email}
+                    value={user.email || ''}
                     onChange={handleInputChange}
                     sx={{ mb: 2 }}
                     InputProps={{ readOnly: !editMode }} />
@@ -385,8 +400,8 @@ export default function UserProfiles() {
                     fullWidth
                     label="State/Province/Area"
                     variant="outlined"
-                    name="state"
-                    value={profileData.state}
+                    name="stateProvince"
+                    value={profileData.stateProvince}
                     onChange={handleInputChange}
                     sx={{ mb: 2 }}
                     InputProps={{ readOnly: !editMode }} />
@@ -451,6 +466,7 @@ export default function UserProfiles() {
         </Box>
         <Box sx={{ borderBottom: '1px solid #ccc', mb: 3 }} />
       </Container>
+      
     </>
   );
 }
