@@ -1,5 +1,21 @@
 import React, { useState } from 'react';
-import { Grid, Card, CardContent, TextField, IconButton, Typography, Container, Stack, Checkbox, FormControlLabel, Button, Box, MenuItem, CircularProgress } from '@mui/material';
+import {
+    Grid,
+    Card,
+    CardContent,
+    TextField,
+    IconButton,
+    Typography,
+    Container,
+    Stack,
+    Checkbox,
+    FormControlLabel,
+    Button,
+    Box,
+    MenuItem,
+    CircularProgress,
+    AppBar, Toolbar
+} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useExercises } from '../context/ExerciseContext';
@@ -7,6 +23,7 @@ import { useUser } from '../context/UserContext';
 import useUsers from '../hooks/useUsers'; // Import the custom hook
 import logo from '../assets/CardeaLogo.png';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ExerciseList: React.FC = () => {
     const { exercises } = useExercises();
@@ -18,6 +35,7 @@ const ExerciseList: React.FC = () => {
     const [showWorkoutForm, setShowWorkoutForm] = useState(false);
     const [showWorkoutDetails, setShowWorkoutDetails] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
 
     const handleExerciseSelect = (id: string) => {
         setSelectedExercises((prevSelected) =>
@@ -61,8 +79,18 @@ const ExerciseList: React.FC = () => {
 
     return (
         <Container>
+            <AppBar position="static">
+                <Toolbar>
+                    <img src={logo} alt="Logo" style={{ width: 50, height: 50, marginRight: 20 }} onClick={() => navigate('/')} />
+                    <Typography variant="h6" style={{ flexGrow: 1 }}>
+                        Cardea
+                    </Typography>
+                    <Button color="inherit" onClick={() => navigate('/')}>Home Page</Button>
+                    <Button color="inherit" onClick={() => navigate('/profile')}>My Profile</Button>
+                </Toolbar>
+            </AppBar>
+
             <Box display="flex" alignItems="center" sx={{ mb: 4 }}>
-                <img src={logo} alt="Logo" style={{ width: '50px', marginRight: '20px' }} />
                 <Typography variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', flexGrow: 1 }}>EXERCISES</Typography>
             </Box>
             <TextField
@@ -141,6 +169,7 @@ const ExerciseList: React.FC = () => {
                     </Grid>
                 ))}
             </Grid>
+
             {user.role === 'coach' && !showWorkoutForm && (
                 <Box sx={{ mt: 4 }}>
                     <Button variant="contained" color="primary" onClick={() => setShowWorkoutForm(true)}>
