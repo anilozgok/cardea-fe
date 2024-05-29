@@ -1,8 +1,9 @@
+
 import './App.css';
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { UserContextProvider } from "./context/UserContextProvider";
-import { ExerciseProvider } from './context/ExerciseContext'; // Make sure this import is correct
+import { ExerciseProvider } from './context/ExerciseContext';
 
 // Import pages
 import SignIn from "./pages/SignIn";
@@ -17,6 +18,7 @@ import WorkoutsList from './pages/WorkoutList';
 import UserProfiles from './pages/UserProfile';
 import UpdatePassword from './pages/UpdatePassword';
 import PhotoUpload from './pages/UploadPhotos';
+
 
 function App() {
     const router = createBrowserRouter([
@@ -34,11 +36,13 @@ function App() {
         
     ]);
 
+
+function App() {
     return (
         <UserContextProvider>
             <ThemeProvider theme={createTheme()}>
-                <ExerciseProvider> {/* Wrap RouterProvider with ExerciseProvider */}
-                    <RouterProvider router={router}/>
+                <ExerciseProvider>
+                    <RouterProvider router={router} />
                 </ExerciseProvider>
             </ThemeProvider>
         </UserContextProvider>
