@@ -26,10 +26,9 @@ function App() {
         { path: "/forgot-password", element: <ForgotPassword/> },
         { path: "/reset-password", element: <ResetPassword/> },
         { path: "/otp", element: <EmailVerification/> },
-        { path: "/profile", element: <LandingPage2/> },
         { path: "/exercise", element: <ExerciseList/> },
         { path: "/workouts", element: <WorkoutsList/> },
-        { path: "/deneme", element: <UserProfiles/> },
+        { path: "/profile", element: <UserProfiles/> },
         { path: "/update-password", element: <UpdatePassword/> },
         { path: "/upload-photos", element: <PhotoUpload/> },
         

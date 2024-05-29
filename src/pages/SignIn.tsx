@@ -30,7 +30,7 @@ export default function SignIn() {
             await user.refetchAfterLogin()
             const hasProfile: boolean = res.headers['has-profile'] === 'true';
             if (!hasProfile) {
-                navigate('/deneme');
+                navigate('/profile');
             } else {
                 navigate('/');
             }
