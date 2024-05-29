@@ -14,7 +14,7 @@ import {
     Box,
     MenuItem,
     CircularProgress,
-    AppBar, Toolbar
+    AppBar, Toolbar, Avatar
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -73,21 +73,86 @@ const ExerciseList: React.FC = () => {
         }
     };
 
+    const handleLogout = async () => {
+        try {
+            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+            navigate('/'); // Redirect to the landing page after logout
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
+
     const filteredExercises = exercises.filter(exercise =>
         exercise.exerciseName && exercise.exerciseName.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
         <Container>
-            <AppBar position="static">
-                <Toolbar>
-                    <img src={logo} alt="Logo" style={{ width: 50, height: 50, marginRight: 20 }} onClick={() => navigate('/')} />
-                    <Typography variant="h6" style={{ flexGrow: 1 }}>
-                        Cardea
-                    </Typography>
-                    <Button color="inherit" onClick={() => navigate('/')}>Home Page</Button>
-                    <Button color="inherit" onClick={() => navigate('/profile')}>My Profile</Button>
-                </Toolbar>
+            <AppBar
+                position="fixed"
+                sx={{
+                    boxShadow: 0,
+                    bgcolor: 'transparent',
+                    backgroundImage: 'none',
+                    mt: 2,
+                }}
+            >
+                <Container maxWidth="lg">
+                    <Toolbar
+                        variant="regular"
+                        sx={(theme) => ({
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            flexShrink: 0,
+                            borderRadius: '999px',
+                            bgcolor:
+                                theme.palette.mode === 'light'
+                                    ? 'rgba(255, 255, 255, 0.4)'
+                                    : 'rgba(0, 0, 0, 0.4)',
+                            backdropFilter: 'blur(24px)',
+                            maxHeight: 56,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            boxShadow:
+                                theme.palette.mode === 'light'
+                                    ? `0 0 1px rgba(85, 166, 246, 0.1), 1px 1.5px 2px -1px rgba(85, 166, 246, 0.15), 4px 4px 12px -2.5px rgba(85, 166, 246, 0.15)`
+                                    : '0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)',
+                        })}
+                    >
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <img
+                                src={logo}
+                                alt="logo of Cardea"
+                                style={{ width: 80, height: 80, borderRadius: '50%' }}
+                                onClick={() => navigate('/')}
+                            />
+                        </Box>
+                        <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center' }}>
+                            <MenuItem onClick={() => navigate('/')} sx={{ py: '10px', px: '36px' }}>
+                                <Typography variant="body1" color="text.primary">
+                                    Home
+                                </Typography>
+                            </MenuItem>
+                            <MenuItem onClick={() => navigate('/update-workout')} sx={{ py: '10px', px: '36px' }}>
+                                <Typography variant="body1" color="text.primary">
+                                    Update & Delete Workouts
+                                </Typography>
+                            </MenuItem>
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Button variant="contained" color="secondary" onClick={handleLogout} sx={{ mr: 2 }}>
+                                Logout
+                            </Button>
+                            <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+                        </Box>
+                    </Toolbar>
+                </Container>
             </AppBar>
 
             <Box display="flex" alignItems="center" sx={{ mb: 4 }}>

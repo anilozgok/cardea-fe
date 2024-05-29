@@ -30,6 +30,7 @@ import { useUser } from '../context/UserContext';
 import logo from '../assets/CardeaLogo.png';
 import { useNavigate } from "react-router-dom";
 import MenuItem from '@mui/material/MenuItem';
+import axios from "axios";
 
 const WorkoutsList: React.FC = () => {
   const { user } = useUser();
@@ -73,6 +74,15 @@ const WorkoutsList: React.FC = () => {
   const navigateTo = (url) => {
     navigate(url)
   };
+
+    const handleLogout = async () => {
+        try {
+            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+            navigate('/'); // Redirect to the landing page after logout
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
 
   return (
     <Container maxWidth="xl" sx={{ mt: -20 }}>
@@ -147,9 +157,12 @@ const WorkoutsList: React.FC = () => {
                 sx={{ flex: 1, maxWidth: 300 }}
               />
             </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigateTo('/profile')} />
-            </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <Button variant="contained" color="secondary" onClick={handleLogout} sx={{ mr: 2 }}>
+                      Logout
+                  </Button>
+                  <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+              </Box>
           </Toolbar>
         </Container>
       </AppBar>
