@@ -15,18 +15,27 @@ import EmailVerification from './pages/OTP';
 import LandingPage2 from './pages/ProfileLandingPage';
 import ExerciseList from "./pages/ExerciseList";
 import WorkoutsList from './pages/WorkoutList';
+import UserProfiles from './pages/UserProfile';
+import UpdatePassword from './pages/UpdatePassword';
+import PhotoUpload from './pages/UploadPhotos';
 
-const router = createBrowserRouter([
-    { path: "/", element: <LandingPage/> },
-    { path: "/sign-in", element: <SignIn/> },
-    { path: "/register", element: <Register/> },
-    { path: "/forgot-password", element: <ForgotPassword/> },
-    { path: "/reset-password", element: <ResetPassword/> },
-    { path: "/otp", element: <EmailVerification/> },
-    { path: "/profile", element: <LandingPage2/> },
-    { path: "/exercise", element: <ExerciseList/> },
-    { path: "/workouts", element: <WorkoutsList/> }
-]);
+
+function App() {
+    const router = createBrowserRouter([
+        { path: "/", element: <LandingPage/> },
+        { path: "/sign-in", element: <SignIn/> },
+        { path: "/register", element: <Register/> },
+        { path: "/forgot-password", element: <ForgotPassword/> },
+        { path: "/reset-password", element: <ResetPassword/> },
+        { path: "/otp", element: <EmailVerification/> },
+        { path: "/exercise", element: <ExerciseList/> },
+        { path: "/workouts", element: <WorkoutsList/> },
+        { path: "/profile", element: <UserProfiles/> },
+        { path: "/update-password", element: <UpdatePassword/> },
+        { path: "/upload-photos", element: <PhotoUpload/> },
+        
+    ]);
+
 
 function App() {
     return (
