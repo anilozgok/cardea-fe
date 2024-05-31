@@ -14,6 +14,7 @@ import { useUser } from "../context/UserContext.tsx";
 import { useNavigate } from "react-router-dom";
 import logo from '../assets/CardeaLogo.png';
 
+
 type loginRequest = {
     email: string,
     password: string
@@ -36,6 +37,8 @@ export default function SignIn() {
             }
         }
     }
+
+    
     const handleForgotPw = () => {
         navigate('/forgot-password');
     }

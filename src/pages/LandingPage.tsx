@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Typography, Grid, Button, Card, CardContent, CardMedia } from '@mui/material';
+import { Container, Typography, Grid, Button, Card, CardContent, CardMedia, AppBar, Box, Toolbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import bmi from '../assets/builder.png'
 import water from '../assets/water.png'
@@ -10,14 +10,17 @@ import idealweight from '../assets/idealWeight.png';
 import trainingImage from '../assets/trainingImage.png';
 import nutritionImage from '../assets/nutrition.png';
 import progressImage from '../assets/progress.png';
-
+import logo from '../assets/CardeaLogo.png';
+import logoName from '../assets/cardeaName.png';
 
 const LandingPage: React.FC = () => {
     const navigate = useNavigate();
 
 
+
     const FeatureItem: React.FC<{ title: string; description: string; imgSrc: string }> = ({ title, description, imgSrc }) => (
-        <Card style={{ maxWidth: 400, margin: 'auto' }}>
+        <Card style=
+            {{ maxWidth: 400, margin: 'auto' }}>
             <CardMedia
                 component="img"
                 height="400"
@@ -32,12 +35,74 @@ const LandingPage: React.FC = () => {
                     {description}
                 </Typography>
             </CardContent>
-        </Card>
+        </Card >
     );
 
     return (
         <Container>
-            <header style={{ textAlign: 'center', margin: '40px 0' }}>
+            <AppBar
+                position="fixed"
+                sx={{
+                    boxShadow: 0,
+                    bgcolor: 'rgba(255, 255, 255, 0.8)',  // Ensuring background is slightly opaque
+                    backgroundImage: 'none',
+                    mt: 2,
+                    color: 'black',  // Explicit text color
+                }}
+            >
+                <Container maxWidth="lg">
+                    <Toolbar
+                        variant="regular"
+                        sx={(theme) => ({
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            flexShrink: 0,
+                            borderRadius: '999px',
+                            bgcolor:
+                                theme.palette.mode === 'light'
+                                    ? 'rgba(255, 255, 255, 0.8)'  // Increased opacity
+                                    : 'rgba(0, 0, 0, 0.4)',
+                            backdropFilter: 'blur(24px)',
+                            maxHeight: 56,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                        })}
+                    >
+                        <img
+                            src={logo}
+                            alt="initial logo"
+                            style={{ width: 80, height: 80, borderRadius: '50%' }}
+                            onClick={() => navigate('/')}
+                        />
+                        <Box
+                            sx={{
+                                flexGrow: 1,
+                                display: 'flex',
+                                justifyContent: 'center', // Aligns the center logo in the middle
+                            }}
+                        >
+                            <img
+                                src={logoName}
+                                alt="Cardea logo"
+                                style={{ width: 130, height: 140, borderRadius: '50%' }}
+                                onClick={() => navigate('/')}
+                            />
+                        </Box>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Button color="inherit" onClick={() => navigate('/sign-in')}>Sign In</Button>
+                            <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
+                        </Box>
+                    </Toolbar>
+                </Container>
+            </AppBar>
+
+            <header style={{ textAlign: 'center', margin: '40px 0', marginTop: '85px' }}>
                 <Typography variant="h2" component="h1" gutterBottom style={{ color: 'black' }}>
                     Welcome to Your Fitness Journey
                 </Typography>

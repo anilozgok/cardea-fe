@@ -1,5 +1,9 @@
+import { Key } from "react";
+
 // src/types/Exercise.ts
 export type Exercise = {
+    exerciseName: any;
+    exerciseId: Key | null | undefined;
     id: string;
     name: string;
     bodyPart: string;
