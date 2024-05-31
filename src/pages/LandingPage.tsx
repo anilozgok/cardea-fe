@@ -1,15 +1,39 @@
-
 import React from 'react';
-import { Container, Typography, Grid, Button } from '@mui/material';
+import { Container, Typography, Grid, Button, Card, CardContent, CardMedia } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import bmi from '../assets/bmi.jpeg'
-import water from '../assets/water-intake.png'
-import caffeine from '../assets/caffeine.jpeg';
-import calorie from '../assets/calorie.jpeg';
-import bodyfat from '../assets/bodyfat.jpeg';
-import idealweight from '../assets/idealw.jpeg';
+import bmi from '../assets/builder.png'
+import water from '../assets/water.png'
+import caffeine from '../assets/coffee.png';
+import calorie from '../assets/calorie.png';
+import bodyfat from '../assets/bodyfat.png';
+import idealweight from '../assets/idealWeight.png';
+import trainingImage from '../assets/trainingImage.png';
+import nutritionImage from '../assets/nutrition.png';
+import progressImage from '../assets/progress.png';
+
+
 const LandingPage: React.FC = () => {
     const navigate = useNavigate();
+
+
+    const FeatureItem: React.FC<{ title: string; description: string; imgSrc: string }> = ({ title, description, imgSrc }) => (
+        <Card style={{ maxWidth: 400, margin: 'auto' }}>
+            <CardMedia
+                component="img"
+                height="400"
+                image={imgSrc}
+                alt={title}
+            />
+            <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                    {title}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                    {description}
+                </Typography>
+            </CardContent>
+        </Card>
+    );
 
     return (
         <Container>
@@ -30,18 +54,21 @@ const LandingPage: React.FC = () => {
                 <Grid container spacing={4} justifyContent="center">
                     <Grid item xs={12} sm={6} md={4}>
                         <FeatureItem
+                            imgSrc={trainingImage}
                             title="Personalized Training Plans"
                             description="Unlock your full potential with customized training programs designed to meet your unique fitness goals. Whether you're a beginner or an advanced athlete, our expert coaches tailor your workouts for maximum effectiveness."
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} md={4}>
                         <FeatureItem
+                            imgSrc={nutritionImage}
                             title="Nutritional Guidance"
                             description="Enhance your physical training with personalized nutritional plans that support your fitness goals. Our certified nutritionists create diet plans that complement your lifestyle and boost your performance."
                         />
                     </Grid>
                     <Grid item xs={12} sm={6} md={4}>
                         <FeatureItem
+                            imgSrc={progressImage}
                             title="Progress Tracking"
                             description="Stay motivated with real-time tracking of your progress. Our platform provides detailed insights into your workouts, diet, and overall fitness journey, helping you stay on track and achieve your goals faster."
                         />
@@ -138,4 +165,3 @@ const CalculationTool: React.FC<{ imgSrc: string; altText: string; title: string
 );
 
 export default LandingPage;
-
