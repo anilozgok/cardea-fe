@@ -21,6 +21,8 @@ import CaffeineIntakeCalculator from "./pages/CaffeineCalculatorPage.tsx";
 import CalorieIntakeCalculator from "./pages/DailyCalorieCalculatorPage.tsx";
 import BodyFatCalculator from "./pages/BodyFatCalculatorPage.tsx";
 import IdealWeightCalculator from "./pages/IdealWeightCalculatorPage.tsx";
+import CreateDietPlanPage from "./pages/CreateDietPlanPage.tsx";
+import UserDietPlanPage from "./pages/UserDietPlanPage.tsx";
 
 
 function App() {
@@ -42,6 +44,8 @@ function App() {
         { path: "/calorie-intake-calculator", element: <CalorieIntakeCalculator/> },
         { path: "/body-fat-percentage-calculator", element: <BodyFatCalculator/> },
         { path: "/ideal-weight-calculator", element: <IdealWeightCalculator/> },
+        { path: "/diet-plan", element: <CreateDietPlanPage/> },
+        { path: "/diet-plan-user", element: <UserDietPlanPage/> },
 
 
     ]);
