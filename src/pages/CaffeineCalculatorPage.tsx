@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Container, Grid, Card, CardContent, TextField, Button, Typography, Box, AppBar, Toolbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/CardeaLogo.png';
@@ -13,19 +13,67 @@ const CaffeineIntakeCalculator: React.FC = () => {
         const intake = weight * 6; // Example calculation: 6 mg of caffeine per kg of body weight
         setCaffeineIntake(intake);
     };
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, []);
 
     return (
         <Container>
-            <AppBar position="static">
-                <Toolbar>
-                    <img src={logo} alt="Logo" style={{ width: 50, height: 50, marginRight: 20 }} onClick={() => navigate('/')} />
-                    <Typography variant="h6" style={{ flexGrow: 1 }}>
-                        Cardea
-                    </Typography>
-                    <Button color="inherit" onClick={() => navigate('/sign-in')}>Sign In</Button>
-                    <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
-                </Toolbar>
-            </AppBar>
+            <AppBar
+                    position="fixed"
+                    sx={{
+                        boxShadow: 0,
+                        bgcolor: 'rgba(255, 255, 255, 0.8)',  // Ensuring background is slightly opaque
+                        backgroundImage: 'none',
+                        mt: 2,
+                        color: 'black',  // Explicit text color
+                    }}
+                >
+                    <Container maxWidth="lg">
+                        <Toolbar
+                            variant="regular"
+                            sx={(theme) => ({
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'space-between',
+                                flexShrink: 0,
+                                borderRadius: '999px',
+                                bgcolor:
+                                    theme.palette.mode === 'light'
+                                        ? 'rgba(255, 255, 255, 0.8)'  // Increased opacity
+                                        : 'rgba(0, 0, 0, 0.4)',
+                                backdropFilter: 'blur(24px)',
+                                maxHeight: 56,
+                                border: '1px solid',
+                                borderColor: 'divider',
+                            })}
+                        >
+                            <Box
+                                sx={{
+                                    flexGrow: 1,
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    ml: '-18px',
+                                    px: 0,
+                                }}
+                            >
+                                <img
+                                    src={logo}
+                                    alt="logo of Cardea"
+                                    style={{ width: 80, height: 80, borderRadius: '50%' }}
+                                    onClick={() => navigate('/')}
+                                />
+                                <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center', color: 'inherit' }}>
+                                    Cardea
+                                </Typography>
+                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <Button color="inherit" onClick={() => navigate('/sign-in')}>Sign In</Button>
+                                    <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
+                                </Box>
+                            </Box>
+                        </Toolbar>
+                    </Container>
+                </AppBar>
 
             <Grid container spacing={4} justifyContent="center" style={{ marginTop: '40px' }}>
                 <Grid item xs={12} md={4}>

@@ -20,7 +20,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useExercises } from '../context/ExerciseContext';
 import { useUser } from '../context/UserContext';
-import useUsers from '../hooks/useUsers'; // Import the custom hook
+import useUsers from '../hooks/useUsers'; 
 import logo from '../assets/CardeaLogo.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +28,7 @@ import { useNavigate } from 'react-router-dom';
 const ExerciseList: React.FC = () => {
     const { exercises } = useExercises();
     const { user } = useUser();
-    const { users, loading, error } = useUsers(); // Use the custom hook
+    const { users, loading, error } = useUsers(); 
     const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
     const [workoutName, setWorkoutName] = useState('');
     const [selectedUserId, setSelectedUserId] = useState('');
@@ -49,17 +49,16 @@ const ExerciseList: React.FC = () => {
                 for (const exerciseId of selectedExercises) {
                     const workout = {
                         name: workoutName,
-                        userId: parseInt(selectedUserId, 10), // Ensure userId is an integer
-                        exercise: parseInt(exerciseId, 10), // Ensure exerciseId is an integer
-                        description: 'Description', // Add appropriate description
-                        area: 'Area', // Add appropriate area
-                        rep: 10, // Add appropriate reps
-                        sets: 3 // Add appropriate sets
+                        userId: parseInt(selectedUserId, 10), 
+                        exercise: parseInt(exerciseId, 10), 
+                        description: 'Description', 
+                        area: 'Area', 
+                        rep: 10, 
+                        sets: 3 
                     };
                     await axios.post('http://localhost:8080/api/v1/workout', workout, { withCredentials: true });
                 }
                 console.log('Workouts created successfully');
-                // Reset the form after successful creation
                 setWorkoutName('');
                 setSelectedUserId('');
                 setSelectedExercises([]);
