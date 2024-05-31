@@ -4,7 +4,6 @@ import {
     Card,
     CardContent,
     TextField,
-    IconButton,
     Typography,
     Container,
     Stack,
@@ -16,11 +15,9 @@ import {
     CircularProgress,
     AppBar, Toolbar
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useExercises } from '../context/ExerciseContext';
 import { useUser } from '../context/UserContext';
-import useUsers from '../hooks/useUsers'; 
+import useUsers from '../hooks/useUsers';
 import logo from '../assets/CardeaLogo.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -28,8 +25,8 @@ import { useNavigate } from 'react-router-dom';
 const ExerciseList: React.FC = () => {
     const { exercises } = useExercises();
     const { user } = useUser();
-    const { users, loading, error } = useUsers(); 
-    const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
+    const { users, loading, error } = useUsers();
+    const [selectedExercises, setSelectedExercises] = useState<{id: string, reps: number, sets: number, description: string}[]>([]);
     const [workoutName, setWorkoutName] = useState('');
     const [selectedUserId, setSelectedUserId] = useState('');
     const [showWorkoutForm, setShowWorkoutForm] = useState(false);
@@ -38,23 +35,35 @@ const ExerciseList: React.FC = () => {
     const navigate = useNavigate();
 
     const handleExerciseSelect = (id: string) => {
-        setSelectedExercises((prevSelected) =>
-            prevSelected.includes(id) ? prevSelected.filter((exerciseId) => exerciseId !== id) : [...prevSelected, id]
-        );
+        setSelectedExercises((prevSelected) => {
+            const existing = prevSelected.find(exercise => exercise.id === id);
+            if (existing) {
+                return prevSelected.filter(exercise => exercise.id !== id);
+            } else {
+                return [...prevSelected, { id, reps: 10, sets: 3, description: '' }];
+            }
+        });
+    };
+
+    const handleExerciseChange = (id: string, field: string, value: string | number) => {
+        setSelectedExercises(prevSelected => prevSelected.map(exercise =>
+            exercise.id === id ? { ...exercise, [field]: value } : exercise
+        ));
     };
 
     const handleCreateWorkout = async () => {
         if (workoutName && selectedUserId && selectedExercises.length > 0) {
             try {
-                for (const exerciseId of selectedExercises) {
+                for (const {id, reps, sets, description} of selectedExercises) {
+                    const exercise = exercises.find(ex => ex.exerciseId.toString() === id);
                     const workout = {
                         name: workoutName,
-                        userId: parseInt(selectedUserId, 10), 
-                        exercise: parseInt(exerciseId, 10), 
-                        description: 'Description', 
-                        area: 'Area', 
-                        rep: 10, 
-                        sets: 3 
+                        userId: parseInt(selectedUserId, 10),
+                        exercise: parseInt(id, 10),
+                        description: description,
+                        area: exercise ? exercise.bodyPart : 'Area',
+                        rep: reps,
+                        sets: sets
                     };
                     await axios.post('http://localhost:8080/api/v1/workout', workout, { withCredentials: true });
                 }
@@ -118,7 +127,7 @@ const ExerciseList: React.FC = () => {
                                 <FormControlLabel
                                     control={
                                         <Checkbox
-                                            checked={selectedExercises.includes(exercise.exerciseId.toString())}
+                                            checked={selectedExercises.some(ex => ex.id === exercise.exerciseId.toString())}
                                             onChange={() => handleExerciseSelect(exercise.exerciseId.toString())}
                                             color="primary"
                                             disabled={user.role !== 'coach'}
@@ -140,27 +149,30 @@ const ExerciseList: React.FC = () => {
                                     Equipment: {exercise.equipment}
                                 </Typography>
                                 {user.role === 'coach' && (
-                                    <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
+                                    <Stack spacing={2} sx={{ mt: 2 }}>
                                         <TextField
                                             size="small"
                                             type="number"
                                             label="Reps"
-                                            defaultValue="10"
-                                            sx={{ width: '50%' }}
+                                            value={selectedExercises.find(ex => ex.id === exercise.exerciseId.toString())?.reps || 10}
+                                            onChange={(e) => handleExerciseChange(exercise.exerciseId.toString(), 'reps', parseInt(e.target.value))}
+                                            sx={{ width: '100%' }}
                                         />
                                         <TextField
                                             size="small"
                                             type="number"
                                             label="Sets"
-                                            defaultValue="3"
-                                            sx={{ width: '50%' }}
+                                            value={selectedExercises.find(ex => ex.id === exercise.exerciseId.toString())?.sets || 3}
+                                            onChange={(e) => handleExerciseChange(exercise.exerciseId.toString(), 'sets', parseInt(e.target.value))}
+                                            sx={{ width: '100%' }}
                                         />
-                                    </Stack>
-                                )}
-                                {user.role === 'coach' && (
-                                    <Stack direction="row" spacing={1} justifyContent="flex-end" sx={{ mt: 2 }}>
-                                        <IconButton color="primary"><EditIcon /></IconButton>
-                                        <IconButton color="secondary"><DeleteIcon /></IconButton>
+                                        <TextField
+                                            size="small"
+                                            label="Description"
+                                            value={selectedExercises.find(ex => ex.id === exercise.exerciseId.toString())?.description || ''}
+                                            onChange={(e) => handleExerciseChange(exercise.exerciseId.toString(), 'description', e.target.value)}
+                                            sx={{ width: '100%' }}
+                                        />
                                     </Stack>
                                 )}
                             </CardContent>
