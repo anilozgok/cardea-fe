@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Grid, Card, CardContent, TextField, Button, Typography, Box, MenuItem, AppBar, Toolbar } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/CardeaLogo.png';
+import logoName from '../assets/cardeaName.png';
 
 const WaterIntakeCalculator: React.FC = () => {
     const [age, setAge] = useState(14);
@@ -53,28 +54,34 @@ const WaterIntakeCalculator: React.FC = () => {
                             borderColor: 'divider',
                         })}
                     >
+                        <img
+                            src={logo}
+                            alt="initial logo"
+                            style={{ width: 80, height: 80, borderRadius: '50%' }}
+                            onClick={() => navigate('/')}
+                        />
                         <Box
                             sx={{
                                 flexGrow: 1,
                                 display: 'flex',
-                                alignItems: 'center',
-                                ml: '-18px',
-                                px: 0,
+                                justifyContent: 'center', // Aligns the center logo in the middle
                             }}
                         >
                             <img
-                                src={logo}
-                                alt="logo of Cardea"
-                                style={{ width: 80, height: 80, borderRadius: '50%' }}
+                                src={logoName}
+                                alt="Cardea logo"
+                                style={{ width: 130, height: 140, borderRadius: '50%' }}
                                 onClick={() => navigate('/')}
                             />
-                            <Typography variant="h6" sx={{ flexGrow: 1, textAlign: 'center', color: 'inherit' }}>
-                                Cardea
-                            </Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                <Button color="inherit" onClick={() => navigate('/sign-in')}>Sign In</Button>
-                                <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
-                            </Box>
+                        </Box>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <Button color="inherit" onClick={() => navigate('/sign-in')}>Sign In</Button>
+                            <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
                         </Box>
                     </Toolbar>
                 </Container>

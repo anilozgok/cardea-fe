@@ -48,12 +48,12 @@ function App() {
 
     return (
         <UserContextProvider>
-            <ThemeProvider theme={createTheme()}>
-                <RouterProvider router={router}/>
-            </ThemeProvider>
+            <ExerciseProvider>
+                <ThemeProvider theme={createTheme()}>
+                    <RouterProvider router={router}/>
+                </ThemeProvider>
+            </ExerciseProvider>
         </UserContextProvider>
-
     )
-
 }
 export default App;
