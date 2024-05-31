@@ -23,6 +23,7 @@ import BodyFatCalculator from "./pages/BodyFatCalculatorPage.tsx";
 import IdealWeightCalculator from "./pages/IdealWeightCalculatorPage.tsx";
 import CreateDietPlanPage from "./pages/CreateDietPlanPage.tsx";
 import UserDietPlanPage from "./pages/UserDietPlanPage.tsx";
+import UpdateDeleteDietPlanPage from "./pages/UpdateDietPlanPage.tsx";
 
 
 function App() {
@@ -46,6 +47,7 @@ function App() {
         { path: "/ideal-weight-calculator", element: <IdealWeightCalculator/> },
         { path: "/diet-plan", element: <CreateDietPlanPage/> },
         { path: "/diet-plan-user", element: <UserDietPlanPage/> },
+        { path: "/diet-plan-update", element: <UpdateDeleteDietPlanPage/> },
 
 
     ]);

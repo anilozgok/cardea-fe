@@ -1,4 +1,5 @@
-import React from 'react';
+// src/pages/UserDietPlanPage.tsx
+import React, { useEffect, useState } from 'react';
 import {
     Container,
     Typography,
@@ -13,44 +14,51 @@ import {
     AppBar,
     Toolbar,
     Avatar,
-    Button
+    Button,
+    CircularProgress,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/CardeaLogo.png';
 import axios from "axios";
+import logo from '../assets/CardeaLogo.png';
 import { useUser } from '../context/UserContext';
+
+interface DietPlan {
+    id: number;
+    name: string;
+    meals: Meal[];
+}
+
+interface Meal {
+    id: number;
+    name: string;
+    description: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+}
 
 const UserDietPlanPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useUser();
+    const [dietPlans, setDietPlans] = useState<DietPlan[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    // Static diet plan data
-    const dietPlans = [
-        {
-            id: 1,
-            meal: 'Breakfast',
-            description: 'Oatmeal with fruits',
-            gram: 200,
-        },
-        {
-            id: 2,
-            meal: 'Lunch',
-            description: 'Grilled chicken with vegetables',
-            gram: 300,
-        },
-        {
-            id: 3,
-            meal: 'Dinner',
-            description: 'Salmon with salad',
-            gram: 250,
-        },
-        {
-            id: 4,
-            meal: 'Snack',
-            description: 'Greek yogurt with honey',
-            gram: 150,
-        },
-    ];
+    useEffect(() => {
+        const fetchDietPlans = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/api/v1/diet?user_id=${user.id}`, { withCredentials: true });
+                setDietPlans(response.data);
+                setLoading(false);
+            } catch (err) {
+                setError('Failed to fetch diet plans');
+                setLoading(false);
+            }
+        };
+
+        fetchDietPlans();
+    }, [user.id]);
 
     const handleLogout = async () => {
         try {
@@ -86,31 +94,48 @@ const UserDietPlanPage: React.FC = () => {
             </AppBar>
 
             <Box sx={{ mt: 10, mb: 2 }}>
-                <Typography variant="h5" color="black">Diet Plan</Typography>
+                <Typography variant="h5" color="black">Diet Plans</Typography>
             </Box>
 
-            <TableContainer component={Paper} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Meal</TableCell>
-                            <TableCell>Description</TableCell>
-                            <TableCell align="right">Gram</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {dietPlans.map((plan) => (
-                            <TableRow key={plan.id}>
-                                <TableCell component="th" scope="row">
-                                    {plan.meal}
-                                </TableCell>
-                                <TableCell>{plan.description}</TableCell>
-                                <TableCell align="right">{plan.gram}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            {loading ? (
+                <CircularProgress />
+            ) : error ? (
+                <Typography color="error">{error}</Typography>
+            ) : (
+                dietPlans.map((dietPlan) => (
+                    <Box key={dietPlan.id} sx={{ mb: 4 }}>
+                        <Typography variant="h6" color="primary">{dietPlan.name}</Typography>
+                        <TableContainer component={Paper} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Meal</TableCell>
+                                        <TableCell>Description</TableCell>
+                                        <TableCell align="right">Calories</TableCell>
+                                        <TableCell align="right">Protein (g)</TableCell>
+                                        <TableCell align="right">Carbs (g)</TableCell>
+                                        <TableCell align="right">Fat (g)</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {dietPlan.meals.map((meal) => (
+                                        <TableRow key={meal.id}>
+                                            <TableCell component="th" scope="row">
+                                                {meal.name}
+                                            </TableCell>
+                                            <TableCell>{meal.description}</TableCell>
+                                            <TableCell align="right">{meal.calories}</TableCell>
+                                            <TableCell align="right">{meal.protein}</TableCell>
+                                            <TableCell align="right">{meal.carbs}</TableCell>
+                                            <TableCell align="right">{meal.fat}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Box>
+                ))
+            )}
         </Container>
     );
 };
