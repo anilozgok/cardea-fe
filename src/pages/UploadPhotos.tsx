@@ -15,6 +15,9 @@ import { useDropzone } from 'react-dropzone';
 import logo from '../assets/CardeaLogo.png';
 import { useNavigate } from 'react-router-dom';
 import GetAppIcon from '@mui/icons-material/GetApp';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import axios from "axios";
+
 
 function PhotoUpload(): JSX.Element {
     const [files, setFiles] = useState<File[]>([]);
@@ -51,7 +54,14 @@ function PhotoUpload(): JSX.Element {
         fetchPhotos();
     }, [openUploadDialog]);
 
-
+    const handleLogout = async () => {
+        try {
+            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+            navigate('/'); // Redirect to the landing page after logout
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
 
     const handleClosePhoto = () => {
         setOpenImageViewDialog(false);
@@ -127,7 +137,7 @@ function PhotoUpload(): JSX.Element {
                         <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
                             <img src={logo} alt="logo of Cardea" style={{ width: 80, height: 80, borderRadius: '50%' }} />
                             <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-evenly', ml: 4 }}>
-                                <MenuItem onClick={() => navigate('/')}>
+                                <MenuItem onClick={() => navigate('/landing')}>
                                     <Typography variant="body1" color="text.primary">Home</Typography>
                                 </MenuItem>
                                 <MenuItem onClick={() => navigate('/workouts')}>
@@ -139,10 +149,16 @@ function PhotoUpload(): JSX.Element {
                                 <Button startIcon={<CloudUploadIcon />} onClick={handleClickOpen}>Upload Photos</Button>
                             </Box>
                             <Avatar sx={{ width: 40, height: 40 }} onClick={() => navigate('/profile')} />
+                            <Button
+                                onClick={handleLogout}
+                                startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft:'20px'}} />} // You can adjust the size here
+                            >
+                            </Button>
                         </Box>
                     </Toolbar>
                 </Container>
             </AppBar>
+
             <Box sx={{ mt: 10, p: 2 }}>
                 <Grid container spacing={3}>
                     {photos.map((photoUrl, index) => (

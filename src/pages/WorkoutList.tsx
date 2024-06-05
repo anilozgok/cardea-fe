@@ -30,6 +30,7 @@ import { useUser } from '../context/UserContext';
 import logo from '../assets/CardeaLogo.png';
 import { useNavigate } from "react-router-dom";
 import MenuItem from '@mui/material/MenuItem';
+import workoutBg from '../assets/workoutBg.png';
 
 const WorkoutsList: React.FC = () => {
   const { user } = useUser();
@@ -75,8 +76,9 @@ const WorkoutsList: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ mt: -20 }}>
-<AppBar
+      <Container maxWidth="xl" sx={{ mt: -20, backgroundImage: `url(${workoutBg})` }}>
+
+      <AppBar
         position="fixed"
         sx={{
           boxShadow: 0,
@@ -122,7 +124,7 @@ const WorkoutsList: React.FC = () => {
               />
             </Box>
             <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center' }}>
-              <MenuItem onClick={() => navigateTo('/')} sx={{ py: '10px', px: '36px' }}>
+              <MenuItem onClick={() => navigateTo('/landing')} sx={{ py: '10px', px: '36px' }}>
                 <Typography variant="body1" color="text.primary">
                   Home
                 </Typography>

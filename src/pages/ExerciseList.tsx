@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
     Grid,
     Card,
@@ -21,7 +21,7 @@ import useUsers from '../hooks/useUsers';
 import logo from '../assets/CardeaLogo.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-
+import workoutBg from '../assets/realworkbg3.png'
 const ExerciseList: React.FC = () => {
     const { exercises } = useExercises();
     const { user } = useUser();
@@ -44,6 +44,25 @@ const ExerciseList: React.FC = () => {
             }
         });
     };
+
+    useEffect(() => {
+        // When the component mounts
+        document.body.style.backgroundImage = `url(${workoutBg})`;
+        document.body.style.backgroundSize = 'cover'; // Cover the viewport
+        document.body.style.backgroundPosition = 'center'; // Center the background image
+        document.body.style.backgroundAttachment = 'fixed'; // Make background fixed during scrolling
+        document.body.style.backgroundRepeat = 'no-repeat'; // Do not repeat the image
+
+        // When the component unmounts
+        return () => {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundAttachment = '';
+            document.body.style.backgroundRepeat = '';
+        };
+    }, []);
+
 
     const handleExerciseChange = (id: string, field: string, value: string | number) => {
         setSelectedExercises(prevSelected => prevSelected.map(exercise =>
@@ -86,8 +105,14 @@ const ExerciseList: React.FC = () => {
     );
 
     return (
-        <Container>
-            <AppBar position="static">
+        <Container sx={{
+            // backgroundImage: `url(${workoutBg})`,
+            backgroundSize: 'cover', // Cover the entire Container
+            backgroundPosition: 'center', // Center the background image
+            minHeight: '150vh', // Optional: Set a minimum height for the container
+            width: '100%', // Optional: Set the width if necessary
+            padding: '20px' // Optional: Add some padding inside the container
+        }}>            <AppBar position="static">
                 <Toolbar>
                     <img src={logo} alt="Logo" style={{ width: 50, height: 50, marginRight: 20 }} onClick={() => navigate('/')} />
                     <Typography variant="h6" style={{ flexGrow: 1 }}>
@@ -98,20 +123,24 @@ const ExerciseList: React.FC = () => {
                 </Toolbar>
             </AppBar>
 
-            <Box display="flex" alignItems="center" sx={{ mb: 4 }}>
-                <Typography variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', flexGrow: 1 }}>EXERCISES</Typography>
+            <Box display="flex" alignItems="center" sx={{ mb: 4,mt:4 }}>
+                <Typography variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', flexGrow: 1,color:'blue'}}>EXERCISES</Typography>
             </Box>
             <TextField
                 fullWidth
                 label="Search Exercises"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                sx={{ mb: 4 }}
+                sx={{ mb: 4,border: '1px solid rgba(0, 0, 0, 0.34)' }}
             />
             <Grid container spacing={4}>
                 {filteredExercises.map((exercise) => (
                     <Grid item xs={12} sm={6} md={4} key={exercise.exerciseId}>
-                        <Card>
+                        <Card sx={{
+                            backgroundColor: 'rgba(255, 255, 255, 0.7)', // Adjust transparency with the last value (0 to 1)
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)', // Optional: adds shadow for better distinction
+                            border: '1px solid rgba(0, 0, 0, 0.1)' // Optional: adds a subtle border
+                        }}>
                             <Box sx={{ height: '140px', position: 'relative', overflow: 'hidden' }}>
                                 <iframe
                                     src={exercise.gifUrl}
