@@ -137,7 +137,7 @@ const WorkoutsList: React.FC = () => {
                 src={logo}
                 alt="logo of Cardea"
                 style={{ width: 80, height: 80, borderRadius: '50%' }}
-                onClick={() => navigateTo('/')}
+                onClick={() => navigateTo('/landing')}
               />
             </Box>
             <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center' }}>
