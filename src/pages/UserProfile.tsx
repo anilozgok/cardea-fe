@@ -73,6 +73,19 @@ export default function UserProfiles() {
       console.error('Error logging out:', error);
     }
   };
+  const handleNavigate = (operation:string) => {
+    var url = '';
+    const isCoach = user.role === 'coach';
+    switch(operation){
+        case 'workout':
+            url = isCoach ? '/exercise' : '/workouts'
+            break;
+        case 'diet':
+            url = isCoach ? '/diet-plan' : '/diet-plan-user' 
+            break;
+    }
+    navigate(url)
+}
 
 
 
@@ -164,10 +177,10 @@ export default function UserProfiles() {
                   <MenuItem onClick={() => navigate('/landing')}>
                     <Typography variant="body1" color="text.primary">Home</Typography>
                   </MenuItem>
-                  <MenuItem onClick={() => navigate('/workouts')}>
+                  <MenuItem onClick={() => handleNavigate('workout')}>
                     <Typography variant="body1" color="text.primary">Workouts</Typography>
                   </MenuItem>
-                  <MenuItem onClick={() => navigate('/diet-plan-user')}>
+                  <MenuItem onClick={() => handleNavigate('diet')}>
                     <Typography variant="body1" color="text.primary">Diet Plans</Typography>
                   </MenuItem>
 

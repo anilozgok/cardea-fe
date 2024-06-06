@@ -18,10 +18,9 @@ import GetAppIcon from '@mui/icons-material/GetApp';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import axios from "axios";
 
-
 function PhotoUpload(): JSX.Element {
     const [files, setFiles] = useState<File[]>([]);
-    const [photos, setPhotos] = useState([]);
+    const [photos, setPhotos] = useState<PhotoResponse[]>([]);
     const [openUploadDialog, setOpenUploadDialog] = useState(false);
     const [openImageViewDialog, setOpenImageViewDialog] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
@@ -44,7 +43,7 @@ function PhotoUpload(): JSX.Element {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
-                const data = await response.json();
+                const data: PhotosResponse = await response.json();
                 setPhotos(data.photos);
             } catch (error) {
                 console.error('Failed to fetch photos:', error);
@@ -57,7 +56,7 @@ function PhotoUpload(): JSX.Element {
     const handleLogout = async () => {
         try {
             await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
-            navigate('/'); // Redirect to the landing page after logout
+            navigate('/');
         } catch (error) {
             console.error('Error logging out:', error);
         }
@@ -110,7 +109,7 @@ function PhotoUpload(): JSX.Element {
         reader.readAsDataURL(blob);
         reader.onloadend = function () {
             const base64data = reader.result;
-            setSelectedImage(base64data); 
+            setSelectedImage(base64data);
             setOpenImageViewDialog(true);
         }
     };
@@ -151,7 +150,7 @@ function PhotoUpload(): JSX.Element {
                             <Avatar sx={{ width: 40, height: 40 }} onClick={() => navigate('/profile')} />
                             <Button
                                 onClick={handleLogout}
-                                startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft:'20px'}} />} 
+                                startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft: '20px' }} />}
                             >
                             </Button>
                         </Box>
@@ -161,8 +160,8 @@ function PhotoUpload(): JSX.Element {
 
             <Box sx={{ mt: 10, p: 2 }}>
                 <Grid container spacing={3}>
-                    {photos.map((photoUrl, index) => (
-                        <Grid item xs={12} sm={6} md={4} key={index} style={{
+                    {photos.map((photo) => (
+                        <Grid item xs={12} sm={6} md={4} key={photo.photoId} style={{
                             padding: '8px',
                             height: '250px',
                             overflow: 'hidden',
@@ -175,7 +174,7 @@ function PhotoUpload(): JSX.Element {
                             borderRadius: '8px',
                             cursor: 'pointer',
                         }}>
-                            <img src={photoUrl} alt={`Photo ${index}`} style={{
+                            <img src={photo.photoURL} alt={`Photo ${photo.photoId}`} style={{
                                 width: '100%',
                                 height: '100%',
                                 objectFit: 'cover',
@@ -183,7 +182,7 @@ function PhotoUpload(): JSX.Element {
                             }}
                                 onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
                                 onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-                                onClick={() => handleOpenPhoto(photoUrl)}
+                                onClick={() => handleOpenPhoto(photo.photoURL)}
                             />
                         </Grid>
                     ))}
@@ -229,7 +228,7 @@ function PhotoUpload(): JSX.Element {
                     <Button
                         component="a"
                         href={selectedImage}
-                        download={`downloadedImage.jpg`} 
+                        download={`downloadedImage.jpg`}
                         color="primary"
                         startIcon={<GetAppIcon />}
                     >
