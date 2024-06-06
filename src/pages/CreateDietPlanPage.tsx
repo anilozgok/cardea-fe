@@ -27,6 +27,8 @@ import { useNavigate } from "react-router-dom";
 import logo from "../assets/CardeaLogo.png";
 import useUsers from '../hooks/useUsers';
 import useFoods from '../hooks/useFoods';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CreateDietPlanPage: React.FC = () => {
     const { user } = useUser();
@@ -68,7 +70,7 @@ const CreateDietPlanPage: React.FC = () => {
 
     const handleCreateDietPlan = async () => {
         if (!mealName || mealItems.length === 0 || !selectedUserId) {
-            alert('Please fill in all fields and add at least one meal item.');
+            toast.error('Please fill in all fields and add at least one meal item.');
             return;
         }
         setCreating(true);
@@ -86,10 +88,12 @@ const CreateDietPlanPage: React.FC = () => {
                 })),
             }, { withCredentials: true });
             setMessage('Diet plan created successfully');
+            toast.success('Diet plan created successfully');
             setMealName('');
             setMealItems([]);
         } catch (err) {
             setMessage('Failed to create diet plan');
+            toast.error('Failed to create diet plan');
         } finally {
             setCreating(false);
         }
@@ -120,6 +124,8 @@ const CreateDietPlanPage: React.FC = () => {
             </AppBar>
 
             <Typography variant="h4" sx={{ my: 4 }}>Create Diet Plan</Typography>
+
+            <ToastContainer />
 
             <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id="user-select-label">Select User</InputLabel>
@@ -221,8 +227,6 @@ const CreateDietPlanPage: React.FC = () => {
             {creating && <CircularProgress />}
             {message && <Typography color={message.includes('successfully') ? 'success' : 'error'} sx={{ mt: 2 }}>{message}</Typography>}
             {usersLoading && <CircularProgress />}
-
-            Kodu kopyala
             {usersError && <Typography color="error">{usersError}</Typography>}
             {foodsLoading && <CircularProgress />}
             {foodsError && <Typography color="error">{foodsError}</Typography>}

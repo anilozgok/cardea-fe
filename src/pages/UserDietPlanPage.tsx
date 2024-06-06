@@ -1,5 +1,4 @@
-// src/pages/UserDietPlanPage.tsx
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
     Container,
     Typography,
@@ -18,47 +17,22 @@ import {
     CircularProgress,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from "axios";
+import axios from 'axios';
 import logo from '../assets/CardeaLogo.png';
 import { useUser } from '../context/UserContext';
-
-interface DietPlan {
-    id: number;
-    name: string;
-    meals: Meal[];
-}
-
-interface Meal {
-    id: number;
-    name: string;
-    description: string;
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-}
+import { useDiet, DietProvider } from '../context/DietContext';
 
 const UserDietPlanPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useUser();
-    const [dietPlans, setDietPlans] = useState<DietPlan[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    const { dietPlans, loading, error, fetchDietPlans } = useDiet();
 
     useEffect(() => {
-        const fetchDietPlans = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/v1/diet?user_id=${user.id}`, { withCredentials: true });
-                setDietPlans(response.data);
-                setLoading(false);
-            } catch (err) {
-                setError('Failed to fetch diet plans');
-                setLoading(false);
-            }
-        };
+        if (user && user.userId) {
+            fetchDietPlans(user.userId);
+        }
+    }, [user, fetchDietPlans]);
 
-        fetchDietPlans();
-    }, [user.id]);
 
     const handleLogout = async () => {
         try {
@@ -112,22 +86,16 @@ const UserDietPlanPage: React.FC = () => {
                                         <TableCell>Meal</TableCell>
                                         <TableCell>Description</TableCell>
                                         <TableCell align="right">Calories</TableCell>
-                                        <TableCell align="right">Protein (g)</TableCell>
-                                        <TableCell align="right">Carbs (g)</TableCell>
-                                        <TableCell align="right">Fat (g)</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {dietPlan.meals.map((meal) => (
-                                        <TableRow key={meal.id}>
+                                    {dietPlan.meals.map((meal, index) => (
+                                        <TableRow key={index}>
                                             <TableCell component="th" scope="row">
                                                 {meal.name}
                                             </TableCell>
                                             <TableCell>{meal.description}</TableCell>
                                             <TableCell align="right">{meal.calories}</TableCell>
-                                            <TableCell align="right">{meal.protein}</TableCell>
-                                            <TableCell align="right">{meal.carbs}</TableCell>
-                                            <TableCell align="right">{meal.fat}</TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -140,4 +108,10 @@ const UserDietPlanPage: React.FC = () => {
     );
 };
 
-export default UserDietPlanPage;
+const UserDietPlanPageWithProvider: React.FC = () => (
+    <DietProvider>
+        <UserDietPlanPage />
+    </DietProvider>
+);
+
+export default UserDietPlanPageWithProvider;
