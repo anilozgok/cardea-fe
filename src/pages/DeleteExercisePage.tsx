@@ -14,58 +14,44 @@ import {
     Toolbar,
     Avatar,
     Button,
+    CircularProgress,
     Select,
     MenuItem,
     FormControl,
-    InputLabel,
-    CircularProgress,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
+    InputLabel
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/CardeaLogo.png';
 import axios from 'axios';
 import { useUser } from '../context/UserContext';
 import useUsers from '../hooks/useUsers';
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import useAllWorkouts from '../hooks/useAllWorkouts';
 
-const UpdateDeleteDietPlanPage: React.FC = () => {
+const DeleteWorkoutPage: React.FC = () => {
     const { user } = useUser();
     const { users, loading: usersLoading, error: usersError } = useUsers();
     const [selectedUserId, setSelectedUserId] = useState<string>('');
-    const [dietPlans, setDietPlans] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
+    const { workouts, loading: workoutsLoading, error: workoutsError } = useAllWorkouts();
+    const [loading, setLoading] = useState<boolean>(false);
+    const [message, setMessage] = useState<string>('');
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (selectedUserId) {
-            fetchDietPlans(selectedUserId);
-        }
-    }, [selectedUserId]);
-
-    const fetchDietPlans = async (userId: string) => {
+    const handleDeleteWorkout = async (workoutName: string) => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/diet?user_id=${userId}`, { withCredentials: true });
-            setDietPlans(response.data);
+            const workoutsToDelete = workouts.filter(workout => workout.name === workoutName && workout.userId === parseInt(selectedUserId, 10));
+            for (const workout of workoutsToDelete) {
+                await axios.delete(`http://localhost:8080/api/v1/workout?workoutId=${workout.workoutId}`, { withCredentials: true });
+            }
+            setMessage('Workout deleted successfully');
+            // Refresh the list of workouts after deletion
+            setSelectedUserId(selectedUserId); // Trigger useEffect
         } catch (error) {
-            console.error('Failed to fetch diet plans:', error);
+            console.error('Failed to delete workout:', error);
+            setMessage('Failed to delete workout');
         } finally {
             setLoading(false);
-        }
-    };
-
-    const handleDeleteDiet = async (dietId: number) => {
-        try {
-            await axios.delete(`http://localhost:8080/api/v1/diet?diet_id=${dietId}`, { withCredentials: true });
-            setMessage('Diet plan deleted successfully');
-            fetchDietPlans(selectedUserId);
-        } catch (error) {
-            console.error('Failed to delete diet plan:', error);
         }
     };
 
@@ -77,6 +63,17 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
             console.error('Error logging out:', error);
         }
     };
+
+    // Group workouts by their name and filter based on selected user
+    const groupedWorkouts = workouts
+        .filter(workout => workout.userId === parseInt(selectedUserId, 10))
+        .reduce((acc, workout) => {
+            if (!acc[workout.name]) {
+                acc[workout.name] = [];
+            }
+            acc[workout.name].push(workout);
+            return acc;
+        }, {} as Record<string, Workout[]>);
 
     return (
         <Container maxWidth="xl" sx={{ mt: 10 }}>
@@ -141,21 +138,21 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
                                     Workouts
                                 </Typography>
                             </MenuItem>
+                            <MenuItem onClick={() => navigate('/delete-exercise')} sx={{ py: '10px', px: '36px' }}>
+                                <Typography variant="body1" color="text.primary">
+                                    Delete Exercise
+                                </Typography>
+                            </MenuItem>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                         </Box>
-                        <Button
-                            onClick={handleLogout}
-                            startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft: '20px' }} />}
-                        >
-                        </Button>
                     </Toolbar>
                 </Container>
             </AppBar>
 
-            <Box sx={{ mt: -30, mb: 2 }}>
-                <Typography variant="h5" color="black">Update and Delete Diet Plans</Typography>
+            <Box sx={{ mt: 10, mb: 2 }}>
+                <Typography variant="h5" color="black">Delete Workouts</Typography>
             </Box>
 
             <FormControl fullWidth sx={{ mb: 4 }}>
@@ -173,52 +170,46 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
             </FormControl>
 
             {loading && <CircularProgress />}
+            {message && <Typography color={message.includes('successfully') ? 'success' : 'error'} sx={{ mt: 2 }}>{message}</Typography>}
             {usersLoading && <CircularProgress />}
             {usersError && <Typography color="error">{usersError}</Typography>}
-            {message && <Typography color="success" sx={{ mt: 2 }}>{message}</Typography>}
+            {workoutsLoading && <CircularProgress />}
+            {workoutsError && <Typography color="error">{workoutsError}</Typography>}
 
-            <Box sx={{ mt: 4 }}>
-                {dietPlans.map((plan) => (
-                    <Accordion key={plan.ID} sx={{ mb: 2 }}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            <Typography variant="h6">{plan.name}</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <TableContainer component={Paper}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Food Name</TableCell>
-                                            <TableCell>Description</TableCell>
-                                            <TableCell align="right">Calories</TableCell>
-                                            <TableCell align="right">Protein</TableCell>
-                                            <TableCell align="right">Carbs</TableCell>
-                                            <TableCell align="right">Fat</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {plan.meals.map((meal) => (
-                                            <TableRow key={meal.ID}>
-                                                <TableCell>{meal.name}</TableCell>
-                                                <TableCell>{meal.description}</TableCell>
-                                                <TableCell align="right">{meal.calories}</TableCell>
-                                                <TableCell align="right">{meal.protein}</TableCell>
-                                                <TableCell align="right">{meal.carbs}</TableCell>
-                                                <TableCell align="right">{meal.fat}</TableCell>
-                                            </TableRow>
+            <TableContainer component={Paper} sx={{ maxWidth: '100%', overflowX: 'auto', mt: 4 }}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Workout Name</TableCell>
+                            <TableCell>Exercises</TableCell>
+                            <TableCell>Actions</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {Object.keys(groupedWorkouts).map((workoutName) => (
+                            <TableRow key={workoutName}>
+                                <TableCell>{workoutName}</TableCell>
+                                <TableCell>
+                                    <ul>
+                                        {groupedWorkouts[workoutName].map((workout, index) => (
+                                            workout.exercises?.map((exercise, idx) => (
+                                                <li key={`${index}-${idx}`}>{exercise.exerciseName}</li>
+                                            ))
                                         ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                            <Button variant="contained" color="secondary" sx={{ mt: 2 }} onClick={() => handleDeleteDiet(plan.ID)}>
-                                Delete Diet
-                            </Button>
-                        </AccordionDetails>
-                    </Accordion>
-                ))}
-            </Box>
+                                    </ul>
+                                </TableCell>
+                                <TableCell>
+                                    <Button variant="contained" color="secondary" onClick={() => handleDeleteWorkout(workoutName)}>
+                                        Delete
+                                    </Button>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </Container>
     );
 };
 
-export default UpdateDeleteDietPlanPage;
+export default DeleteWorkoutPage;

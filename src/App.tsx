@@ -25,6 +25,7 @@ import CreateDietPlanPage from "./pages/CreateDietPlanPage.tsx";
 import UserDietPlanPage from "./pages/UserDietPlanPage.tsx";
 import LandingPageSignedIn from "./pages/LandingPageSignedIn.tsx";
 import UpdateDeleteDietPlanPage from "./pages/UpdateDietPlanPage.tsx";
+import DeleteExercisePage from './pages/DeleteExercisePage';
 
 
 function App() {
@@ -50,7 +51,7 @@ function App() {
         { path: "/diet-plan-user", element: <UserDietPlanPage/> },
         { path: "/landing", element: <LandingPageSignedIn/> },
         { path: "/diet-plan-update", element: <UpdateDeleteDietPlanPage/> },
-
+        {path: "/delete-exercise", element: <DeleteExercisePage/>}
 
     ]);
 
