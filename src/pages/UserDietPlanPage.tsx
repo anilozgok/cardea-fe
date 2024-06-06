@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
     Container,
     Typography,
@@ -13,46 +13,26 @@ import {
     AppBar,
     Toolbar,
     Avatar,
-    Button, MenuItem
+    Button,
+    CircularProgress,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import logo from '../assets/CardeaLogo.png';
-import axios from "axios";
 import { useUser } from '../context/UserContext';
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import { useDiet, DietProvider } from '../context/DietContext';
 
 const UserDietPlanPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useUser();
+    const { dietPlans, loading, error, fetchDietPlans } = useDiet();
 
-    // Static diet plan data
-    const dietPlans = [
-        {
-            id: 1,
-            meal: 'Breakfast',
-            description: 'Oatmeal with fruits',
-            gram: 200,
-        },
-        {
-            id: 2,
-            meal: 'Lunch',
-            description: 'Grilled chicken with vegetables',
-            gram: 300,
-        },
-        {
-            id: 3,
-            meal: 'Dinner',
-            description: 'Salmon with salad',
-            gram: 250,
-        },
-        {
-            id: 4,
-            meal: 'Snack',
-            description: 'Greek yogurt with honey',
-            gram: 150,
-        },
-    ];
+    useEffect(() => {
+        if (user && user.userId) {
+            fetchDietPlans(user.userId);
+        }
+    }, [user, fetchDietPlans]);
+
 
     const handleLogout = async () => {
         try {
@@ -65,65 +45,73 @@ const UserDietPlanPage: React.FC = () => {
 
     return (
         <Container maxWidth="xl" sx={{ mt: 10 }}>
-            <AppBar position="fixed" sx={{ boxShadow: 0, bgcolor: 'transparent', backgroundImage: 'none', mt: 2 }}>
-                <Container maxWidth="lg">
-                    <Toolbar variant="regular" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderRadius: '999px', bgcolor: 'rgba(255, 255, 255, 0.4)', backdropFilter: 'blur(24px)', maxHeight: 56, border: '1px solid', borderColor: 'divider', padding: '0 24px' }}>
-                        <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
-                            <img src={logo} alt="logo of Cardea" style={{ width: 80, height: 80, borderRadius: '50%' }} />
-                            <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-evenly', ml: 4 }}>
-                                <MenuItem onClick={() => navigate('/landing')}>
-                                    <Typography variant="body1" color="text.primary">Home</Typography>
-                                </MenuItem>
-                                <MenuItem onClick={() => navigate('/workouts')}>
-                                    <Typography variant="body1" color="text.primary">Workouts</Typography>
-                                </MenuItem>
-                                <MenuItem onClick={() => navigate('/diet-plan-user')}>
-                                    <Typography variant="body1" color="text.primary">Diet Plans</Typography>
-                                </MenuItem>
-
-                                <MenuItem onClick={() => navigate('/upload-photos')}>
-                                    <Typography variant="body1" color="text.primary">Body Transformation</Typography>
-                                </MenuItem>
-                            </Box>
-                            <Avatar sx={{ width: 40, height: 40 }} onClick={() => navigate('/profile')} />
-                            <Button
-                                onClick={handleLogout}
-                                startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft:'20px'}} />} // You can adjust the size here
-                            >
-                            </Button>
-                        </Box>
-                    </Toolbar>
-                </Container>
+            <AppBar position="fixed">
+                <Toolbar>
+                    <img
+                        src={logo}
+                        alt="Logo"
+                        style={{ width: 50, height: 50, marginRight: 20 }}
+                        onClick={() => navigate('/')}
+                    />
+                    <Typography variant="h6" style={{ flexGrow: 1 }}>
+                        Cardea
+                    </Typography>
+                    <Button color="inherit" onClick={() => navigate('/')}>Home Page</Button>
+                    <Button color="inherit" onClick={() => navigate('/profile')}>My Profile</Button>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <Button variant="contained" color="secondary" onClick={handleLogout} sx={{ mr: 2 }}>
+                            Logout
+                        </Button>
+                        <Avatar src={user.avatarUrl} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+                    </Box>
+                </Toolbar>
             </AppBar>
 
             <Box sx={{ mt: 10, mb: 2 }}>
-                <Typography variant="h5" color="black">Diet Plan</Typography>
+                <Typography variant="h5" color="black">Diet Plans</Typography>
             </Box>
 
-            <TableContainer component={Paper} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
-                <Table sx={{ minWidth: 650 }} aria-label="simple table">
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Meal</TableCell>
-                            <TableCell>Description</TableCell>
-                            <TableCell align="right">Gram</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {dietPlans.map((plan) => (
-                            <TableRow key={plan.id}>
-                                <TableCell component="th" scope="row">
-                                    {plan.meal}
-                                </TableCell>
-                                <TableCell>{plan.description}</TableCell>
-                                <TableCell align="right">{plan.gram}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            {loading ? (
+                <CircularProgress />
+            ) : error ? (
+                <Typography color="error">{error}</Typography>
+            ) : (
+                dietPlans.map((dietPlan) => (
+                    <Box key={dietPlan.id} sx={{ mb: 4 }}>
+                        <Typography variant="h6" color="primary">{dietPlan.name}</Typography>
+                        <TableContainer component={Paper} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
+                            <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Meal</TableCell>
+                                        <TableCell>Description</TableCell>
+                                        <TableCell align="right">Calories</TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {dietPlan.meals.map((meal, index) => (
+                                        <TableRow key={index}>
+                                            <TableCell component="th" scope="row">
+                                                {meal.name}
+                                            </TableCell>
+                                            <TableCell>{meal.description}</TableCell>
+                                            <TableCell align="right">{meal.calories}</TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    </Box>
+                ))
+            )}
         </Container>
     );
 };
 
-export default UserDietPlanPage;
+const UserDietPlanPageWithProvider: React.FC = () => (
+    <DietProvider>
+        <UserDietPlanPage />
+    </DietProvider>
+);
+
+export default UserDietPlanPageWithProvider;
