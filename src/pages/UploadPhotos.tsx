@@ -17,6 +17,7 @@ import { useNavigate } from 'react-router-dom';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import axios from "axios";
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function PhotoUpload(): JSX.Element {
     const [files, setFiles] = useState<File[]>([]);
@@ -27,6 +28,9 @@ function PhotoUpload(): JSX.Element {
     const [imageDimensions, setImageDimensions] = useState({ width: 'auto', height: 'auto' });
     const [toast, setToast] = useState({ open: false, message: '', severity: 'info' });
     const navigate = useNavigate();
+    const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
+    const [selectedPhotoUrl, setSelectedPhotoUrl] = useState('');
+
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
@@ -61,12 +65,27 @@ function PhotoUpload(): JSX.Element {
             console.error('Error logging out:', error);
         }
     };
+    const fetchPhotos = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/v1/user/my-photos', {
+                    credentials: 'include'
+                });
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const data: PhotosResponse = await response.json();
+                setPhotos(data.photos);
+            } catch (error) {
+                console.error('Failed to fetch photos:', error);
+            }
+        };
 
     const handleClosePhoto = () => {
         setOpenImageViewDialog(false);
     };
 
     const handleSave = async () => {
+
         for (const file of files) {
             const formData = new FormData();
             formData.append('image', file);
@@ -80,17 +99,17 @@ function PhotoUpload(): JSX.Element {
 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
-                } else {
-                    console.log('File uploaded successfully', file.name);
-                    setToast({ open: true, message: 'Files uploaded successfully!', severity: 'success' });
-                    setFiles([]);
-                    setOpenUploadDialog(false);
                 }
+                console.log('File uploaded successfully', file.name);
             } catch (e) {
                 console.error('Upload failed', e);
                 setToast({ open: true, message: `Upload failed: ${e.message}`, severity: 'error' });
             }
         }
+
+        fetchPhotos();  // Fetch the updated list of photos after all uploads are done
+        setFiles([]);  // Clear the files array
+        setOpenUploadDialog(false);  // Close the upload dialog
     };
 
     const handleDownload = (base64Data, filename) => {
@@ -102,15 +121,22 @@ function PhotoUpload(): JSX.Element {
         document.body.removeChild(link);
     };
 
-    const handleOpenPhoto = async (photoUrl) => {
-        const response = await fetch(photoUrl);
-        const blob = await response.blob();
-        const reader = new FileReader();
-        reader.readAsDataURL(blob);
-        reader.onloadend = function () {
-            const base64data = reader.result;
-            setSelectedImage(base64data);
-            setOpenImageViewDialog(true);
+    const handleOpenPhoto = async (photoId, photoUrl) => {
+        try {
+            setSelectedPhotoId(photoId); // Store the photo ID
+            setSelectedPhotoUrl(photoUrl); // Also store the photo URL for delete operation
+            const response = await fetch(photoUrl);
+            const blob = await response.blob();
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+                const base64data = reader.result;
+                setSelectedImage(base64data);
+                setOpenImageViewDialog(true);
+            }
+        } catch (error) {
+            console.error('Failed to load photo:', error);
+            setToast({ open: true, message: 'Failed to load photo', severity: 'error' });
         }
     };
     const handleClickOpen = () => {
@@ -127,6 +153,33 @@ function PhotoUpload(): JSX.Element {
         }
         setToast({ open: false, message: '', severity: 'info' });
     };
+
+    const handleDeletePhoto = async () => {
+        if (!selectedPhotoId || !selectedPhotoUrl) return; // Ensure both ID and URL are available
+
+        try {
+            // Sending both ID and URL in the request body
+            const response = await axios.delete('http://localhost:8080/api/v1/user/photo', {
+                data: {
+                    photoId: selectedPhotoId,
+                    photoUrl: selectedPhotoUrl
+                },
+                withCredentials: true
+            });
+
+            if (response.status === 200) {
+                setPhotos(photos.filter(photo => photo.photoId !== selectedPhotoId)); // Update the photos state
+                setOpenImageViewDialog(false); // Close the dialog
+                setToast({ open: true, message: 'Photo deleted successfully!', severity: 'success' });
+            } else {
+                throw new Error('Failed to delete photo');
+            }
+        } catch (error) {
+            console.error('Error deleting photo:', error);
+            setToast({ open: true, message: `Failed to delete photo: ${error.message}`, severity: 'error' });
+        }
+    };
+
 
     return (
         <>
@@ -182,7 +235,7 @@ function PhotoUpload(): JSX.Element {
                             }}
                                 onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
                                 onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-                                onClick={() => handleOpenPhoto(photo.photoURL)}
+                                onClick={() => handleOpenPhoto(photo.photoId, photo.photoURL)}
                             />
                         </Grid>
                     ))}
@@ -225,14 +278,11 @@ function PhotoUpload(): JSX.Element {
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClosePhoto} color="primary">Close</Button>
-                    <Button
-                        component="a"
-                        href={selectedImage}
-                        download={`downloadedImage.jpg`}
-                        color="primary"
-                        startIcon={<GetAppIcon />}
-                    >
+                    <Button component="a" href={selectedImage} download={`downloadedImage.jpg`} color="primary" startIcon={<GetAppIcon />}>
                         Download
+                    </Button>
+                    <Button onClick={handleDeletePhoto} color="primary" startIcon={<DeleteIcon />}>
+                        Delete
                     </Button>
                 </DialogActions>
             </Dialog>
