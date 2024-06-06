@@ -141,17 +141,17 @@ function PhotoUpload(): JSX.Element {
                                     <Typography variant="body1" color="text.primary">Home</Typography>
                                 </MenuItem>
                                 <MenuItem onClick={() => navigate('/workouts')}>
-                                    <Typography variant="body1" color="text.primary">My Workouts</Typography>
+                                    <Typography variant="body1" color="text.primary">Workouts</Typography>
                                 </MenuItem>
                                 <MenuItem onClick={() => navigate('/diets')}>
-                                    <Typography variant="body1" color="text.primary">My Diet Plans</Typography>
+                                    <Typography variant="body1" color="text.primary">Diet Plans</Typography>
                                 </MenuItem>
                                 <Button startIcon={<CloudUploadIcon />} onClick={handleClickOpen}>Upload Photos</Button>
                             </Box>
                             <Avatar sx={{ width: 40, height: 40 }} onClick={() => navigate('/profile')} />
                             <Button
                                 onClick={handleLogout}
-                                startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft:'20px'}} />} // You can adjust the size here
+                                startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft:'20px'}} />} 
                             >
                             </Button>
                         </Box>

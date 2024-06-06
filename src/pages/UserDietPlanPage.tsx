@@ -71,7 +71,7 @@ const UserDietPlanPage: React.FC = () => {
                         <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
                             <img src={logo} alt="logo of Cardea" style={{ width: 80, height: 80, borderRadius: '50%' }} />
                             <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-evenly', ml: 4 }}>
-                                <MenuItem onClick={() => navigate('/')}>
+                                <MenuItem onClick={() => navigate('/landing')}>
                                     <Typography variant="body1" color="text.primary">Home</Typography>
                                 </MenuItem>
                                 <MenuItem onClick={() => navigate('/workouts')}>

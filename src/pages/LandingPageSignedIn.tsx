@@ -26,9 +26,11 @@ import logo from '../assets/CardeaLogo.png';
 import logoName from '../assets/cardeaName.png';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import axios from "axios";
+import { useUser } from '../context/UserContext';
 
 const LandingPage: React.FC = () => {
     const navigate = useNavigate();
+    const { user } = useUser();
 
     const handleLogout = async () => {
         try {
@@ -38,6 +40,20 @@ const LandingPage: React.FC = () => {
             console.error('Error logging out:', error);
         }
     };
+
+    const handleNavigate = (operation:string) => {
+        var url = '';
+        const isCoach = user.role === 'coach';
+        switch(operation){
+            case 'workout':
+                url = isCoach ? '/exercise' : '/workouts'
+                break;
+            case 'diet':
+                url = isCoach ? '/diet-plan' : '/diet-plan-user' 
+                break;
+        }
+        navigate(url)
+    }
 
 
     const FeatureItem: React.FC<{ title: string; description: string; imgSrc: string }> = ({ title, description, imgSrc }) => (
@@ -68,13 +84,13 @@ const LandingPage: React.FC = () => {
                         <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
                             <img src={logo} alt="logo of Cardea" style={{ width: 80, height: 80, borderRadius: '50%' }} />
                             <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-evenly', ml: 4 }}>
-                                <MenuItem onClick={() => navigate('/workouts')}>
+                                <MenuItem onClick={() => handleNavigate('workout')}>
                                     <Typography variant="body1" color="text.primary">Workouts</Typography>
                                 </MenuItem>
-                                <MenuItem onClick={() => navigate('/diets')}>
+                                <MenuItem onClick={() => handleNavigate('diet')}>
                                     <Typography variant="body1" color="text.primary">Diet Plans</Typography>
                                 </MenuItem>
-                                <MenuItem onClick={() => navigate('/upload-photos')}>
+                                <MenuItem onClick={() => handleNavigate('/upload-photos')}>
                                     <Typography variant="body1" color="text.primary">Body Transformation</Typography>
                                 </MenuItem>
                             </Box>
