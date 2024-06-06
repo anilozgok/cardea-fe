@@ -19,9 +19,15 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import axios from "axios";
 import DeleteIcon from '@mui/icons-material/Delete';
 
+type PhotoResponse = {
+    photoId: number;
+    photoURL: string;
+    createdAt: string; // Ensure this exists with full timestamp
+};
+
 function PhotoUpload(): JSX.Element {
     const [files, setFiles] = useState<File[]>([]);
-    const [photos, setPhotos] = useState<PhotoResponse[]>([]);
+    const [photos, setPhotos] = useState<{ [key: string]: PhotoResponse[] }>({});
     const [openUploadDialog, setOpenUploadDialog] = useState(false);
     const [openImageViewDialog, setOpenImageViewDialog] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
@@ -31,7 +37,6 @@ function PhotoUpload(): JSX.Element {
     const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
     const [selectedPhotoUrl, setSelectedPhotoUrl] = useState('');
 
-
     const onDrop = useCallback((acceptedFiles: File[]) => {
         setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
     }, []);
@@ -39,23 +44,33 @@ function PhotoUpload(): JSX.Element {
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: 'image/*', multiple: true });
 
     useEffect(() => {
-        const fetchPhotos = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/api/v1/user/my-photos', {
-                    credentials: 'include'
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data: PhotosResponse = await response.json();
-                setPhotos(data.photos);
-            } catch (error) {
-                console.error('Failed to fetch photos:', error);
-            }
-        };
-
         fetchPhotos();
     }, [openUploadDialog]);
+
+    const fetchPhotos = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/user/my-photos', {
+                credentials: 'include'
+            });
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data: { photos: PhotoResponse[] } = await response.json();
+            const groupedPhotos = groupPhotosByDate(data.photos);
+            setPhotos(groupedPhotos);
+        } catch (error) {
+            console.error('Failed to fetch photos:', error);
+        }
+    };
+
+    const groupPhotosByDate = (photos: PhotoResponse[]) => {
+        return photos.reduce((acc, photo) => {
+            const date = photo.createdAt.split('T')[0]; // Split by 'T' and take the date part
+            acc[date] = acc[date] || [];
+            acc[date].push(photo);
+            return acc;
+        }, {} as { [key: string]: PhotoResponse[] });
+    };
 
     const handleLogout = async () => {
         try {
@@ -65,27 +80,12 @@ function PhotoUpload(): JSX.Element {
             console.error('Error logging out:', error);
         }
     };
-    const fetchPhotos = async () => {
-            try {
-                const response = await fetch('http://localhost:8080/api/v1/user/my-photos', {
-                    credentials: 'include'
-                });
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                const data: PhotosResponse = await response.json();
-                setPhotos(data.photos);
-            } catch (error) {
-                console.error('Failed to fetch photos:', error);
-            }
-        };
 
     const handleClosePhoto = () => {
         setOpenImageViewDialog(false);
     };
 
     const handleSave = async () => {
-
         for (const file of files) {
             const formData = new FormData();
             formData.append('image', file);
@@ -139,6 +139,7 @@ function PhotoUpload(): JSX.Element {
             setToast({ open: true, message: 'Failed to load photo', severity: 'error' });
         }
     };
+
     const handleClickOpen = () => {
         setOpenUploadDialog(true);
     };
@@ -168,7 +169,13 @@ function PhotoUpload(): JSX.Element {
             });
 
             if (response.status === 200) {
-                setPhotos(photos.filter(photo => photo.photoId !== selectedPhotoId)); // Update the photos state
+                setPhotos((prevPhotos) => {
+                    const updatedPhotos = { ...prevPhotos };
+                    for (const date in updatedPhotos) {
+                        updatedPhotos[date] = updatedPhotos[date].filter(photo => photo.photoId !== selectedPhotoId);
+                    }
+                    return updatedPhotos;
+                }); // Update the photos state
                 setOpenImageViewDialog(false); // Close the dialog
                 setToast({ open: true, message: 'Photo deleted successfully!', severity: 'success' });
             } else {
@@ -179,7 +186,6 @@ function PhotoUpload(): JSX.Element {
             setToast({ open: true, message: `Failed to delete photo: ${error.message}`, severity: 'error' });
         }
     };
-
 
     return (
         <>
@@ -212,35 +218,45 @@ function PhotoUpload(): JSX.Element {
             </AppBar>
 
             <Box sx={{ mt: 10, p: 2 }}>
-                <Grid container spacing={3}>
-                    {photos.map((photo) => (
-                        <Grid item xs={12} sm={6} md={4} key={photo.photoId} style={{
-                            padding: '8px',
-                            height: '250px',
-                            overflow: 'hidden',
-                            position: 'relative',
-                            display: 'flex',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            border: '1px solid #ddd',
-                            boxShadow: '0px 2px 10px rgba(0,0,0,0.1)',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                        }}>
-                            <img src={photo.photoURL} alt={`Photo ${photo.photoId}`} style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
-                                transition: 'transform 0.3s ease'
-                            }}
-                                onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
-                                onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-                                onClick={() => handleOpenPhoto(photo.photoId, photo.photoURL)}
-                            />
+                {Object.entries(photos).map(([date, photosOnDate]) => (
+                    <div key={date} style={{ marginBottom: '20px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', margin: '30px 0', position: 'relative' }}>
+                            <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginRight: '40px' }}></div>
+                            <span style={{ whiteSpace: 'nowrap', color:'black'}}>{date}</span>
+                            <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginLeft: '40px' }}></div>
+                        </div>
+                        <Grid container spacing={3}>
+                            {photosOnDate.map((photo) => (
+                                <Grid item xs={12} sm={6} md={4} key={photo.photoId} style={{
+                                    padding: '8px',
+                                    height: '250px',
+                                    overflow: 'hidden',
+                                    position: 'relative',
+                                    display: 'flex',
+                                    justifyContent: 'center',
+                                    alignItems: 'center',
+                                    border: '1px solid #ddd',
+                                    boxShadow: '0px 2px 10px rgba(0,0,0,0.1)',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                }}>
+                                    <img src={photo.photoURL} alt={`Photo ${photo.photoId}`} style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        transition: 'transform 0.3s ease'
+                                    }}
+                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                                        onClick={() => handleOpenPhoto(photo.photoId, photo.photoURL)}
+                                    />
+                                </Grid>
+                            ))}
                         </Grid>
-                    ))}
-                </Grid>
+                    </div>
+                ))}
             </Box>
+
             <Dialog open={openUploadDialog} onClose={handleClose} aria-labelledby="form-dialog-title">
                 <DialogTitle id="form-dialog-title">Upload Your Form Pictures Here</DialogTitle>
                 <DialogContent>
@@ -272,6 +288,7 @@ function PhotoUpload(): JSX.Element {
                     <Button onClick={handleSave} color="primary">Save Photos</Button>
                 </DialogActions>
             </Dialog>
+
             <Dialog open={openImageViewDialog} onClose={handleClosePhoto} maxWidth="lg">
                 <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: imageDimensions.width, height: imageDimensions.height }}>
                     <img src={selectedImage} alt="Selected" style={{ maxWidth: '100%', height: 'auto' }} />
@@ -286,6 +303,7 @@ function PhotoUpload(): JSX.Element {
                     </Button>
                 </DialogActions>
             </Dialog>
+
             <Snackbar open={toast.open} autoHideDuration={6000} onClose={handleToastClose}>
                 <Alert onClose={handleToastClose} severity={toast.severity} sx={{ width: '100%' }}>
                     {toast.message}
