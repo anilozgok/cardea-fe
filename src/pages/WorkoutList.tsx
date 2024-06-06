@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -30,6 +30,7 @@ import { useUser } from '../context/UserContext';
 import logo from '../assets/CardeaLogo.png';
 import { useNavigate } from "react-router-dom";
 import MenuItem from '@mui/material/MenuItem';
+import workoutBg from '../assets/realworkbg3.png';
 
 const WorkoutsList: React.FC = () => {
   const { user } = useUser();
@@ -40,6 +41,23 @@ const WorkoutsList: React.FC = () => {
   const [selectedGif, setSelectedGif] = useState('');
   const navigate = useNavigate()
 
+  useEffect(() => {
+    // When the component mounts
+    document.body.style.backgroundImage = `url(${workoutBg})`;
+    document.body.style.backgroundSize = 'cover'; // Cover the viewport
+    document.body.style.backgroundPosition = 'center'; // Center the background image
+    document.body.style.backgroundAttachment = 'fixed'; // Make background fixed during scrolling
+    document.body.style.backgroundRepeat = 'no-repeat'; // Do not repeat the image
+
+    // When the component unmounts
+    return () => {
+        document.body.style.backgroundImage = '';
+        document.body.style.backgroundSize = '';
+        document.body.style.backgroundPosition = '';
+        document.body.style.backgroundAttachment = '';
+        document.body.style.backgroundRepeat = '';
+    };
+}, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -75,8 +93,9 @@ const WorkoutsList: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="xl" sx={{ mt: -20 }}>
-<AppBar
+      <Container maxWidth="xl" sx={{ mt: -20 }}>
+
+      <AppBar
         position="fixed"
         sx={{
           boxShadow: 0,
@@ -122,12 +141,12 @@ const WorkoutsList: React.FC = () => {
               />
             </Box>
             <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center' }}>
-              <MenuItem onClick={() => navigateTo('/')} sx={{ py: '10px', px: '36px' }}>
+              <MenuItem onClick={() => navigateTo('/landing')} sx={{ py: '10px', px: '36px' }}>
                 <Typography variant="body1" color="text.primary">
                   Home
                 </Typography>
               </MenuItem>
-              <MenuItem onClick={() => navigateTo('/diets')} sx={{ py: '10px', px: '36px' }}>
+              <MenuItem onClick={() => navigateTo('/diet-plan-user')} sx={{ py: '10px', px: '36px' }}>
                 <Typography variant="body1" color="text.primary">
                   Diet Plans
                 </Typography>
@@ -153,9 +172,6 @@ const WorkoutsList: React.FC = () => {
           </Toolbar>
         </Container>
       </AppBar>
-      <Box sx={{ mt: 10, mb: 2 }}>
-        <Typography variant="h5" color="black">{user.name ? `${user.name}'s` : 'My'} Workouts</Typography>
-      </Box>
       {loading && <CircularProgress />}
       {error && <Typography color="error">{error}</Typography>}
       {!loading && !error && filteredWorkoutNames.length === 0 && (
@@ -167,7 +183,7 @@ const WorkoutsList: React.FC = () => {
             <TableRow>
               <TableCell>
                 <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-                  Workout Name
+                  Workout
                 </Typography>
               </TableCell>
               <TableCell align="right"></TableCell>
