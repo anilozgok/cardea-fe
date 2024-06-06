@@ -14,7 +14,6 @@ interface PasswordValidation {
     hasSpecialChar: boolean;
 }
 
-
 const validatePassword = (password: string): PasswordValidation => {
     return {
         isLengthValid: password.length >= 8,
@@ -27,6 +26,7 @@ const validatePassword = (password: string): PasswordValidation => {
 export default function UpdatePassword() {
     const navigate = useNavigate();
     const { state } = useLocation();
+    const [oldPassword, setOldPassword] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');
 
@@ -37,6 +37,10 @@ export default function UpdatePassword() {
         hasSpecialChar: false
     });
     const [passwordsMatch, setPasswordsMatch] = useState<boolean>(true);
+
+    const handleOldPasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setOldPassword(event.target.value);
+    };
 
     const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newPassword = event.target.value;
@@ -61,23 +65,23 @@ export default function UpdatePassword() {
         }
     
         try {
-            const res = await axios.put("http://localhost:8080/api/v1/auth/update-password", {
-                email: state.email,
-                password: password
+            const res = await axios.put("http://localhost:8080/api/v1/user/change-password", {
+                oldPassword: oldPassword,
+                newPassword: password
             }, { withCredentials: true });
     
             if (res.status === 200) {
                 notify();
-            setTimeout(() => {
-                navigate('/sign-in'); 
-            }, 2000);
+                setTimeout(() => {
+                    navigate('/profile'); 
+                }, 2000);
             }
         } catch (error) {
             console.error('Failed to reset password', error);
         }
     };
 
-    const notify = () => toast.success('Succesfully changed', {
+    const notify = () => toast.success('Successfully changed', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -93,29 +97,18 @@ export default function UpdatePassword() {
             <CssBaseline />
             <Box sx={{ marginTop: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <img src={logo} alt="Logo" style={{ width: 100, height: 100, borderRadius: '50%' }} />
-                <ToastContainer
-                    position="top-right"
-                    autoClose={5000}
-                    hideProgressBar={false}
-                    newestOnTop={false}
-                    closeOnClick
-                    rtl={false}
-                    pauseOnFocusLoss
-                    draggable
-                    pauseOnHover
-                    theme="light"
-                />
-                <Typography component="h1" variant="h5">Enter your new password</Typography>
+                <ToastContainer />
+                <Typography component="h1" variant="h5">Update your password</Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-                <TextField
+                    <TextField
                         margin="normal"
                         required
                         fullWidth
                         label="Enter your old password"
                         type="password"
-                        value={password}
-                        onChange={handlePasswordChange}
-                        autoComplete="old-password"
+                        value={oldPassword}
+                        onChange={handleOldPasswordChange}
+                        autoComplete="current-password"
                     />
                     <TextField
                         margin="normal"
@@ -166,7 +159,7 @@ export default function UpdatePassword() {
                         variant="contained"
                         sx={{ mt: 3 }}
                     >
-                        Reset
+                        Reset Password
                     </Button>
                 </Box>
             </Box>

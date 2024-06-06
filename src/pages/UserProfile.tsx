@@ -106,19 +106,9 @@ export default function UserProfiles() {
   };
   const [isProfileNew, setIsProfileNew] = useState<boolean>(true);
   const [, setOpen] = useState(false);
-  const scrollToSection = (sectionId: string) => {
-    const sectionElement = document.getElementById(sectionId);
-    const offset = 128;
-    if (sectionElement) {
-      const targetScroll = sectionElement.offsetTop - offset;
-      sectionElement.scrollIntoView({ behavior: 'smooth' });
-      window.scrollTo({
-        top: targetScroll,
-        behavior: 'smooth',
-      });
-      setOpen(false);
-    }
-  };
+
+
+
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
@@ -126,7 +116,7 @@ export default function UserProfiles() {
         if (response.status === 200 && response.data) {
           setProfileData(response.data);
           setOriginalProfileData(response.data);
-          setIsProfileNew(false); // Profile exists, so we are updating
+          setIsProfileNew(false); 
         }
       } catch (error) {
         console.error("No profile data found. Attempting to fetch minimal user data.");
