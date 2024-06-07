@@ -98,6 +98,8 @@ const LandingPage: React.FC = () => {
                                 alignItems: 'center',
                             }}
                         >
+                            <Button color="inherit" onClick={() => navigate('/about-us')}>About Us</Button>
+
                             <Button color="inherit" onClick={() => navigate('/sign-in')}>Sign In</Button>
                             <Button color="inherit" onClick={() => navigate('/register')}>Register</Button>
                         </Box>

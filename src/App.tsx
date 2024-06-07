@@ -28,6 +28,8 @@ import UpdateDeleteDietPlanPage from "./pages/UpdateDietPlanPage.tsx";
 import DeleteExercisePage from './pages/DeleteExercisePage';
 import CoachPhotoView from './pages/CoachPhotoView.tsx';
 import RecipesPage from "./pages/RecipesPage.tsx";
+import AboutUsPage from "./pages/AboutUsPage.tsx";
+import AboutUsPageNlg from "./pages/AboutUsPageNlg.tsx";
 
 
 function App() {
@@ -55,7 +57,9 @@ function App() {
         { path: "/diet-plan-update", element: <UpdateDeleteDietPlanPage/> },
         {path: "/delete-exercise", element: <DeleteExercisePage/>},
         {path: "/athlete-photos", element: <CoachPhotoView/>},
-        {path: "/recipes", element: <RecipesPage/>}
+        {path: "/recipes", element: <RecipesPage/>},
+        {path: "/about", element: <AboutUsPage/>},
+        {path: "/about-us", element: <AboutUsPageNlg/>}
 
     ]);
 

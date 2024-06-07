@@ -26,6 +26,7 @@ import axios from 'axios';
 import { useUser } from '../context/UserContext';
 import useUsers from '../hooks/useUsers';
 import useAllWorkouts from '../hooks/useAllWorkouts';
+import workoutBg from '../assets/realworkbg3.png'
 
 const DeleteWorkoutPage: React.FC = () => {
     const { user } = useUser();
@@ -54,6 +55,23 @@ const DeleteWorkoutPage: React.FC = () => {
             setLoading(false);
         }
     };
+    useEffect(() => {
+        // When the component mounts
+        document.body.style.backgroundImage = `url(${workoutBg})`;
+        document.body.style.backgroundSize = 'cover'; // Cover the viewport
+        document.body.style.backgroundPosition = 'center'; // Center the background image
+        document.body.style.backgroundAttachment = 'fixed'; // Make background fixed during scrolling
+        document.body.style.backgroundRepeat = 'no-repeat'; // Do not repeat the image
+
+        // When the component unmounts
+        return () => {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundAttachment = '';
+            document.body.style.backgroundRepeat = '';
+        };
+    }, []);
 
     const handleLogout = async () => {
         try {
@@ -140,7 +158,7 @@ const DeleteWorkoutPage: React.FC = () => {
                             </MenuItem>
                             <MenuItem onClick={() => navigate('/delete-exercise')} sx={{ py: '10px', px: '36px' }}>
                                 <Typography variant="body1" color="text.primary">
-                                    Delete Exercise
+                                    Delete Workout
                                 </Typography>
                             </MenuItem>
                         </Box>
@@ -151,7 +169,7 @@ const DeleteWorkoutPage: React.FC = () => {
                 </Container>
             </AppBar>
 
-            <Box sx={{ mt: 10, mb: 2 }}>
+            <Box sx={{ mt: -50, mb: 2}}>
                 <Typography variant="h5" color="black">Delete Workouts</Typography>
             </Box>
 

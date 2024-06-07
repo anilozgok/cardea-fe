@@ -98,6 +98,12 @@ const LandingPage: React.FC = () => {
                                 <MenuItem onClick={() => handleNavigate('photo')}>
                                     <Typography variant="body1" color="text.primary">Body Transformation</Typography>
                                 </MenuItem>
+                                <MenuItem onClick={() => navigate('/recipes')}>
+                                    <Typography variant="body1" color="text.primary">Recipes</Typography>
+                                </MenuItem>
+                                <MenuItem onClick={() => navigate('/about')}>
+                                    <Typography variant="body1" color="text.primary">About Us</Typography>
+                                </MenuItem>
                             </Box>
                             <Avatar sx={{ width: 40, height: 40 }} onClick={() => navigate('/profile')} />
                             <Button

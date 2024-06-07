@@ -177,7 +177,7 @@ const ExerciseList: React.FC = () => {
                             </MenuItem>
                             <MenuItem onClick={() => navigate('/delete-exercise')} sx={{ py: '10px', px: '36px' }}>
                                 <Typography variant="body1" color="text.primary">
-                                    Delete Exercise
+                                    Delete Workout
                                 </Typography>
                             </MenuItem>
                         </Box>

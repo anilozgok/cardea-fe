@@ -30,6 +30,7 @@ import useFoods from '../hooks/useFoods';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import dietBg from '../assets/diet.png';
 
 const CreateDietPlanPage: React.FC = () => {
     const { user } = useUser();
@@ -99,6 +100,21 @@ const CreateDietPlanPage: React.FC = () => {
             setCreating(false);
         }
     };
+    useEffect(() => {
+        document.body.style.backgroundImage = `url(${dietBg})`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundAttachment = 'fixed';
+        document.body.style.backgroundRepeat = 'no-repeat';
+
+        return () => {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundAttachment = '';
+            document.body.style.backgroundRepeat = '';
+        };
+    }, []);
 
     return (
         <Container maxWidth="md">

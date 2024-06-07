@@ -167,6 +167,7 @@ const UserDietPlanPage: React.FC = () => {
                                             </TableCell>
                                             <TableCell>{meal.description}</TableCell>
                                             <TableCell align="right">{meal.calories}</TableCell>
+                                            
                                         </TableRow>
                                     ))}
                                 </TableBody>
