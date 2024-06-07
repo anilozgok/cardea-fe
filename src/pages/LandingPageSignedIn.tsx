@@ -53,6 +53,9 @@ const LandingPage: React.FC = () => {
             case 'diet':
                 url = isCoach ? '/diet-plan' : '/diet-plan-user'
                 break;
+            case 'photo':
+                url = isCoach ? '/athlete-photos' : '/upload-photos'
+                break;
         }
         navigate(url)
     }
@@ -92,7 +95,7 @@ const LandingPage: React.FC = () => {
                                 <MenuItem onClick={() => handleNavigate('diet')}>
                                     <Typography variant="body1" color="text.primary">Diet Plans</Typography>
                                 </MenuItem>
-                                <MenuItem onClick={() => handleNavigate('/upload-photos')}>
+                                <MenuItem onClick={() => handleNavigate('photo')}>
                                     <Typography variant="body1" color="text.primary">Body Transformation</Typography>
                                 </MenuItem>
                             </Box>
@@ -114,7 +117,7 @@ const LandingPage: React.FC = () => {
             {/* Features Section */}
             <section>
                 <Typography variant="h4" component="h2" gutterBottom align="center" style={{ color: 'black' }}>
-                <img src={features} alt="Features" style={{ width: '100%', height: 'auto', marginBottom: '20px' }} />
+                    <img src={features} alt="Features" style={{ width: '100%', height: 'auto', marginBottom: '20px' }} />
                 </Typography>
                 <Grid container spacing={4} justifyContent="center">
                     <Grid item xs={12} sm={6} md={4}>
@@ -143,7 +146,7 @@ const LandingPage: React.FC = () => {
 
             {/* Calculation Tools Section */}
             <section style={{ marginTop: '40px' }}>
-            <img src={calcTools} alt="Features" style={{ width: '100%', height: 'auto', marginBottom: '20px' }} />
+                <img src={calcTools} alt="Features" style={{ width: '100%', height: 'auto', marginBottom: '20px' }} />
                 <Grid container spacing={4} justifyContent="center">
                     <Grid item xs={12} sm={6} md={4}>
                         <CalculationTool

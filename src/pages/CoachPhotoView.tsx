@@ -7,9 +7,10 @@ import { useUser } from "../context/UserContext.tsx";
 import { useNavigate } from "react-router-dom";
 import logo from '../assets/CardeaLogo.png';
 import { FormControl, InputLabel, Select, MenuItem, AppBar, Avatar, Toolbar, Grid, Dialog, DialogActions, DialogContent } from '@mui/material';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import useUsers from '../hooks/useUsersOfCoach.ts';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import bgPicture from '../assets/uploadBg.png';
 
 type PhotoResponse = {
     photoId: number;
@@ -36,6 +37,26 @@ export default function SignIn() {
             console.error('Error logging out:', error);
         }
     };
+
+
+    useEffect(() => {
+        // When the component mounts
+        document.body.style.backgroundImage = `url(${bgPicture})`;
+        document.body.style.backgroundSize = 'cover'; // Cover the viewport
+        document.body.style.backgroundPosition = 'center'; // Center the background image
+        document.body.style.backgroundAttachment = 'fixed'; // Make background fixed during scrolling
+        document.body.style.backgroundRepeat = 'no-repeat'; // Do not repeat the image
+    
+        // When the component unmounts
+        return () => {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundAttachment = '';
+            document.body.style.backgroundRepeat = '';
+        };
+    }, []);
+    
 
     const handleOpenPhoto = async (photoId, photoUrl) => {
         try {

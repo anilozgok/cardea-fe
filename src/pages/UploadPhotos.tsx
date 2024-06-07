@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     Typography, Grid, IconButton, Button, Box, Dialog,
     DialogTitle, DialogContent, DialogActions, Snackbar, Alert,
@@ -18,7 +18,7 @@ import GetAppIcon from '@mui/icons-material/GetApp';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import axios from "axios";
 import DeleteIcon from '@mui/icons-material/Delete';
-import bgPicture from '../assets/uploadBg.png';
+import bgPicture from '../assets/uploadBg2.png';
 
 type PhotoResponse = {
     photoId: number;
