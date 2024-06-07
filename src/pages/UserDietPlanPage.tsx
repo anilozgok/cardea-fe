@@ -37,11 +37,11 @@ const UserDietPlanPage: React.FC = () => {
 
     useEffect(() => {
         document.body.style.backgroundImage = `url(${dietBg})`;
-        document.body.style.backgroundSize = 'cover'; 
-        document.body.style.backgroundPosition = 'center'; 
-        document.body.style.backgroundAttachment = 'fixed'; 
-        document.body.style.backgroundRepeat = 'no-repeat'; 
-    
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundAttachment = 'fixed';
+        document.body.style.backgroundRepeat = 'no-repeat';
+
         return () => {
             document.body.style.backgroundImage = '';
             document.body.style.backgroundSize = '';
@@ -54,7 +54,7 @@ const UserDietPlanPage: React.FC = () => {
     const handleLogout = async () => {
         try {
             await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
-            navigate('/'); 
+            navigate('/');
         } catch (error) {
             console.error('Error logging out:', error);
         }
@@ -122,6 +122,9 @@ const UserDietPlanPage: React.FC = () => {
                                 <Typography variant="body1" color="text.primary">
                                     Workouts
                                 </Typography>
+                            </MenuItem>
+                            <MenuItem onClick={() => navigate('/upload-photos')}>
+                                <Typography variant="body1" color="text.primary">Body Transformation</Typography>
                             </MenuItem>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>

@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import {
     Typography, Grid, IconButton, Button, Box, Dialog,
     DialogTitle, DialogContent, DialogActions, Snackbar, Alert,
@@ -222,7 +222,7 @@ function PhotoUpload(): JSX.Element {
                                 <MenuItem onClick={() => navigate('/workouts')}>
                                     <Typography variant="body1" color="text.primary">Workouts</Typography>
                                 </MenuItem>
-                                <MenuItem onClick={() => navigate('/diets')}>
+                                <MenuItem onClick={() => navigate('/diet-plan-user')}>
                                     <Typography variant="body1" color="text.primary">Diet Plans</Typography>
                                 </MenuItem>
                                 <Button startIcon={<CloudUploadIcon />} onClick={handleClickOpen}>Upload Photos</Button>

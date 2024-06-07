@@ -31,6 +31,8 @@ import logo from '../assets/CardeaLogo.png';
 import { useNavigate } from "react-router-dom";
 import MenuItem from '@mui/material/MenuItem';
 import workoutBg from '../assets/realworkbg3.png';
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+
 
 const WorkoutsList: React.FC = () => {
   const { user } = useUser();
@@ -51,13 +53,13 @@ const WorkoutsList: React.FC = () => {
 
     // When the component unmounts
     return () => {
-        document.body.style.backgroundImage = '';
-        document.body.style.backgroundSize = '';
-        document.body.style.backgroundPosition = '';
-        document.body.style.backgroundAttachment = '';
-        document.body.style.backgroundRepeat = '';
+      document.body.style.backgroundImage = '';
+      document.body.style.backgroundSize = '';
+      document.body.style.backgroundPosition = '';
+      document.body.style.backgroundAttachment = '';
+      document.body.style.backgroundRepeat = '';
     };
-}, []);
+  }, []);
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -92,8 +94,17 @@ const WorkoutsList: React.FC = () => {
     navigate(url)
   };
 
+  const handleLogout = async () => {
+    try {
+        await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+        navigate('/');
+    } catch (error) {
+        console.error('Error logging out:', error);
+    }
+};
+
   return (
-      <Container maxWidth="xl" sx={{ mt: -20 }}>
+    <Container maxWidth="xl" sx={{ mt: -20 }}>
 
       <AppBar
         position="fixed"
@@ -156,6 +167,9 @@ const WorkoutsList: React.FC = () => {
                   Workouts
                 </Typography>
               </MenuItem>
+              <MenuItem onClick={() => navigate('/upload-photos')}>
+                <Typography variant="body1" color="text.primary">Body Transformation</Typography>
+              </MenuItem>
             </Box>
             <Box sx={{ display: 'flex', justifyContent: 'center', flexGrow: 1 }}>
               <TextField
@@ -167,8 +181,13 @@ const WorkoutsList: React.FC = () => {
               />
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigateTo('/profile')} />
+              <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2, ml:2 }} onClick={() => navigateTo('/profile')} />
             </Box>
+            <Button
+              onClick={handleLogout}
+              startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft: '10px' }} />}
+            >
+            </Button>
           </Toolbar>
         </Container>
       </AppBar>
