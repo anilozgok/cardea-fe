@@ -22,6 +22,7 @@ import logo from '../assets/CardeaLogo.png';
 import { useUser } from '../context/UserContext';
 import { useDiet, DietProvider } from '../context/DietContext';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import dietBg from '../assets/diet.png';
 
 const UserDietPlanPage: React.FC = () => {
     const navigate = useNavigate();
@@ -34,11 +35,26 @@ const UserDietPlanPage: React.FC = () => {
         }
     }, [user, fetchDietPlans]);
 
+    useEffect(() => {
+        document.body.style.backgroundImage = `url(${dietBg})`;
+        document.body.style.backgroundSize = 'cover'; 
+        document.body.style.backgroundPosition = 'center'; 
+        document.body.style.backgroundAttachment = 'fixed'; 
+        document.body.style.backgroundRepeat = 'no-repeat'; 
+    
+        return () => {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundAttachment = '';
+            document.body.style.backgroundRepeat = '';
+        };
+    }, []);
 
     const handleLogout = async () => {
         try {
             await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
-            navigate('/'); // Redirect to the landing page after logout
+            navigate('/'); 
         } catch (error) {
             console.error('Error logging out:', error);
         }
@@ -97,12 +113,12 @@ const UserDietPlanPage: React.FC = () => {
                                     Home
                                 </Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => navigate('/diet-plan')} sx={{ py: '10px', px: '36px' }}>
+                            <MenuItem onClick={() => navigate('/diet-plan-user')} sx={{ py: '10px', px: '36px' }}>
                                 <Typography variant="body1" color="text.primary">
                                     Diet Plans
                                 </Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => navigate('/exercise')} sx={{ py: '10px', px: '36px' }}>
+                            <MenuItem onClick={() => navigate('/workouts')} sx={{ py: '10px', px: '36px' }}>
                                 <Typography variant="body1" color="text.primary">
                                     Workouts
                                 </Typography>

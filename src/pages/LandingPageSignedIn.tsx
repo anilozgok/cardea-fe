@@ -23,7 +23,9 @@ import trainingImage from '../assets/trainingImage.png';
 import nutritionImage from '../assets/nutrition.png';
 import progressImage from '../assets/progress.png';
 import logo from '../assets/CardeaLogo.png';
-import logoName from '../assets/cardeaName.png';
+import banner from '../assets/banner.png';
+import features from '../assets/features.png';
+import calcTools from '../assets/calculation.png';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import axios from "axios";
 import { useUser } from '../context/UserContext';
@@ -41,15 +43,15 @@ const LandingPage: React.FC = () => {
         }
     };
 
-    const handleNavigate = (operation:string) => {
+    const handleNavigate = (operation: string) => {
         var url = '';
         const isCoach = user.role === 'coach';
-        switch(operation){
+        switch (operation) {
             case 'workout':
                 url = isCoach ? '/exercise' : '/workouts'
                 break;
             case 'diet':
-                url = isCoach ? '/diet-plan' : '/diet-plan-user' 
+                url = isCoach ? '/diet-plan' : '/diet-plan-user'
                 break;
         }
         navigate(url)
@@ -58,7 +60,7 @@ const LandingPage: React.FC = () => {
 
     const FeatureItem: React.FC<{ title: string; description: string; imgSrc: string }> = ({ title, description, imgSrc }) => (
         <Card style=
-                  {{ maxWidth: 400, margin: 'auto' }}>
+            {{ maxWidth: 400, margin: 'auto' }}>
             <CardMedia
                 component="img"
                 height="400"
@@ -97,7 +99,7 @@ const LandingPage: React.FC = () => {
                             <Avatar sx={{ width: 40, height: 40 }} onClick={() => navigate('/profile')} />
                             <Button
                                 onClick={handleLogout}
-                                startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft:'20px'}} />} // You can adjust the size here
+                                startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft: '20px' }} />} // You can adjust the size here
                             >
                             </Button>
                         </Box>
@@ -106,18 +108,13 @@ const LandingPage: React.FC = () => {
             </AppBar>
 
             <header style={{ textAlign: 'center', margin: '40px 0', marginTop: '85px' }}>
-                <Typography variant="h2" component="h1" gutterBottom style={{ color: 'black' }}>
-                    Welcome to Your Fitness Journey
-                </Typography>
-                <Typography variant="h5" component="p" style={{ color: 'black' }}>
-                    Achieve your fitness goals with personalized training plans, nutritional guidance, and progress tracking.
-                </Typography>
+                <img src={banner} alt="Fitness Journey Banner" style={{ width: '100%', height: 'auto' }} />
             </header>
 
             {/* Features Section */}
             <section>
                 <Typography variant="h4" component="h2" gutterBottom align="center" style={{ color: 'black' }}>
-                    Features
+                <img src={features} alt="Features" style={{ width: '100%', height: 'auto', marginBottom: '20px' }} />
                 </Typography>
                 <Grid container spacing={4} justifyContent="center">
                     <Grid item xs={12} sm={6} md={4}>
@@ -146,9 +143,7 @@ const LandingPage: React.FC = () => {
 
             {/* Calculation Tools Section */}
             <section style={{ marginTop: '40px' }}>
-                <Typography variant="h4" component="h2" gutterBottom align="center" style={{ color: 'black' }}>
-                    Calculation Tools
-                </Typography>
+            <img src={calcTools} alt="Features" style={{ width: '100%', height: 'auto', marginBottom: '20px' }} />
                 <Grid container spacing={4} justifyContent="center">
                     <Grid item xs={12} sm={6} md={4}>
                         <CalculationTool

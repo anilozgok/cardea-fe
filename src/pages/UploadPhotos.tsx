@@ -18,6 +18,7 @@ import GetAppIcon from '@mui/icons-material/GetApp';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import axios from "axios";
 import DeleteIcon from '@mui/icons-material/Delete';
+import bgPicture from '../assets/uploadBg.png';
 
 type PhotoResponse = {
     photoId: number;
@@ -36,6 +37,26 @@ function PhotoUpload(): JSX.Element {
     const navigate = useNavigate();
     const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
     const [selectedPhotoUrl, setSelectedPhotoUrl] = useState('');
+
+    useEffect(() => {
+        // When the component mounts
+        document.body.style.backgroundImage = `url(${bgPicture})`;
+        document.body.style.backgroundSize = 'cover'; // Cover the viewport
+        document.body.style.backgroundPosition = 'center'; // Center the background image
+        document.body.style.backgroundAttachment = 'fixed'; // Make background fixed during scrolling
+        document.body.style.backgroundRepeat = 'no-repeat'; // Do not repeat the image
+    
+        // When the component unmounts
+        return () => {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundAttachment = '';
+            document.body.style.backgroundRepeat = '';
+        };
+    }, []);
+    
+
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
