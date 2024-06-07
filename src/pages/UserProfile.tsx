@@ -83,6 +83,9 @@ export default function UserProfiles() {
         case 'diet':
             url = isCoach ? '/diet-plan' : '/diet-plan-user' 
             break;
+        case 'photo':
+            url = isCoach ? '/athlete-photos' : '/upload-photos' 
+            break;    
     }
     navigate(url)
 }
@@ -174,15 +177,15 @@ export default function UserProfiles() {
                     <Typography variant="body1" color="text.primary">Diet Plans</Typography>
                   </MenuItem>
 
-                  <MenuItem onClick={() => navigate('/upload-photos')}>
-                    <Typography variant="body1" color="text.primary">Upload Photo</Typography>
+                  <MenuItem onClick={() => handleNavigate('photo')}>
+                    <Typography variant="body1" color="text.primary">Body Transformation</Typography>
                   </MenuItem>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
                   {editMode ? (
                       <>
                         <Button variant="contained" color="primary" onClick={handleSave}>
-                          Save Changes
+                          Save
                         </Button>
                         <Button variant="outlined" sx={{ ml: 2 }} onClick={handleEditModeToggle}>
                           Quit
@@ -190,7 +193,7 @@ export default function UserProfiles() {
                       </>
                   ) : (
                       <Button variant="contained" color="primary" onClick={handleEditModeToggle}>
-                        Edit Profile
+                        Edit Mode
                       </Button>
                   )}
                 </Box>
