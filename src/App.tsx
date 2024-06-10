@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { UserContextProvider } from "./context/UserContextProvider";
 import { ExerciseProvider } from './context/ExerciseContext';
+import { ChatProvider } from './context/ChatContext';
 
 import SignIn from "./pages/SignIn";
 import LandingPage from "./pages/LandingPage";
@@ -30,45 +31,52 @@ import CoachPhotoView from './pages/CoachPhotoView.tsx';
 import RecipesPage from "./pages/RecipesPage.tsx";
 import AboutUsPage from "./pages/AboutUsPage.tsx";
 import AboutUsPageNlg from "./pages/AboutUsPageNlg.tsx";
-
+import ChatPage from "./pages/ChatPage.tsx"; // Add this import
+import UserChatPage from "./pages/UserChatPage";
+import CoachChatPage from "./pages/CoachChatPage";
 
 function App() {
     const router = createBrowserRouter([
-        { path: "/", element: <LandingPage/> },
-        { path: "/sign-in", element: <SignIn/> },
-        { path: "/register", element: <Register/> },
-        { path: "/forgot-password", element: <ForgotPassword/> },
-        { path: "/reset-password", element: <ResetPassword/> },
-        { path: "/otp", element: <EmailVerification/> },
-        { path: "/exercise", element: <ExerciseList/> },
-        { path: "/workouts", element: <WorkoutsList/> },
-        { path: "/profile", element: <UserProfiles/> },
-        { path: "/update-password", element: <UpdatePassword/> },
-        { path: "/upload-photos", element: <PhotoUpload/> },
-        { path: "/bmi-calculator", element: <BMICalculator/> },
-        { path: "/water-intake-calculator", element: <WaterIntakeCalculator/> },
-        { path: "/caffeine-intake-calculator", element: <CaffeineIntakeCalculator/> },
-        { path: "/calorie-intake-calculator", element: <CalorieIntakeCalculator/> },
-        { path: "/body-fat-percentage-calculator", element: <BodyFatCalculator/> },
-        { path: "/ideal-weight-calculator", element: <IdealWeightCalculator/> },
-        { path: "/diet-plan", element: <CreateDietPlanPage/> },
-        { path: "/diet-plan-user", element: <UserDietPlanPage/> },
-        { path: "/landing", element: <LandingPageSignedIn/> },
-        { path: "/diet-plan-update", element: <UpdateDeleteDietPlanPage/> },
-        {path: "/delete-exercise", element: <DeleteExercisePage/>},
-        {path: "/athlete-photos", element: <CoachPhotoView/>},
-        {path: "/recipes", element: <RecipesPage/>},
-        {path: "/about", element: <AboutUsPage/>},
-        {path: "/about-us", element: <AboutUsPageNlg/>}
+        { path: "/", element: <LandingPage /> },
+        { path: "/sign-in", element: <SignIn /> },
+        { path: "/register", element: <Register /> },
+        { path: "/forgot-password", element: <ForgotPassword /> },
+        { path: "/reset-password", element: <ResetPassword /> },
+        { path: "/otp", element: <EmailVerification /> },
+        { path: "/exercise", element: <ExerciseList /> },
+        { path: "/workouts", element: <WorkoutsList /> },
+        { path: "/profile", element: <UserProfiles /> },
+        { path: "/update-password", element: <UpdatePassword /> },
+        { path: "/upload-photos", element: <PhotoUpload /> },
+        { path: "/bmi-calculator", element: <BMICalculator /> },
+        { path: "/water-intake-calculator", element: <WaterIntakeCalculator /> },
+        { path: "/caffeine-intake-calculator", element: <CaffeineIntakeCalculator /> },
+        { path: "/calorie-intake-calculator", element: <CalorieIntakeCalculator /> },
+        { path: "/body-fat-percentage-calculator", element: <BodyFatCalculator /> },
+        { path: "/ideal-weight-calculator", element: <IdealWeightCalculator /> },
+        { path: "/diet-plan", element: <CreateDietPlanPage /> },
+        { path: "/diet-plan-user", element: <UserDietPlanPage /> },
+        { path: "/landing", element: <LandingPageSignedIn /> },
+        { path: "/diet-plan-update", element: <UpdateDeleteDietPlanPage /> },
+        { path: "/delete-exercise", element: <DeleteExercisePage /> },
+        { path: "/athlete-photos", element: <CoachPhotoView /> },
+        { path: "/recipes", element: <RecipesPage /> },
+        { path: "/about", element: <AboutUsPage /> },
+        { path: "/about-us", element: <AboutUsPageNlg /> },
+        //{ path: "/chat", element: <ChatPage /> } // Add this route
+        { path: "/chat-user", element: <UserChatPage/> },
+        { path: "/chat-coach", element: <CoachChatPage/> }
 
     ]);
 
     return (
         <UserContextProvider>
             <ExerciseProvider>
-                <ThemeProvider theme={createTheme()}>
-                    <RouterProvider router={router}/>
-                </ThemeProvider>
+                <ChatProvider> {/* Add the ChatProvider */}
+                    <ThemeProvider theme={createTheme()}>
+                        <RouterProvider router={router} />
+                    </ThemeProvider>
+                </ChatProvider>
             </ExerciseProvider>
         </UserContextProvider>
     )
