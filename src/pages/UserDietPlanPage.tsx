@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Container,
     Typography,
@@ -28,6 +28,7 @@ const UserDietPlanPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useUser();
     const { dietPlans, loading, error, fetchDietPlans } = useDiet();
+    const [profilePicture, setProfilePicture] = useState<string>('');
 
     useEffect(() => {
         if (user && user.userId) {
@@ -36,20 +37,33 @@ const UserDietPlanPage: React.FC = () => {
     }, [user, fetchDietPlans]);
 
     useEffect(() => {
+        const fetchProfilePicture = async () => {
+          try {
+            const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+            if (response.data && response.data.photoURL) {
+              setProfilePicture(response.data.photoURL);
+            }
+          } catch (error) {
+            console.error('Failed to fetch profile picture:', error);
+          }
+        };
+    
+        fetchProfilePicture();
+    
         document.body.style.backgroundImage = `url(${dietBg})`;
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundPosition = 'center';
         document.body.style.backgroundAttachment = 'fixed';
         document.body.style.backgroundRepeat = 'no-repeat';
-
+    
         return () => {
-            document.body.style.backgroundImage = '';
-            document.body.style.backgroundSize = '';
-            document.body.style.backgroundPosition = '';
-            document.body.style.backgroundAttachment = '';
-            document.body.style.backgroundRepeat = '';
+          document.body.style.backgroundImage = '';
+          document.body.style.backgroundSize = '';
+          document.body.style.backgroundPosition = '';
+          document.body.style.backgroundAttachment = '';
+          document.body.style.backgroundRepeat = '';
         };
-    }, []);
+      }, []);
 
     const handleLogout = async () => {
         try {
@@ -128,7 +142,7 @@ const UserDietPlanPage: React.FC = () => {
                             </MenuItem>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+                            <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                         </Box>
                         <Button
                             onClick={handleLogout}

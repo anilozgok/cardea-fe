@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Container,
     Typography,
@@ -33,6 +33,22 @@ import { useUser } from '../context/UserContext';
 const LandingPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useUser();
+    const [profilePicture, setProfilePicture] = useState<string>('');
+
+    useEffect(() => {
+        const fetchProfilePicture = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+                if (response.data) {
+                    setProfilePicture(response.data.photoURL); // Assuming the response contains a URL in the `url` field
+                }
+            } catch (error) {
+                console.error('Failed to fetch profile picture:', error);
+            }
+        };
+
+        fetchProfilePicture();
+    }, []);
 
     const handleLogout = async () => {
         try {
@@ -105,7 +121,7 @@ const LandingPage: React.FC = () => {
                                     <Typography variant="body1" color="text.primary">About Us</Typography>
                                 </MenuItem>
                             </Box>
-                            <Avatar sx={{ width: 40, height: 40 }} onClick={() => navigate('/profile')} />
+                            <Avatar src={profilePicture} sx={{ width: 40, height: 40 }} onClick={() => navigate('/profile')} />
                             <Button
                                 onClick={handleLogout}
                                 startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft: '20px' }} />} // You can adjust the size here

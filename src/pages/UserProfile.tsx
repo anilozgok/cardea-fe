@@ -6,6 +6,7 @@ import { useUser } from '../context/UserContext';
 import { Navigate, useNavigate } from 'react-router-dom';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import profileBg from '../assets/profileBg.png'
+import { ToastContainer, toast } from 'react-toastify';
 
 interface UserProfileProps {
   firstName: string;
@@ -44,15 +45,15 @@ export default function UserProfiles() {
     zipCode: ''
   });
   const [originalProfileData, setOriginalProfileData] = useState<UserProfileProps>(profileData);
- 
+
   const navigate = useNavigate()
 
   useEffect(() => {
     document.body.style.backgroundImage = `url(${profileBg})`;
-    document.body.style.backgroundSize = 'cover'; 
-    document.body.style.backgroundPosition = 'center'; 
-    document.body.style.backgroundAttachment = 'fixed'; 
-    document.body.style.backgroundRepeat = 'no-repeat'; 
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundAttachment = 'fixed';
+    document.body.style.backgroundRepeat = 'no-repeat';
 
     return () => {
       document.body.style.backgroundImage = '';
@@ -62,7 +63,7 @@ export default function UserProfiles() {
       document.body.style.backgroundRepeat = '';
     };
   }, []);
- 
+
   const handleEditModeToggle = () => {
     if (editMode) {
       setProfileData(originalProfileData);
@@ -83,27 +84,27 @@ export default function UserProfiles() {
   const handleLogout = async () => {
     try {
       await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
-      navigate('/'); 
+      navigate('/');
     } catch (error) {
       console.error('Error logging out:', error);
     }
   };
-  const handleNavigate = (operation:string) => {
+  const handleNavigate = (operation: string) => {
     var url = '';
     const isCoach = user.role === 'coach';
-    switch(operation){
-        case 'workout':
-            url = isCoach ? '/exercise' : '/workouts'
-            break;
-        case 'diet':
-            url = isCoach ? '/diet-plan' : '/diet-plan-user' 
-            break;
-        case 'photo':
-            url = isCoach ? '/athlete-photos' : '/upload-photos' 
-            break;    
+    switch (operation) {
+      case 'workout':
+        url = isCoach ? '/exercise' : '/workouts'
+        break;
+      case 'diet':
+        url = isCoach ? '/diet-plan' : '/diet-plan-user'
+        break;
+      case 'photo':
+        url = isCoach ? '/athlete-photos' : '/upload-photos'
+        break;
     }
     navigate(url)
-}
+  }
 
 
 
@@ -111,20 +112,84 @@ export default function UserProfiles() {
     const apiUrl = 'http://localhost:8080/api/v1/profile';
     const method = isProfileNew ? axios.post : axios.put;
 
-    method(apiUrl, profileData, { withCredentials: true })
-      .then(response => {
-        console.log('Profile saved:', response.data);
-        setIsProfileNew(false);
-        setEditMode(false);
-        alert('Profile successfully saved!');
+    const inputElement = document.getElementById('profile-picture-input') as HTMLInputElement;
+    const file = inputElement && inputElement.files[0];
+    const formData = new FormData();
+
+    const updateProfileData = () => {
+      const updatedProfileData = {
+        ...profileData,
+        profilePicture: profileData.profilePicture
+      };
+
+      method(apiUrl, updatedProfileData, { withCredentials: true })
+        .then(response => {
+          console.log('Profile saved:', response.data);
+          setIsProfileNew(false);
+          setEditMode(false);
+          notify();
+        })
+        .catch(error => {
+          console.error('Error during profile update:', error);
+          notifyError();
+        });
+    };
+
+    if (file) {
+      formData.append('image', file, file.name);
+      const apiPictureUrl = 'http://localhost:8080/api/v1/profile/upload-photo?is_pp=true';
+
+      fetch(apiPictureUrl, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
       })
-      .catch(error => {
-        console.error('Error saving profile:', error);
-      });
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(data => {
+          if (typeof data === 'string' && data.startsWith('./')) {
+            const newProfilePictureUrl = `http://localhost:8080${data.substring(1)}`;
+            setProfileData(prevData => ({
+              ...prevData,
+              profilePicture: newProfilePictureUrl
+            }));
+            updateProfileData();
+          }
+        })
+        .catch(error => {
+          console.error('Error during photo upload:', error);
+          notifyError();
+        });
+    } else {
+      updateProfileData();
+    }
   };
   const [isProfileNew, setIsProfileNew] = useState<boolean>(true);
   const [, setOpen] = useState(false);
-
+  const notify = () => toast.success('Succesfully Saved', {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+  });
+  const notifyError = () => toast.error('Error while saving changes', {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+  });
 
 
   useEffect(() => {
@@ -134,7 +199,7 @@ export default function UserProfiles() {
         if (response.status === 200 && response.data) {
           setProfileData(response.data);
           setOriginalProfileData(response.data);
-          setIsProfileNew(false); 
+          setIsProfileNew(false);
         }
       } catch (error) {
         console.error("No profile data found. Attempting to fetch minimal user data.");
@@ -170,9 +235,6 @@ export default function UserProfiles() {
     fetchProfileData();
   }, []);
 
-
-
-
   return (
     <>
       <div>
@@ -198,18 +260,18 @@ export default function UserProfiles() {
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
                   {editMode ? (
-                      <>
-                        <Button variant="contained" color="primary" onClick={handleSave}>
-                          Save
-                        </Button>
-                        <Button variant="outlined" sx={{ ml: 2 }} onClick={handleEditModeToggle}>
-                          Quit
-                        </Button>
-                      </>
-                  ) : (
-                      <Button variant="contained" color="primary" onClick={handleEditModeToggle}>
-                        Edit Mode
+                    <>
+                      <Button variant="contained" color="primary" onClick={handleSave}>
+                        Save
                       </Button>
+                      <Button variant="outlined" sx={{ ml: 2 }} onClick={handleEditModeToggle}>
+                        Quit
+                      </Button>
+                    </>
+                  ) : (
+                    <Button variant="contained" color="primary" onClick={handleEditModeToggle}>
+                      Edit Mode
+                    </Button>
                   )}
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -219,8 +281,8 @@ export default function UserProfiles() {
                   <Avatar src={profileData.profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                 </Box>
                 <Button
-                    onClick={handleLogout}
-                    startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft:'20px'}} />} 
+                  onClick={handleLogout}
+                  startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft: '20px' }} />}
                 >
                 </Button>
               </Box>
@@ -231,21 +293,40 @@ export default function UserProfiles() {
       </div>
 
       <Container id="generalInfo">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
         <Box sx={{ mt: 10, p: 3 }}>
           <Typography variant="h4" gutterBottom style={{ color: 'black' }}>User Profile</Typography>
-          <Box display="flex" alignItems="center" justifyContent={"center"} mb={3}>
+          <Box display="flex" justifyContent="center" alignItems="center" mb={3}>
             <input
               accept="image/*"
               style={{ display: 'none' }}
               id="profile-picture-input"
               type="file"
               disabled={!editMode}
-              onChange={(e) => handleInputChange({ target: { name: 'profilePicture', value: e.target.files ? URL.createObjectURL(e.target.files[0]) : profileData.profilePicture } })}
+              onChange={(e) => handleInputChange({
+                target: {
+                  name: 'profilePicture',
+                  value: e.target.files ? URL.createObjectURL(e.target.files[0]) : profileData.profilePicture
+                }
+              })}
             />
             <label htmlFor="profile-picture-input">
               <Avatar
-                src={profileData.profilePicture}
-                sx={{ width: 80, height: 80, mr: 2 }} />
+                src={profileData.profilePicture}  // Fallback to logo if no profile picture
+                sx={{ width: 80, height: 80, mr: 2, cursor: editMode ? 'pointer' : 'default' }}
+                style={{ border: editMode ? '2px dashed #ccc' : '' }}
+              />
             </label>
           </Box>
           <Grid container spacing={3}>
@@ -457,7 +538,7 @@ export default function UserProfiles() {
         </Box>
         <Box sx={{ borderBottom: '1px solid #ccc', mb: 3 }} />
       </Container>
-      
+
     </>
   );
 }

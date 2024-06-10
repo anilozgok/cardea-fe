@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Container,
     Typography,
@@ -22,6 +22,22 @@ import sadik from "../assets/mert.jpg"
 const AboutUsPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useUser();
+    const [profilePicture, setProfilePicture] = useState<string>('');
+
+    useEffect(() => {
+        const fetchProfilePicture = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+                if (response.data) {
+                    setProfilePicture(response.data.photoURL); // Assuming the response contains a URL in the `url` field
+                }
+            } catch (error) {
+                console.error('Failed to fetch profile picture:', error);
+            }
+        };
+
+        fetchProfilePicture();
+    }, []);
     const handleLogout = async () => {
         try {
             await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
@@ -99,7 +115,7 @@ const AboutUsPage: React.FC = () => {
                             </MenuItem>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+                            <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                         </Box>
                         <Button
                             onClick={handleLogout}

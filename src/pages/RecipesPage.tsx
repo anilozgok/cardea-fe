@@ -32,6 +32,24 @@ const RecipesPage: React.FC = () => {
     const [selectedRecipe, setSelectedRecipe] = useState<Recipe | null>(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [initialRecipes, setInitialRecipes] = useState<Recipe[]>([]);
+    const [profilePicture, setProfilePicture] = useState<string>('');
+
+    useEffect(() => {
+        const fetchProfilePicture = async () => {
+          try {
+            const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+            if (response.data && response.data.photoURL) {
+              setProfilePicture(response.data.photoURL);
+            }
+          } catch (error) {
+            console.error('Failed to fetch profile picture:', error);
+          }
+        };
+    
+        fetchProfilePicture();
+    
+        
+      }, []);
 
     useEffect(() => {
         fetchRecipes();
@@ -148,7 +166,7 @@ const RecipesPage: React.FC = () => {
                             </MenuItem>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+                            <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                         </Box>
                         <Button
                             onClick={handleLogout}

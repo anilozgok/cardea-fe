@@ -32,6 +32,7 @@ import { useNavigate } from "react-router-dom";
 import MenuItem from '@mui/material/MenuItem';
 import workoutBg from '../assets/realworkbg3.png';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import axios from 'axios';
 
 
 const WorkoutsList: React.FC = () => {
@@ -42,16 +43,27 @@ const WorkoutsList: React.FC = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedGif, setSelectedGif] = useState('');
   const navigate = useNavigate()
-
+  const [profilePicture, setProfilePicture] = useState<string>('');
   useEffect(() => {
-    // When the component mounts
-    document.body.style.backgroundImage = `url(${workoutBg})`;
-    document.body.style.backgroundSize = 'cover'; // Cover the viewport
-    document.body.style.backgroundPosition = 'center'; // Center the background image
-    document.body.style.backgroundAttachment = 'fixed'; // Make background fixed during scrolling
-    document.body.style.backgroundRepeat = 'no-repeat'; // Do not repeat the image
+    const fetchProfilePicture = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+        if (response.data && response.data.photoURL) {
+          setProfilePicture(response.data.photoURL);
+        }
+      } catch (error) {
+        console.error('Failed to fetch profile picture:', error);
+      }
+    };
 
-    // When the component unmounts
+    fetchProfilePicture();
+
+    document.body.style.backgroundImage = `url(${workoutBg})`;
+    document.body.style.backgroundSize = 'cover';
+    document.body.style.backgroundPosition = 'center';
+    document.body.style.backgroundAttachment = 'fixed';
+    document.body.style.backgroundRepeat = 'no-repeat';
+
     return () => {
       document.body.style.backgroundImage = '';
       document.body.style.backgroundSize = '';
@@ -96,12 +108,12 @@ const WorkoutsList: React.FC = () => {
 
   const handleLogout = async () => {
     try {
-        await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
-        navigate('/');
+      await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+      navigate('/');
     } catch (error) {
-        console.error('Error logging out:', error);
+      console.error('Error logging out:', error);
     }
-};
+  };
 
   return (
     <Container maxWidth="xl" sx={{ mt: -20 }}>
@@ -181,7 +193,7 @@ const WorkoutsList: React.FC = () => {
               />
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-              <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2, ml:2 }} onClick={() => navigateTo('/profile')} />
+              <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2, ml: 2 }} onClick={() => navigateTo('/profile')} />
             </Box>
             <Button
               onClick={handleLogout}

@@ -37,24 +37,36 @@ function PhotoUpload(): JSX.Element {
     const navigate = useNavigate();
     const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
     const [selectedPhotoUrl, setSelectedPhotoUrl] = useState('');
+    const [profilePicture, setProfilePicture] = useState<string>('');
 
     useEffect(() => {
-        // When the component mounts
-        document.body.style.backgroundImage = `url(${bgPicture})`;
-        document.body.style.backgroundSize = 'cover'; // Cover the viewport
-        document.body.style.backgroundPosition = 'center'; // Center the background image
-        document.body.style.backgroundAttachment = 'fixed'; // Make background fixed during scrolling
-        document.body.style.backgroundRepeat = 'no-repeat'; // Do not repeat the image
-    
-        // When the component unmounts
-        return () => {
-            document.body.style.backgroundImage = '';
-            document.body.style.backgroundSize = '';
-            document.body.style.backgroundPosition = '';
-            document.body.style.backgroundAttachment = '';
-            document.body.style.backgroundRepeat = '';
+        const fetchProfilePicture = async () => {
+          try {
+            const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+            if (response.data && response.data.photoURL) {
+              setProfilePicture(response.data.photoURL);
+            }
+          } catch (error) {
+            console.error('Failed to fetch profile picture:', error);
+          }
         };
-    }, []);
+    
+        fetchProfilePicture();
+    
+        document.body.style.backgroundImage = `url(${bgPicture})`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundAttachment = 'fixed';
+        document.body.style.backgroundRepeat = 'no-repeat';
+    
+        return () => {
+          document.body.style.backgroundImage = '';
+          document.body.style.backgroundSize = '';
+          document.body.style.backgroundPosition = '';
+          document.body.style.backgroundAttachment = '';
+          document.body.style.backgroundRepeat = '';
+        };
+      }, []);
     
 
 
@@ -227,7 +239,7 @@ function PhotoUpload(): JSX.Element {
                                 </MenuItem>
                                 <Button startIcon={<CloudUploadIcon />} onClick={handleClickOpen}>Upload Photos</Button>
                             </Box>
-                            <Avatar sx={{ width: 40, height: 40 }} onClick={() => navigate('/profile')} />
+                            <Avatar src={profilePicture} sx={{ width: 40, height: 40 }} onClick={() => navigate('/profile')} />
                             <Button
                                 onClick={handleLogout}
                                 startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft: '20px' }} />}
