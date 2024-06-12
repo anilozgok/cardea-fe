@@ -26,7 +26,6 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import CloseIcon from '@mui/icons-material/Close';
 import useWorkouts from '../hooks/useWorkouts';
-import { useUser } from '../context/UserContext';
 import logo from '../assets/CardeaLogo.png';
 import { useNavigate } from "react-router-dom";
 import MenuItem from '@mui/material/MenuItem';
@@ -47,7 +46,6 @@ interface Workout {
 }
 
 const WorkoutsList: React.FC = () => {
-  const { user } = useUser() as { user: { email: string, role: string } };
   const { workouts, loading, error } = useWorkouts() as unknown as {
     workouts: Workout[];
     loading: boolean;
