@@ -25,8 +25,8 @@ type registerRequest = {
 }
 
 export default function Register() {
-    const navigate = useNavigate()
-    const notify = () => toast.success('Succesfully Registered', {
+    const navigate = useNavigate();
+    const notify = () => toast.success('Successfully Registered', {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -37,11 +37,14 @@ export default function Register() {
         theme: "light",
     });
 
-
     const [date, setDate] = useState('');
     const [error, setError] = useState(false);
+    const [gender, setGender] = useState<'male' | 'female'>('male');
+    const [role, setRole] = useState<'coach' | 'user'>('user');
+    const [password, setPassword] = useState('');
+    const [showValidation, setShowValidation] = useState(false);
 
-    const handleDateChange = (event: { target: { value: any; }; }) => {
+    const handleDateChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const selectedDate = event.target.value;
         if (new Date(selectedDate) >= new Date()) {
             setError(true);
@@ -52,9 +55,6 @@ export default function Register() {
         }
     };
 
-    const [password, setPassword] = useState('');
-    const [showValidation, setShowValidation] = useState(false);
-
     const passwordValidation = {
         isLengthValid: password.length >= 8,
         hasNumber: /\d/.test(password),
@@ -62,7 +62,7 @@ export default function Register() {
         hasSpecialChar: /[!@#$%^&*(),.?":{}|<>]/.test(password)
     };
 
-    const handlePasswordChange = (event: { target: { value: React.SetStateAction<string>; }; }) => {
+    const handlePasswordChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setPassword(event.target.value);
     };
 
@@ -71,23 +71,36 @@ export default function Register() {
     };
 
     const handleBlur = () => {
-        // Hide validation only if all conditions are met
         if (passwordValidation.isLengthValid && passwordValidation.hasNumber && passwordValidation.hasUpperCase && passwordValidation.hasSpecialChar) {
             setShowValidation(false);
         }
     };
 
     async function request(registerRequest: registerRequest) {
-        const res = await axios.post(
-            "http://localhost:8080/api/v1/auth/register", registerRequest, { withCredentials: true }
-        );
-
-        if (res.status === 200) {
-            notify();
-            setTimeout(() => {
-                navigate('/sign-in');
-            }, 2000);
+        try {
+            const res = await axios.post(
+                "http://localhost:8080/api/v1/auth/register", registerRequest, { withCredentials: true }
+            );
+            if (res.status === 200) {
+                notify();
+                setTimeout(() => {
+                    navigate('/sign-in');
+                }, 2000);
+            } else if (res.status >= 400 && res.status < 600) {
+                toastInfo('error', capitalizeFirstLetter(res.data));
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                toastInfo('error', capitalizeFirstLetter(error.response.data));
+            } else {
+                toastInfo('error', 'An unexpected error occurred');
+            }
         }
+    }
+
+    function capitalizeFirstLetter(string: string): string {
+        if (!string) return '';
+        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -98,16 +111,59 @@ export default function Register() {
             lastName: formData.get('lastName') as string,
             email: formData.get('email') as string,
             password: formData.get('password') as string,
-            gender: formData.get('gender') as 'male' | 'female',
+            gender: gender,
             dateOfBirth: new Date(formData.get('dateOfBirth') as string),
-            role: formData.get('role') as 'coach' | 'user',
+            role: role,
         }
-        request(registerRequest)
+
+        const errorMessages: string[] = [];
+
+        if (!registerRequest.firstName) {
+            errorMessages.push('First Name is a required field');
+        }
+        if (!registerRequest.lastName) {
+            errorMessages.push('Last Name is a required field');
+        }
+        if (!registerRequest.email) {
+            errorMessages.push('Email is a required field');
+        }
+        if (!registerRequest.password) {
+            errorMessages.push('Password is a required field');
+        }
+        if (!registerRequest.gender) {
+            errorMessages.push('Gender is a required field');
+        }
+        if (!registerRequest.dateOfBirth) {
+            errorMessages.push('Date of Birth is a required field');
+        }
+        if (!registerRequest.role) {
+            errorMessages.push('Role is a required field');
+        }
+
+        if (errorMessages.length > 0) {
+            errorMessages.forEach(message => toastInfo('error', message));
+            return;
+        }
+        request(registerRequest);
     };
 
     const handleSignInClick = () => {
         navigate('/sign-in');
+    };
 
+    const toastInfo = (toastMethod: string, messageToShow: string) => {
+        const method = toastMethod === 'error' ? toast.error : toast.success;
+
+        method(messageToShow, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
     };
 
     const today = new Date().toISOString().split('T')[0];
@@ -216,6 +272,8 @@ export default function Register() {
                                 name="gender"
                                 select
                                 SelectProps={{ native: true }}
+                                value={gender}
+                                onChange={(e) => setGender(e.target.value as 'male' | 'female')}
                             >
                                 <option value="male">Male</option>
                                 <option value="female">Female</option>
@@ -248,6 +306,8 @@ export default function Register() {
                                 name="role"
                                 select
                                 SelectProps={{ native: true }}
+                                value={role}
+                                onChange={(e) => setRole(e.target.value as 'coach' | 'user')}
                             >
                                 <option value="coach">Coach</option>
                                 <option value="user">Student</option>
@@ -273,4 +333,4 @@ export default function Register() {
             </Box>
         </Container>
     );
-};
+}
