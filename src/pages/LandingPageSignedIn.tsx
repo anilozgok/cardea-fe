@@ -230,14 +230,6 @@ const LandingPage: React.FC = () => {
     );
 };
 
-const FeatureItem: React.FC<{ title: string; description: string }> = ({ title, description }) => (
-    <div style={{ padding: '20px', textAlign: 'center', border: '1px solid #ddd', borderRadius: '8px' }}>
-        <Typography variant="h6" component="h3" gutterBottom style={{ color: 'black' }}>
-            {title}
-        </Typography>
-        <Typography style={{ color: 'black' }}>{description}</Typography>
-    </div>
-);
 
 const CalculationTool: React.FC<{ imgSrc: string; altText: string; title: string; description: string; onClick: () => void }> = ({ imgSrc, altText, title, description, onClick }) => (
     <div onClick={onClick} style={{ cursor: 'pointer', padding: '20px', textAlign: 'center', border: '1px solid #ddd', borderRadius: '8px' }}>

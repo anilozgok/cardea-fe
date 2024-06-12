@@ -144,14 +144,6 @@ const PhotoUpload: React.FC = () => {
         setOpenUploadDialog(false);  // Close the upload dialog
     };
 
-    const handleDownload = (base64Data: string, filename: string) => {
-        const link = document.createElement('a');
-        link.href = `data:image/jpeg;base64,${base64Data}`;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    };
 
     const handleOpenPhoto = async (photoId: number, photoUrl: string) => {
         try {
@@ -180,7 +172,7 @@ const PhotoUpload: React.FC = () => {
         setOpenUploadDialog(false);
     };
 
-    const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    const handleToastClose = (_event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }

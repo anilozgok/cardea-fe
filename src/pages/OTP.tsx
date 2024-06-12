@@ -7,15 +7,11 @@ export default function EmailVerification() {
     const email = state.email; 
     const navigate = useNavigate();
 
-  const [otp, setOtp] = useState(generateOtp());
   const [timerCount, setTimerCount] = useState(60);
   const [OTPinput, setOTPinput] = useState(new Array(4).fill(""));
   const [disable, setDisable] = useState(true);
   const inputRefs = useRef(new Array(4).fill(React.createRef()));
 
-  function generateOtp() {
-    return Math.floor(1000 + Math.random() * 9000);
-  }
 
   function resendOTP() {
     if (disable) return;
