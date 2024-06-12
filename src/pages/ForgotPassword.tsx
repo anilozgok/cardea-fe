@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -6,19 +5,13 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from "axios";
-import {useUser} from "../context/UserContext.tsx";
 import {useNavigate} from "react-router-dom";
 import logo from '../assets/CardeaLogo.png';
 
-type forgotPwRequest = {
-    email: string
-}
+
 
 export default function ForgotPassword() {
-    const user = useUser()
     const navigate = useNavigate()
-
- 
 
     const handleSubmit = async (event: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
         event.preventDefault();

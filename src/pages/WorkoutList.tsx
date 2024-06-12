@@ -26,7 +26,6 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import CloseIcon from '@mui/icons-material/Close';
 import useWorkouts from '../hooks/useWorkouts';
-import { useUser } from '../context/UserContext';
 import logo from '../assets/CardeaLogo.png';
 import { useNavigate } from "react-router-dom";
 import MenuItem from '@mui/material/MenuItem';
@@ -34,16 +33,31 @@ import workoutBg from '../assets/realworkbg3.png';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import axios from 'axios';
 
+interface Workout {
+  workoutId: number;
+  name: string;
+  exerciseName: string;
+  description: string;
+  area: string;
+  rep: number;
+  sets: number;
+  equipment: string;
+  gifUrl: string;
+}
 
 const WorkoutsList: React.FC = () => {
-  const { user } = useUser();
-  const { workouts, loading, error } = useWorkouts();
+  const { workouts, loading, error } = useWorkouts() as unknown as {
+    workouts: Workout[];
+    loading: boolean;
+    error: string | null;
+  };
   const [searchTerm, setSearchTerm] = useState('');
-  const [open, setOpen] = useState(null);
+  const [open, setOpen] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedGif, setSelectedGif] = useState('');
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [profilePicture, setProfilePicture] = useState<string>('');
+
   useEffect(() => {
     const fetchProfilePicture = async () => {
       try {
@@ -77,11 +91,11 @@ const WorkoutsList: React.FC = () => {
     setSearchTerm(event.target.value);
   };
 
-  const handleClick = (workoutName) => {
+  const handleClick = (workoutName: string) => {
     setOpen(open === workoutName ? null : workoutName);
   };
 
-  const handleGifClick = (gifUrl) => {
+  const handleGifClick = (gifUrl: string) => {
     setSelectedGif(gifUrl);
     setDialogOpen(true);
   };
@@ -90,7 +104,7 @@ const WorkoutsList: React.FC = () => {
     setDialogOpen(false);
   };
 
-  const groupedWorkouts = workouts.reduce((acc, workout) => {
+  const groupedWorkouts = workouts.reduce((acc: { [key: string]: Workout[] }, workout) => {
     if (!acc[workout.name]) {
       acc[workout.name] = [];
     }
@@ -102,8 +116,8 @@ const WorkoutsList: React.FC = () => {
     workoutName.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const navigateTo = (url) => {
-    navigate(url)
+  const navigateTo = (url: string) => {
+    navigate(url);
   };
 
   const handleLogout = async () => {
@@ -117,7 +131,6 @@ const WorkoutsList: React.FC = () => {
 
   return (
     <Container maxWidth="xl" sx={{ mt: -20 }}>
-
       <AppBar
         position="fixed"
         sx={{

@@ -10,8 +10,7 @@ const CaffeineIntakeCalculator: React.FC = () => {
     const navigate = useNavigate();
 
     const calculateCaffeineIntake = () => {
-        // Simplified caffeine intake calculation logic
-        const intake = weight * 6; // Example calculation: 6 mg of caffeine per kg of body weight
+        const intake = weight * 6; 
         setCaffeineIntake(intake);
     };
     useEffect(() => {
@@ -24,10 +23,10 @@ const CaffeineIntakeCalculator: React.FC = () => {
                 position="fixed"
                 sx={{
                     boxShadow: 0,
-                    bgcolor: 'rgba(255, 255, 255, 0.8)',  // Ensuring background is slightly opaque
+                    bgcolor: 'rgba(255, 255, 255, 0.8)', 
                     backgroundImage: 'none',
                     mt: 2,
-                    color: 'black',  // Explicit text color
+                    color: 'black', 
                 }}
             >
                 <Container maxWidth="lg">
@@ -41,7 +40,7 @@ const CaffeineIntakeCalculator: React.FC = () => {
                             borderRadius: '999px',
                             bgcolor:
                                 theme.palette.mode === 'light'
-                                    ? 'rgba(255, 255, 255, 0.8)'  // Increased opacity
+                                    ? 'rgba(255, 255, 255, 0.8)'  
                                     : 'rgba(0, 0, 0, 0.4)',
                             backdropFilter: 'blur(24px)',
                             maxHeight: 56,
@@ -59,7 +58,7 @@ const CaffeineIntakeCalculator: React.FC = () => {
                             sx={{
                                 flexGrow: 1,
                                 display: 'flex',
-                                justifyContent: 'center', // Aligns the center logo in the middle
+                                justifyContent: 'center', 
                             }}
                         >
                             <img

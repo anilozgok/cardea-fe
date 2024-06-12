@@ -2,11 +2,7 @@ import React, { useCallback, useState, useEffect } from 'react';
 import {
     Typography, Grid, IconButton, Button, Box, Dialog,
     DialogTitle, DialogContent, DialogActions, Snackbar, Alert,
-    AppBar,
-    Avatar,
-    Container,
-    MenuItem,
-    Toolbar
+    AppBar, Avatar, Container, MenuItem, Toolbar
 } from '@mui/material';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
@@ -16,24 +12,29 @@ import logo from '../assets/CardeaLogo.png';
 import { useNavigate } from 'react-router-dom';
 import GetAppIcon from '@mui/icons-material/GetApp';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
-import axios from "axios";
+import axios from 'axios';
 import DeleteIcon from '@mui/icons-material/Delete';
 import bgPicture from '../assets/uploadBg2.png';
 
 type PhotoResponse = {
     photoId: number;
     photoURL: string;
-    createdAt: string; // Ensure this exists with full timestamp
+    createdAt: string;
 };
 
-function PhotoUpload(): JSX.Element {
+type Toast = {
+    open: boolean;
+    message: string;
+    severity: 'info' | 'success' | 'warning' | 'error';
+};
+
+const PhotoUpload: React.FC = () => {
     const [files, setFiles] = useState<File[]>([]);
     const [photos, setPhotos] = useState<{ [key: string]: PhotoResponse[] }>({});
     const [openUploadDialog, setOpenUploadDialog] = useState(false);
     const [openImageViewDialog, setOpenImageViewDialog] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
-    const [imageDimensions, setImageDimensions] = useState({ width: 'auto', height: 'auto' });
-    const [toast, setToast] = useState({ open: false, message: '', severity: 'info' });
+    const [toast, setToast] = useState<Toast>({ open: false, message: '', severity: 'info' });
     const navigate = useNavigate();
     const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
     const [selectedPhotoUrl, setSelectedPhotoUrl] = useState('');
@@ -41,40 +42,38 @@ function PhotoUpload(): JSX.Element {
 
     useEffect(() => {
         const fetchProfilePicture = async () => {
-          try {
-            const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
-            if (response.data && response.data.photoURL) {
-              setProfilePicture(response.data.photoURL);
+            try {
+                const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+                if (response.data && response.data.photoURL) {
+                    setProfilePicture(response.data.photoURL);
+                }
+            } catch (error) {
+                console.error('Failed to fetch profile picture:', error);
             }
-          } catch (error) {
-            console.error('Failed to fetch profile picture:', error);
-          }
         };
-    
+
         fetchProfilePicture();
-    
+
         document.body.style.backgroundImage = `url(${bgPicture})`;
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundPosition = 'center';
         document.body.style.backgroundAttachment = 'fixed';
         document.body.style.backgroundRepeat = 'no-repeat';
-    
-        return () => {
-          document.body.style.backgroundImage = '';
-          document.body.style.backgroundSize = '';
-          document.body.style.backgroundPosition = '';
-          document.body.style.backgroundAttachment = '';
-          document.body.style.backgroundRepeat = '';
-        };
-      }, []);
-    
 
+        return () => {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundAttachment = '';
+            document.body.style.backgroundRepeat = '';
+        };
+    }, []);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         setFiles((prevFiles) => [...prevFiles, ...acceptedFiles]);
     }, []);
 
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: 'image/*', multiple: true });
+    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop, accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.gif'] }, multiple: true });
 
     useEffect(() => {
         fetchPhotos();
@@ -96,7 +95,7 @@ function PhotoUpload(): JSX.Element {
         }
     };
 
-    const groupPhotosByDate = (photos: PhotoResponse[]) => {
+    const groupPhotosByDate = (photos: PhotoResponse[]): { [key: string]: PhotoResponse[] } => {
         return photos.reduce((acc, photo) => {
             const date = photo.createdAt.split('T')[0]; // Split by 'T' and take the date part
             acc[date] = acc[date] || [];
@@ -136,7 +135,7 @@ function PhotoUpload(): JSX.Element {
                 console.log('File uploaded successfully', file.name);
             } catch (e) {
                 console.error('Upload failed', e);
-                setToast({ open: true, message: `Upload failed: ${e.message}`, severity: 'error' });
+                setToast({ open: true, message: `Upload failed: ${(e as Error).message}`, severity: 'error' });
             }
         }
 
@@ -145,7 +144,7 @@ function PhotoUpload(): JSX.Element {
         setOpenUploadDialog(false);  // Close the upload dialog
     };
 
-    const handleDownload = (base64Data, filename) => {
+    const handleDownload = (base64Data: string, filename: string) => {
         const link = document.createElement('a');
         link.href = `data:image/jpeg;base64,${base64Data}`;
         link.download = filename;
@@ -154,7 +153,7 @@ function PhotoUpload(): JSX.Element {
         document.body.removeChild(link);
     };
 
-    const handleOpenPhoto = async (photoId, photoUrl) => {
+    const handleOpenPhoto = async (photoId: number, photoUrl: string) => {
         try {
             setSelectedPhotoId(photoId); // Store the photo ID
             setSelectedPhotoUrl(photoUrl); // Also store the photo URL for delete operation
@@ -163,7 +162,7 @@ function PhotoUpload(): JSX.Element {
             const reader = new FileReader();
             reader.readAsDataURL(blob);
             reader.onloadend = () => {
-                const base64data = reader.result;
+                const base64data = reader.result as string;
                 setSelectedImage(base64data);
                 setOpenImageViewDialog(true);
             }
@@ -181,7 +180,7 @@ function PhotoUpload(): JSX.Element {
         setOpenUploadDialog(false);
     };
 
-    const handleToastClose = (event?: React.SyntheticEvent, reason?: string) => {
+    const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
         if (reason === 'clickaway') {
             return;
         }
@@ -189,10 +188,9 @@ function PhotoUpload(): JSX.Element {
     };
 
     const handleDeletePhoto = async () => {
-        if (!selectedPhotoId || !selectedPhotoUrl) return; // Ensure both ID and URL are available
+        if (!selectedPhotoId || !selectedPhotoUrl) return; 
 
         try {
-            // Sending both ID and URL in the request body
             const response = await axios.delete('http://localhost:8080/api/v1/user/photo', {
                 data: {
                     photoId: selectedPhotoId,
@@ -216,7 +214,7 @@ function PhotoUpload(): JSX.Element {
             }
         } catch (error) {
             console.error('Error deleting photo:', error);
-            setToast({ open: true, message: `Failed to delete photo: ${error.message}`, severity: 'error' });
+            setToast({ open: true, message: `Failed to delete photo: ${(error as Error).message}`, severity: 'error' });
         }
     };
 
@@ -255,7 +253,7 @@ function PhotoUpload(): JSX.Element {
                     <div key={date} style={{ marginBottom: '20px' }}>
                         <div style={{ display: 'flex', alignItems: 'center', margin: '30px 0', position: 'relative' }}>
                             <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginRight: '40px' }}></div>
-                            <span style={{ whiteSpace: 'nowrap', color:'black'}}>{date}</span>
+                            <span style={{ whiteSpace: 'nowrap', color: 'black' }}>{date}</span>
                             <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginLeft: '40px' }}></div>
                         </div>
                         <Grid container spacing={3}>
@@ -323,7 +321,7 @@ function PhotoUpload(): JSX.Element {
             </Dialog>
 
             <Dialog open={openImageViewDialog} onClose={handleClosePhoto} maxWidth="lg">
-                <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: imageDimensions.width, height: imageDimensions.height }}>
+                <DialogContent sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                     <img src={selectedImage} alt="Selected" style={{ maxWidth: '100%', height: 'auto' }} />
                 </DialogContent>
                 <DialogActions>
@@ -344,6 +342,6 @@ function PhotoUpload(): JSX.Element {
             </Snackbar>
         </>
     );
-}
+};
 
 export default PhotoUpload;

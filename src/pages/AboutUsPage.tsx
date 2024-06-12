@@ -13,7 +13,6 @@ import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import logo from "../assets/CardeaLogo.png";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import {useNavigate} from "react-router-dom";
-import {useUser} from "../context/UserContext.tsx";
 import axios from "axios";
 import anil from "../assets/anil.jpg"
 import omer from "../assets/omer.jpg"
@@ -21,7 +20,6 @@ import sadik from "../assets/mert.jpg"
 
 const AboutUsPage: React.FC = () => {
     const navigate = useNavigate();
-    const { user } = useUser();
     const [profilePicture, setProfilePicture] = useState<string>('');
 
     useEffect(() => {
