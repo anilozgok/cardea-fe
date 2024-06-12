@@ -37,7 +37,7 @@ const DeleteWorkoutPage: React.FC = () => {
     const { workouts, loading: workoutsLoading, error: workoutsError } = useAllWorkouts();
     const [loading, setLoading] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
-
+    const [profilePicture, setProfilePicture] = useState<string>('');
     const navigate = useNavigate();
 
     const handleDeleteWorkout = async (workoutName: string) => {
@@ -57,7 +57,18 @@ const DeleteWorkoutPage: React.FC = () => {
         }
     };
     useEffect(() => {
-        // When the component mounts
+        const fetchProfilePicture = async () => {
+            try {
+              const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+              if (response.data && response.data.photoURL) {
+                setProfilePicture(response.data.photoURL);
+              }
+            } catch (error) {
+              console.error('Failed to fetch profile picture:', error);
+            }
+          };
+      
+          fetchProfilePicture();
         document.body.style.backgroundImage = `url(${workoutBg})`;
         document.body.style.backgroundSize = 'cover'; // Cover the viewport
         document.body.style.backgroundPosition = 'center'; // Center the background image
@@ -175,7 +186,7 @@ const DeleteWorkoutPage: React.FC = () => {
                             </MenuItem>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+                            <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                         </Box>
                     </Toolbar>
                 </Container>

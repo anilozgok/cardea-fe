@@ -58,6 +58,7 @@ const ExerciseList: React.FC = () => {
     const [showWorkoutDetails, setShowWorkoutDetails] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+    const [profilePicture, setProfilePicture] = useState<string>('');
 
     const handleExerciseSelect = (id: string) => {
         setSelectedExercises((prevSelected) => {
@@ -71,6 +72,18 @@ const ExerciseList: React.FC = () => {
     };
 
     useEffect(() => {
+        const fetchProfilePicture = async () => {
+            try {
+              const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+              if (response.data && response.data.photoURL) {
+                setProfilePicture(response.data.photoURL);
+              }
+            } catch (error) {
+              console.error('Failed to fetch profile picture:', error);
+            }
+          };
+      
+          fetchProfilePicture();
         document.body.style.backgroundImage = `url(${workoutBg})`;
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundPosition = 'center';
@@ -224,7 +237,7 @@ const ExerciseList: React.FC = () => {
                             </MenuItem>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+                            <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                         </Box>
                     </Toolbar>
                 </Container>

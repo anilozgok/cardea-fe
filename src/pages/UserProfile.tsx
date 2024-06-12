@@ -132,7 +132,7 @@ export default function UserProfiles() {
           if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
           }
-          return response.text();
+          return response.text(); // parse as text
         })
         .then(data => {
           if (typeof data === 'string' && data.startsWith('./')) {
@@ -141,7 +141,7 @@ export default function UserProfiles() {
               ...prevData,
               profilePicture: newProfilePictureUrl
             }));
-            updateProfileData();
+            updateProfileData(newProfilePictureUrl);
           }
         })
         .catch(error => {
@@ -149,13 +149,13 @@ export default function UserProfiles() {
           notifyError();
         });
     } else {
-      updateProfileData();
+      updateProfileData(profileData.profilePicture);
     }
 
-    function updateProfileData() {
+    function updateProfileData(newProfilePictureUrl: string) {
       const updatedProfileData = {
         ...profileData,
-        profilePicture: profileData.profilePicture
+        profilePicture: newProfilePictureUrl
       };
 
       method(apiUrl, updatedProfileData, { withCredentials: true })

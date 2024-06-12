@@ -29,6 +29,7 @@ export default function SignIn() {
     const [photos, setPhotos] = useState<{ [key: string]: PhotoResponse[] }>({});
     const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
     const [selectedPhotoUrl, setSelectedPhotoUrl] = useState('');
+    const [profilePicture, setProfilePicture] = useState<string>('');
     const handleLogout = async () => {
         try {
             await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
@@ -40,7 +41,18 @@ export default function SignIn() {
 
 
     useEffect(() => {
-        // When the component mounts
+        const fetchProfilePicture = async () => {
+            try {
+              const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+              if (response.data && response.data.photoURL) {
+                setProfilePicture(response.data.photoURL);
+              }
+            } catch (error) {
+              console.error('Failed to fetch profile picture:', error);
+            }
+          };
+      
+          fetchProfilePicture();
         document.body.style.backgroundImage = `url(${bgPicture})`;
         document.body.style.backgroundSize = 'cover'; // Cover the viewport
         document.body.style.backgroundPosition = 'center'; // Center the background image
@@ -175,7 +187,7 @@ export default function SignIn() {
                             </MenuItem>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+                            <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                         </Box>
 
                         <Button

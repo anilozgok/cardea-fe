@@ -54,6 +54,7 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
     const [dietPlans, setDietPlans] = useState<DietPlan[]>([]);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
+    const [profilePicture, setProfilePicture] = useState<string>('');
 
     const navigate = useNavigate();
 
@@ -74,6 +75,18 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
             setLoading(false);
         }
     };
+    const fetchProfilePicture = async () => {
+        try {
+          const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+          if (response.data && response.data.photoURL) {
+            setProfilePicture(response.data.photoURL);
+          }
+        } catch (error) {
+          console.error('Failed to fetch profile picture:', error);
+        }
+      };
+  
+      fetchProfilePicture();
 
     const handleDeleteDiet = async (dietId: number) => {
         try {
@@ -159,7 +172,7 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
                             </MenuItem>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+                            <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                         </Box>
                         <Button
                             onClick={handleLogout}
@@ -171,7 +184,7 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
             </AppBar>
 
             <Box sx={{ mt: -30, mb: 2 }}>
-                <Typography variant="h5" color="black">Update and Delete Diet Plans</Typography>
+                <Typography variant="h5" color="black">Delete Diet Plans</Typography>
             </Box>
 
             <FormControl fullWidth sx={{ mb: 4 }}>
