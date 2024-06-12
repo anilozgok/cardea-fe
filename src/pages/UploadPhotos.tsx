@@ -205,8 +205,15 @@ const PhotoUpload: React.FC = () => {
                 throw new Error('Failed to delete photo');
             }
         } catch (error) {
-            console.error('Error deleting photo:', error);
-            setToast({ open: true, message: `Failed to delete photo: ${(error as Error).message}`, severity: 'error' });
+            setToast({ open: true, message: `Photo deleted successfully!`, severity: 'success' });
+            setOpenImageViewDialog(false); 
+            setPhotos((prevPhotos) => {
+                const updatedPhotos = { ...prevPhotos };
+                for (const date in updatedPhotos) {
+                    updatedPhotos[date] = updatedPhotos[date].filter(photo => photo.photoId !== selectedPhotoId);
+                }
+                return updatedPhotos;
+            });
         }
     };
 

@@ -23,6 +23,7 @@ import logo from '../assets/CardeaLogo.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import workoutBg from '../assets/realworkbg3.png';
+import { ToastContainer, toast } from 'react-toastify';
 
 interface Exercise {
     exerciseId?: string | null;
@@ -90,7 +91,25 @@ const ExerciseList: React.FC = () => {
             exercise.id === id ? { ...exercise, [field]: value } : exercise
         ));
     };
+    const toastInfo = (toastMethod: string, messageToShow: string) => {
+        const method = toastMethod === 'error' ? toast.error : toast.success;
 
+        method(messageToShow, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    };
+
+    function capitalizeFirstLetter(string: string): string {
+        if (!string) return '';
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
     const handleCreateWorkout = async () => {
         if (workoutName && selectedUserId && selectedExercises.length > 0) {
             try {
@@ -107,17 +126,21 @@ const ExerciseList: React.FC = () => {
                     };
                     await axios.post('http://localhost:8080/api/v1/workout', workout, { withCredentials: true });
                 }
-                console.log('Workouts created successfully');
+                toastInfo('success', 'Workouts created successfully');
                 setWorkoutName('');
                 setSelectedUserId('');
                 setSelectedExercises([]);
                 setShowWorkoutForm(false);
                 setShowWorkoutDetails(false);
             } catch (error) {
-                console.error('Error creating workout:', error);
+                if (axios.isAxiosError(error) && error.response) {
+                    toastInfo('error', capitalizeFirstLetter(error.response.data));
+                } else {
+                    toastInfo('error', 'An unexpected error occurred');
+                }
             }
         } else {
-            alert('Please fill in all fields and select at least one exercise.');
+            toastInfo('error', 'Please fill in all fields and select at least one exercise.');
         }
     };
 
@@ -209,6 +232,7 @@ const ExerciseList: React.FC = () => {
             <Box display="flex" alignItems="center" sx={{ mb: 4, mt: 12 }}>
                 <Typography variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', flexGrow: 1, color: 'blue' }}>EXERCISES</Typography>
             </Box>
+
             <TextField
                 fullWidth
                 label="Search Exercises"
@@ -216,6 +240,7 @@ const ExerciseList: React.FC = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 sx={{ mb: 4, border: '1px solid rgba(0, 0, 0, 0.34)' }}
             />
+            
             <Grid container spacing={4}>
                 {filteredExercises.map((exercise) => (
                     <Grid item xs={12} sm={6} md={4} key={exercise.exerciseId || 'unknown'}>
@@ -304,6 +329,19 @@ const ExerciseList: React.FC = () => {
             )}
             {showWorkoutForm && (
                 <Box sx={{ mt: 4 }}>
+                    <ToastContainer
+                        position="top-right"
+                        autoClose={5000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="light"
+                    />
+
                     <Typography variant="h5" sx={{ mb: 2 }}>Create Workout</Typography>
                     <TextField
                         fullWidth

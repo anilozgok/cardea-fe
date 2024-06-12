@@ -51,6 +51,26 @@ const CreateDietPlanPage: React.FC = () => {
         setSearchTerm(food.name);
     };
 
+    const toastInfo = (toastMethod: string, messageToShow: string) => {
+        const method = toastMethod === 'error' ? toast.error : toast.success;
+
+        method(messageToShow, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    };
+
+    function capitalizeFirstLetter(string: string): string {
+        if (!string) return '';
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     const handleAddMealItem = () => {
         const selectedFood = foods.find(food => food.name === searchTerm);
         if (selectedFood) {
@@ -93,9 +113,12 @@ const CreateDietPlanPage: React.FC = () => {
             toast.success('Diet plan created successfully');
             setMealName('');
             setMealItems([]);
-        } catch (err) {
-            setMessage('Failed to create diet plan');
-            toast.error('Failed to create diet plan');
+        } catch (error) {
+            if (axios.isAxiosError(error) && error.response) {
+                toastInfo('error', capitalizeFirstLetter(error.response.data));
+            } else {
+                toastInfo('error', 'An unexpected error occurred');
+            }
         } finally {
             setCreating(false);
         }
@@ -202,7 +225,18 @@ const CreateDietPlanPage: React.FC = () => {
 
             <Typography variant="h4" sx={{ my: 4 }}>Create Diet Plan</Typography>
 
-            <ToastContainer />
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
 
             <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id="user-select-label">Select User</InputLabel>

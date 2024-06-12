@@ -236,6 +236,26 @@ export default function UserProfiles() {
 
     fetchProfileData();
   }, []);
+  const toastInfo = (toastMethod: string, messageToShow: string) => {
+    const method = toastMethod === 'error' ? toast.error : toast.success;
+
+    method(messageToShow, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
+  function capitalizeFirstLetter(string: string): string {
+    if (!string) return '';
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
 
   return (
     <>

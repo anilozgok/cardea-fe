@@ -59,21 +59,27 @@ export default function ResetPassword() {
             alert("Please ensure all password requirements are met and passwords match.");
             return;
         }
-    
+
         try {
             const res = await axios.put("http://localhost:8080/api/v1/auth/update-password", {
                 email: state.email,
                 password: password
             }, { withCredentials: true });
-    
+
             if (res.status === 200) {
                 notify();
-            setTimeout(() => {
-                navigate('/sign-in'); 
-            }, 2000);
+                setTimeout(() => {
+                    navigate('/sign-in');
+                }, 2000);
+            } else if (res.status >= 400 && res.status < 600) {
+                toastInfo('error', capitalizeFirstLetter(res.data));
             }
         } catch (error) {
-            console.error('Failed to reset password', error);
+            if (axios.isAxiosError(error) && error.response) {
+                toastInfo('error', capitalizeFirstLetter(error.response.data));
+            } else {
+                toastInfo('error', 'An unexpected error occurred');
+            }
         }
     };
 
@@ -87,6 +93,26 @@ export default function ResetPassword() {
         progress: undefined,
         theme: "light",
     });
+
+    const toastInfo = (toastMethod: string, messageToShow: string) => {
+        const method = toastMethod === 'error' ? toast.error : toast.success;
+
+        method(messageToShow, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    };
+
+    function capitalizeFirstLetter(string: string): string {
+        if (!string) return '';
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
     return (
         <Container component="main" maxWidth="xs">
@@ -107,6 +133,19 @@ export default function ResetPassword() {
                 />
                 <Typography component="h1" variant="h5">Enter your new password</Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    <ToastContainer
+                        position="top-right"
+                        autoClose={5000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="light"
+                    />
+
                     <TextField
                         margin="normal"
                         required
