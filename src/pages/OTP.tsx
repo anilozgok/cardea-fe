@@ -28,10 +28,6 @@ export default function EmailVerification() {
     });
   };
 
-  function capitalizeFirstLetter(string: string): string {
-    if (!string) return '';
-    return string.charAt(0).toUpperCase() + string.slice(1);
-  }
 
   function resendOTP() {
     if (disable) return;
