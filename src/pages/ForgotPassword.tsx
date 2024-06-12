@@ -5,8 +5,9 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import logo from '../assets/CardeaLogo.png';
+import { ToastContainer, toast } from 'react-toastify';
 
 
 
@@ -17,26 +18,51 @@ export default function ForgotPassword() {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
         const email = formData.get('email') as string;
-    
+
         if (email) {
             try {
                 const response = await axios.get(`http://localhost:8080/api/v1/auth/check-user?email=${email}`, { withCredentials: true });
                 if (response.status === 200) {
-                    navigate('/otp', { state: { email } }); 
+                    navigate('/otp', { state: { email } });
+                } else if (response.status >= 400 && response.status < 600) {
+                    toastInfo('error', capitalizeFirstLetter(response.data));
                 }
             } catch (error) {
-                alert('Failed to send reset email: ');
+                if (axios.isAxiosError(error) && error.response) {
+                    toastInfo('error', capitalizeFirstLetter(error.response.data));
+                } else {
+                    toastInfo('error', 'An unexpected error occurred');
+                }
             }
         } else {
-            alert('Please provide an email address.');
+            toastInfo('error', 'Please provide an email address.');
         }
     };
-    
-    
+
+    const toastInfo = (toastMethod: string, messageToShow: string) => {
+        const method = toastMethod === 'error' ? toast.error : toast.success;
+
+        method(messageToShow, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    };
+
+    function capitalizeFirstLetter(string: string): string {
+        if (!string) return '';
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
 
     return (
         <Container component="main" maxWidth="xs">
-            <CssBaseline/>
+            <CssBaseline />
             <Box
                 sx={{
                     marginTop: 8,
@@ -45,6 +71,18 @@ export default function ForgotPassword() {
                     alignItems: 'center',
                 }}
             >
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                />
                 <div>
                     <img src={logo} alt="Logo" style={{ width: 100, height: 100, borderRadius: '50%' }} />
                 </div>
@@ -71,7 +109,7 @@ export default function ForgotPassword() {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                     >
-                        Proceed 
+                        Proceed
                     </Button>
                 </Box>
             </Box>

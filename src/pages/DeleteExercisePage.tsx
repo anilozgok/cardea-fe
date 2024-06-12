@@ -28,6 +28,7 @@ import useUsers from '../hooks/useUsers';
 import useAllWorkouts from '../hooks/useAllWorkouts';
 import workoutBg from '../assets/realworkbg3.png'
 import { Workout } from '../types/Workout';
+import { ToastContainer, toast } from 'react-toastify';
 
 const DeleteWorkoutPage: React.FC = () => {
     const { user } = useUser();
@@ -50,8 +51,7 @@ const DeleteWorkoutPage: React.FC = () => {
             // Refresh the list of workouts after deletion
             setSelectedUserId(selectedUserId); // Trigger useEffect
         } catch (error) {
-            console.error('Failed to delete workout:', error);
-            setMessage('Failed to delete workout');
+            toastInfo('error', 'Failed to delete workout');
         } finally {
             setLoading(false);
         }
@@ -74,6 +74,25 @@ const DeleteWorkoutPage: React.FC = () => {
         };
     }, []);
 
+    const toastInfo = (toastMethod: string, messageToShow: string) => {
+        const method = toastMethod === 'error' ? toast.error : toast.success;
+
+        method(messageToShow, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    };
+
+    function capitalizeFirstLetter(string: string): string {
+        if (!string) return '';
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
 
     const groupedWorkouts = workouts
@@ -162,9 +181,21 @@ const DeleteWorkoutPage: React.FC = () => {
                 </Container>
             </AppBar>
 
-            <Box sx={{ mt: -50, mb: 2}}>
+            <Box sx={{ mt: -50, mb: 2 }}>
                 <Typography variant="h5" color="black">Delete Workouts</Typography>
             </Box>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
 
             <FormControl fullWidth sx={{ mb: 4 }}>
                 <InputLabel id="user-select-label">Select User</InputLabel>

@@ -63,24 +63,48 @@ export default function UpdatePassword() {
             alert("Please ensure all password requirements are met and passwords match.");
             return;
         }
-    
+
         try {
             const res = await axios.put("http://localhost:8080/api/v1/user/change-password", {
                 oldPassword: oldPassword,
                 newPassword: password
             }, { withCredentials: true });
-    
+
             if (res.status === 200) {
                 notify();
                 setTimeout(() => {
-                    navigate('/profile'); 
+                    navigate('/profile');
                 }, 2000);
+            } else if (res.status >= 400 && res.status < 600) {
+                toastInfo('error', capitalizeFirstLetter(res.data));
             }
         } catch (error) {
-            console.error('Failed to reset password', error);
+            if (axios.isAxiosError(error) && error.response) {
+                toastInfo('error', capitalizeFirstLetter(error.response.data));
+            } else {
+                toastInfo('error', 'An unexpected error occurred');
+            }
         }
     };
+    const toastInfo = (toastMethod: string, messageToShow: string) => {
+        const method = toastMethod === 'error' ? toast.error : toast.success;
 
+        method(messageToShow, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    };
+
+    function capitalizeFirstLetter(string: string): string {
+        if (!string) return '';
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
     const notify = () => toast.success('Successfully changed', {
         position: "top-right",
         autoClose: 5000,
@@ -110,6 +134,19 @@ export default function UpdatePassword() {
                         onChange={handleOldPasswordChange}
                         autoComplete="current-password"
                     />
+                    <ToastContainer
+                        position="top-right"
+                        autoClose={5000}
+                        hideProgressBar={false}
+                        newestOnTop={false}
+                        closeOnClick
+                        rtl={false}
+                        pauseOnFocusLoss
+                        draggable
+                        pauseOnHover
+                        theme="light"
+                    />
+
                     <TextField
                         margin="normal"
                         required

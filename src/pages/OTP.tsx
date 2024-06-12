@@ -1,53 +1,64 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
 
 export default function EmailVerification() {
-    const { state } = useLocation();
-    const email = state.email; 
-    const navigate = useNavigate();
+  const { state } = useLocation();
+  const email = state.email;
+  const navigate = useNavigate();
 
   const [timerCount, setTimerCount] = useState(60);
   const [OTPinput, setOTPinput] = useState(new Array(4).fill(""));
   const [disable, setDisable] = useState(true);
   const inputRefs = useRef(new Array(4).fill(React.createRef()));
 
+  const toastInfo = (toastMethod: string, messageToShow: string) => {
+    const method = toastMethod === 'error' ? toast.error : toast.success;
+
+    method(messageToShow, {
+      position: "top-right",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: "light",
+    });
+  };
+
 
   function resendOTP() {
     if (disable) return;
-    axios.post("http://localhost:8080/api/v1/auth/check-user", { email }) 
-        .then(() => {
-            alert("A new OTP has successfully been sent to your email.");
-            setDisable(true);
-            setTimerCount(60);
-        })
-        .catch(console.error);
+    axios.post("http://localhost:8080/api/v1/auth/check-user", { email })
+      .then(() => {
+        alert("A new OTP has successfully been sent to your email.");
+        setDisable(true);
+        setTimerCount(60);
+      })
+      .catch(console.error);
   }
   function verifyOTP() {
     const passcode = parseInt(OTPinput.join(""));
     axios.put("http://localhost:8080/api/v1/auth/verify-passcode", {
-        passcode: passcode
-      })
+      passcode: passcode
+    })
       .then((response) => {
         if (response.status === 200) {
-          // Navigate to the reset password page upon successful OTP verification
           navigate('/reset-password', { state: { email } });
         } else {
-          // Handle other status codes if needed
-          alert("Unexpected error occurred. Please try again.");
+          toastInfo('error', "Unexpected error occurred. Please try again.");
         }
       })
       .catch((error) => {
-        if (error.response && error.response.status === 400) {
-          alert("The code you have entered is not correct, try again or resend the link");
+        if (error.response.status >= 400 && error.response.status < 600) {
+          toastInfo('error', "The code you have entered is not correct, try again or resend the link");
         } else {
-          alert("An unexpected error occurred. Please try again later.");
+          toastInfo('error', "An unexpected error occurred. Please try again later.");
         }
       });
   }
-  
-  
-  
 
   useEffect(() => {
     let interval = setInterval(() => {
@@ -66,13 +77,13 @@ export default function EmailVerification() {
     setOTPinput(newOtpInput);
 
     if (event.target.value && index < OTPinput.length - 1) {
-        inputRefs.current[index + 1].focus();
+      inputRefs.current[index + 1].focus();
     }
   }
 
   function handleKeyDown(index: number, event: React.KeyboardEvent<HTMLInputElement>) {
     if (event.key === "Backspace" && index > 0 && OTPinput[index] === '') {
-        inputRefs.current[index - 1].focus();
+      inputRefs.current[index - 1].focus();
     }
   }
 
@@ -88,17 +99,17 @@ export default function EmailVerification() {
                 key={index}
                 maxLength={1}
                 style={{
-                  width: '60px',  
-                  height: '60px',  
+                  width: '60px',
+                  height: '60px',
                   textAlign: 'center',
-                  fontSize: '22px',  
+                  fontSize: '22px',
                   borderRadius: '10px',
                   border: '1px solid #CCC',
                   outline: 'none',
                   boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)',
                   backgroundColor: 'white',
-                  color : 'black',
-                  margin :'5px' 
+                  color: 'black',
+                  margin: '5px'
                 }}
                 type="text"
                 value={value}
@@ -108,6 +119,19 @@ export default function EmailVerification() {
               />
             ))}
           </div>
+
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
           <button
             type="button"
             onClick={verifyOTP}
