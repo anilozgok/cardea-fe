@@ -1,6 +1,5 @@
-import React from 'react';
 import { AppBar, Toolbar, Typography, Box, Link, Avatar } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { To, useNavigate } from 'react-router-dom';
 import logo from '../assets/CardeaLogo.png';
 import { useUser } from '../context/UserContext';
 
@@ -8,7 +7,7 @@ const NavigationBar = () => {
     const navigate = useNavigate();
     const { user } = useUser();
 
-    const navigateTo = (url) => {
+    const navigateTo = (url: To) => {
         navigate(url);
     };
 

@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import logo from '../assets/CardeaLogo.png';
-import { Container, Grid, TextField, Typography, Avatar, Box, MenuItem, AppBar, Button, Toolbar } from '@mui/material';
+import {
+  Container, Grid, TextField, Typography, Avatar, Box, MenuItem, AppBar, Button, Toolbar
+} from '@mui/material';
 import axios from 'axios';
 import { useUser } from '../context/UserContext';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
-import profileBg from '../assets/profileBg.png'
+import profileBg from '../assets/profileBg.png';
 import { ToastContainer, toast } from 'react-toastify';
 
 interface UserProfileProps {
@@ -27,7 +29,7 @@ interface UserProfileProps {
 
 export default function UserProfiles() {
   const [editMode, setEditMode] = useState<boolean>(false);
-  const { user } = useUser();
+  const { user } = useUser() as { user: { email: string, role: string } };
   const [profileData, setProfileData] = useState<UserProfileProps>({
     firstName: '',
     lastName: '',
@@ -45,8 +47,9 @@ export default function UserProfiles() {
     zipCode: ''
   });
   const [originalProfileData, setOriginalProfileData] = useState<UserProfileProps>(profileData);
+  const [isProfileNew, setIsProfileNew] = useState<boolean>(true);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.body.style.backgroundImage = `url(${profileBg})`;
@@ -89,56 +92,37 @@ export default function UserProfiles() {
       console.error('Error logging out:', error);
     }
   };
+
   const handleNavigate = (operation: string) => {
-    var url = '';
     const isCoach = user.role === 'coach';
+    let url = '';
     switch (operation) {
       case 'workout':
-        url = isCoach ? '/exercise' : '/workouts'
+        url = isCoach ? '/exercise' : '/workouts';
         break;
       case 'diet':
-        url = isCoach ? '/diet-plan' : '/diet-plan-user'
+        url = isCoach ? '/diet-plan' : '/diet-plan-user';
         break;
       case 'photo':
-        url = isCoach ? '/athlete-photos' : '/upload-photos'
+        url = isCoach ? '/athlete-photos' : '/upload-photos';
         break;
+      default:
+        url = '/';
     }
-    navigate(url)
-  }
-
-
+    navigate(url);
+  };
 
   const handleSave = () => {
     const apiUrl = 'http://localhost:8080/api/v1/profile';
     const method = isProfileNew ? axios.post : axios.put;
 
     const inputElement = document.getElementById('profile-picture-input') as HTMLInputElement;
-    const file = inputElement && inputElement.files[0];
-    const formData = new FormData();
-
-    const updateProfileData = () => {
-      const updatedProfileData = {
-        ...profileData,
-        profilePicture: profileData.profilePicture
-      };
-
-      method(apiUrl, updatedProfileData, { withCredentials: true })
-        .then(response => {
-          console.log('Profile saved:', response.data);
-          setIsProfileNew(false);
-          setEditMode(false);
-          notify();
-        })
-        .catch(error => {
-          console.error('Error during profile update:', error);
-          notifyError();
-        });
-    };
-
-    if (file) {
+    if (inputElement && inputElement.files && inputElement.files[0]) {
+      const file = inputElement.files[0];
+      const formData = new FormData();
       formData.append('image', file, file.name);
-      const apiPictureUrl = 'http://localhost:8080/api/v1/profile/upload-photo?is_pp=true';
 
+      const apiPictureUrl = 'http://localhost:8080/api/v1/profile/upload-photo?is_pp=true';
       fetch(apiPictureUrl, {
         method: 'POST',
         body: formData,
@@ -167,20 +151,28 @@ export default function UserProfiles() {
     } else {
       updateProfileData();
     }
+
+    function updateProfileData() {
+      const updatedProfileData = {
+        ...profileData,
+        profilePicture: profileData.profilePicture
+      };
+
+      method(apiUrl, updatedProfileData, { withCredentials: true })
+        .then(response => {
+          console.log('Profile saved:', response.data);
+          setIsProfileNew(false);
+          setEditMode(false);
+          notify();
+        })
+        .catch(error => {
+          console.error('Error during profile update:', error);
+          notifyError();
+        });
+    }
   };
-  const [isProfileNew, setIsProfileNew] = useState<boolean>(true);
-  const [, setOpen] = useState(false);
-  const notify = () => toast.success('Succesfully Saved', {
-    position: "top-right",
-    autoClose: 5000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: true,
-    draggable: true,
-    progress: undefined,
-    theme: "light",
-  });
-  const notifyError = () => toast.error('Error while saving changes', {
+
+  const notify = () => toast.success('Successfully Saved', {
     position: "top-right",
     autoClose: 5000,
     hideProgressBar: false,
@@ -191,6 +183,16 @@ export default function UserProfiles() {
     theme: "light",
   });
 
+  const notifyError = () => toast.error('Error while saving changes', {
+    position: "top-right",
+    autoClose: 5000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "light",
+  });
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -253,7 +255,6 @@ export default function UserProfiles() {
                   <MenuItem onClick={() => handleNavigate('diet')}>
                     <Typography variant="body1" color="text.primary">Diet Plans</Typography>
                   </MenuItem>
-
                   <MenuItem onClick={() => handleNavigate('photo')}>
                     <Typography variant="body1" color="text.primary">Body Transformation</Typography>
                   </MenuItem>
@@ -289,7 +290,6 @@ export default function UserProfiles() {
             </Toolbar>
           </Container>
         </AppBar>
-
       </div>
 
       <Container id="generalInfo">
@@ -319,7 +319,7 @@ export default function UserProfiles() {
                   name: 'profilePicture',
                   value: e.target.files ? URL.createObjectURL(e.target.files[0]) : profileData.profilePicture
                 }
-              })}
+              } as React.ChangeEvent<HTMLInputElement>)}
             />
             <label htmlFor="profile-picture-input">
               <Avatar
@@ -538,7 +538,6 @@ export default function UserProfiles() {
         </Box>
         <Box sx={{ borderBottom: '1px solid #ccc', mb: 3 }} />
       </Container>
-
     </>
   );
 }

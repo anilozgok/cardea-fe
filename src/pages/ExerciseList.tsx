@@ -22,12 +22,35 @@ import useUsers from '../hooks/useUsers';
 import logo from '../assets/CardeaLogo.png';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import workoutBg from '../assets/realworkbg3.png'
+import workoutBg from '../assets/realworkbg3.png';
+
+interface Exercise {
+    exerciseId?: string | null;
+    exerciseName?: string;
+    bodyPart?: string;
+    target?: string;
+    equipment?: string;
+    gifUrl?: string;
+}
+
+interface User {
+    userId: string;
+    firstName: string;
+    lastName: string;
+}
+
+interface SelectedExercise {
+    id: string;
+    reps: number;
+    sets: number;
+    description: string;
+}
+
 const ExerciseList: React.FC = () => {
-    const { exercises } = useExercises();
-    const { user } = useUser();
-    const { users, loading, error } = useUsers();
-    const [selectedExercises, setSelectedExercises] = useState<{ id: string, reps: number, sets: number, description: string }[]>([]);
+    const { exercises } = useExercises() as { exercises: Exercise[] };
+    const { user } = useUser() as { user: { role: string; name: string } };
+    const { users, loading, error } = useUsers() as { users: User[]; loading: boolean; error: string };
+    const [selectedExercises, setSelectedExercises] = useState<SelectedExercise[]>([]);
     const [workoutName, setWorkoutName] = useState('');
     const [selectedUserId, setSelectedUserId] = useState('');
     const [showWorkoutForm, setShowWorkoutForm] = useState(false);
@@ -47,14 +70,12 @@ const ExerciseList: React.FC = () => {
     };
 
     useEffect(() => {
-        // When the component mounts
         document.body.style.backgroundImage = `url(${workoutBg})`;
-        document.body.style.backgroundSize = 'cover'; // Cover the viewport
-        document.body.style.backgroundPosition = 'center'; // Center the background image
-        document.body.style.backgroundAttachment = 'fixed'; // Make background fixed during scrolling
-        document.body.style.backgroundRepeat = 'no-repeat'; // Do not repeat the image
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundAttachment = 'fixed';
+        document.body.style.backgroundRepeat = 'no-repeat';
 
-        // When the component unmounts
         return () => {
             document.body.style.backgroundImage = '';
             document.body.style.backgroundSize = '';
@@ -63,7 +84,6 @@ const ExerciseList: React.FC = () => {
             document.body.style.backgroundRepeat = '';
         };
     }, []);
-
 
     const handleExerciseChange = (id: string, field: string, value: string | number) => {
         setSelectedExercises(prevSelected => prevSelected.map(exercise =>
@@ -75,7 +95,7 @@ const ExerciseList: React.FC = () => {
         if (workoutName && selectedUserId && selectedExercises.length > 0) {
             try {
                 for (const { id, reps, sets, description } of selectedExercises) {
-                    const exercise = exercises.find(ex => ex.exerciseId.toString() === id);
+                    const exercise = exercises.find(ex => ex.exerciseId?.toString() === id);
                     const workout = {
                         name: workoutName,
                         userId: parseInt(selectedUserId, 10),
@@ -107,12 +127,11 @@ const ExerciseList: React.FC = () => {
 
     return (
         <Container sx={{
-            // backgroundImage: `url(${workoutBg})`,
-            backgroundSize: 'cover', // Cover the entire Container
-            backgroundPosition: 'center', // Center the background image
-            minHeight: '150vh', // Optional: Set a minimum height for the container
-            width: '100%', // Optional: Set the width if necessary
-            padding: '20px' // Optional: Add some padding inside the container
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            minHeight: '150vh',
+            width: '100%',
+            padding: '20px'
         }}>
             <AppBar
                 position="fixed"
@@ -199,29 +218,31 @@ const ExerciseList: React.FC = () => {
             />
             <Grid container spacing={4}>
                 {filteredExercises.map((exercise) => (
-                    <Grid item xs={12} sm={6} md={4} key={exercise.exerciseId}>
+                    <Grid item xs={12} sm={6} md={4} key={exercise.exerciseId || 'unknown'}>
                         <Card sx={{
-                            backgroundColor: 'rgba(255, 255, 255, 0.7)', // Adjust transparency with the last value (0 to 1)
-                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)', // Optional: adds shadow for better distinction
-                            border: '1px solid rgba(0, 0, 0, 0.1)' // Optional: adds a subtle border
+                            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.4)',
+                            border: '1px solid rgba(0, 0, 0, 0.1)'
                         }}>
                             <Box sx={{ height: '140px', position: 'relative', overflow: 'hidden' }}>
-                                <iframe
-                                    src={exercise.gifUrl}
-                                    width="100%"
-                                    height="100%"
-                                    frameBorder="0"
-                                    allowFullScreen
-                                    title={exercise.exerciseName}
-                                    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                                ></iframe>
+                                {exercise.gifUrl && (
+                                    <iframe
+                                        src={exercise.gifUrl}
+                                        width="100%"
+                                        height="100%"
+                                        frameBorder="0"
+                                        allowFullScreen
+                                        title={exercise.exerciseName || 'Exercise'}
+                                        style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                                    ></iframe>
+                                )}
                             </Box>
                             <CardContent>
                                 <FormControlLabel
                                     control={
                                         <Checkbox
-                                            checked={selectedExercises.some(ex => ex.id === exercise.exerciseId.toString())}
-                                            onChange={() => handleExerciseSelect(exercise.exerciseId.toString())}
+                                            checked={selectedExercises.some(ex => ex.id === exercise.exerciseId?.toString())}
+                                            onChange={() => handleExerciseSelect(exercise.exerciseId?.toString() || '')}
                                             color="primary"
                                             disabled={user.role !== 'coach'}
                                         />
@@ -247,23 +268,23 @@ const ExerciseList: React.FC = () => {
                                             size="small"
                                             type="number"
                                             label="Reps"
-                                            value={selectedExercises.find(ex => ex.id === exercise.exerciseId.toString())?.reps || 10}
-                                            onChange={(e) => handleExerciseChange(exercise.exerciseId.toString(), 'reps', parseInt(e.target.value))}
+                                            value={selectedExercises.find(ex => ex.id === exercise.exerciseId?.toString())?.reps || 10}
+                                            onChange={(e) => handleExerciseChange(exercise.exerciseId?.toString() || '', 'reps', parseInt(e.target.value))}
                                             sx={{ width: '100%' }}
                                         />
                                         <TextField
                                             size="small"
                                             type="number"
                                             label="Sets"
-                                            value={selectedExercises.find(ex => ex.id === exercise.exerciseId.toString())?.sets || 3}
-                                            onChange={(e) => handleExerciseChange(exercise.exerciseId.toString(), 'sets', parseInt(e.target.value))}
+                                            value={selectedExercises.find(ex => ex.id === exercise.exerciseId?.toString())?.sets || 3}
+                                            onChange={(e) => handleExerciseChange(exercise.exerciseId?.toString() || '', 'sets', parseInt(e.target.value))}
                                             sx={{ width: '100%' }}
                                         />
                                         <TextField
                                             size="small"
                                             label="Description"
-                                            value={selectedExercises.find(ex => ex.id === exercise.exerciseId.toString())?.description || ''}
-                                            onChange={(e) => handleExerciseChange(exercise.exerciseId.toString(), 'description', e.target.value)}
+                                            value={selectedExercises.find(ex => ex.id === exercise.exerciseId?.toString())?.description || ''}
+                                            onChange={(e) => handleExerciseChange(exercise.exerciseId?.toString() || '', 'description', e.target.value)}
                                             sx={{ width: '100%' }}
                                         />
                                     </Stack>

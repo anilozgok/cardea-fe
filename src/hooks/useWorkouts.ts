@@ -1,4 +1,3 @@
-// src/hooks/useWorkouts.ts
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Workout } from '../types/Workout';

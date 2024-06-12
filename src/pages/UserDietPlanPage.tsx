@@ -31,8 +31,8 @@ const UserDietPlanPage: React.FC = () => {
     const [profilePicture, setProfilePicture] = useState<string>('');
 
     useEffect(() => {
-        if (user && user.userId) {
-            fetchDietPlans(user.userId);
+        if (user && user.id) {
+            fetchDietPlans(user.id);
         }
     }, [user, fetchDietPlans]);
 

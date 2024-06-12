@@ -25,7 +25,7 @@ const validatePassword = (password: string): PasswordValidation => {
 
 export default function UpdatePassword() {
     const navigate = useNavigate();
-    const { state } = useLocation();
+    useLocation();
     const [oldPassword, setOldPassword] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [confirmPassword, setConfirmPassword] = useState<string>('');

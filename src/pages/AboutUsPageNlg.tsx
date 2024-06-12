@@ -7,14 +7,11 @@ import {
     Card,
     CardContent,
     Avatar,
-    Button, AppBar, Toolbar, MenuItem,
+    Button, AppBar, Toolbar, 
 } from '@mui/material';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import logo from "../assets/CardeaLogo.png";
-import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import {useNavigate} from "react-router-dom";
-import {useUser} from "../context/UserContext.tsx";
-import axios from "axios";
 import logoName from "../assets/cardeaName.png";
 import omer from "../assets/omer.jpg";
 import sadik from "../assets/mert.jpg";
@@ -24,15 +21,6 @@ import anil from "../assets/anil.jpg";
 
 const AboutUsPageNlg: React.FC = () => {
     const navigate = useNavigate();
-    const { user } = useUser();
-    const handleLogout = async () => {
-        try {
-            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
-            navigate('/');
-        } catch (error) {
-            console.error('Error logging out:', error);
-        }
-    };
     return (
         <Container>
             <AppBar

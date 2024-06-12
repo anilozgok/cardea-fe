@@ -27,6 +27,7 @@ import { useUser } from '../context/UserContext';
 import useUsers from '../hooks/useUsers';
 import useAllWorkouts from '../hooks/useAllWorkouts';
 import workoutBg from '../assets/realworkbg3.png'
+import { Workout } from '../types/Workout';
 
 const DeleteWorkoutPage: React.FC = () => {
     const { user } = useUser();
@@ -73,16 +74,8 @@ const DeleteWorkoutPage: React.FC = () => {
         };
     }, []);
 
-    const handleLogout = async () => {
-        try {
-            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
-            navigate('/'); // Redirect to the landing page after logout
-        } catch (error) {
-            console.error('Error logging out:', error);
-        }
-    };
 
-    // Group workouts by their name and filter based on selected user
+
     const groupedWorkouts = workouts
         .filter(workout => workout.userId === parseInt(selectedUserId, 10))
         .reduce((acc, workout) => {
@@ -211,7 +204,7 @@ const DeleteWorkoutPage: React.FC = () => {
                                     <ul>
                                         {groupedWorkouts[workoutName].map((workout, index) => (
                                             workout.exercises?.map((exercise, idx) => (
-                                                <li key={`${index}-${idx}`}>{exercise.exerciseName}</li>
+                                                <li key={`${index}-${idx}`}>{exercise.name}</li>
                                             ))
                                         ))}
                                     </ul>

@@ -17,7 +17,6 @@ import logo from "../assets/CardeaLogo.png";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
-import {useUser} from "../context/UserContext.tsx";
 
 interface Recipe {
     ID: string;
@@ -89,7 +88,6 @@ const RecipesPage: React.FC = () => {
     const filteredRecipes = recipes.filter(recipe =>
         recipe.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
-    const { user } = useUser();
 
     const recipesToShow = searchTerm ? filteredRecipes : initialRecipes;
     const handleLogout = async () => {

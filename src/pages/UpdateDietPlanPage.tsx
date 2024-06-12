@@ -31,11 +31,27 @@ import { useUser } from '../context/UserContext';
 import useUsers from '../hooks/useUsers';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
+interface DietPlan {
+    ID: number;
+    name: string;
+    meals: Meal[];
+}
+
+interface Meal {
+    ID: number;
+    name: string;
+    description: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+}
+
 const UpdateDeleteDietPlanPage: React.FC = () => {
-    const { user } = useUser();
-    const { users, loading: usersLoading, error: usersError } = useUsers();
+    const { user } = useUser() as { user: { role: string; name: string } };
+    const { users, loading: usersLoading, error: usersError } = useUsers() as { users: { userId: string, firstName: string, lastName: string }[]; loading: boolean; error: string };
     const [selectedUserId, setSelectedUserId] = useState<string>('');
-    const [dietPlans, setDietPlans] = useState([]);
+    const [dietPlans, setDietPlans] = useState<DietPlan[]>([]);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
 
