@@ -238,7 +238,7 @@ export default function CoachPhotoView() {
                                     <span style={{ whiteSpace: 'nowrap', color: 'black' }}>{date}</span>
                                     <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginLeft: '40px' }}></div>
                                 </div>
-                                <Grid container spacing={3}>
+                                <Grid container spacing={3}  minWidth={900}>
                                     {photosOnDate.map((photo) => (
                                         <Grid item xs={12} sm={6} md={4} key={photo.photoId} style={{
                                             padding: '8px',
