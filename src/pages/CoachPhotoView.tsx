@@ -19,16 +19,18 @@ type PhotoResponse = {
 };
 
 export default function SignIn() {
-    const [imageDimensions, setImageDimensions] = useState({ width: 'auto', height: 'auto' });
-    const user = useUser();
+    const [imageDimensions] = useState({ width: 'auto', height: 'auto' });
+    const { user } = useUser(); // Destructure user from useUser
     const navigate = useNavigate();
     const [selectedUserId, setSelectedUserId] = useState<string>('');
     const [openImageViewDialog, setOpenImageViewDialog] = useState(false);
-    const [selectedImage, setSelectedImage] = useState('');
-    const { users, loading: usersLoading, error: usersError } = useUsers();
+    const [selectedImage, setSelectedImage] = useState<string>(''); // Ensure type is string
+    const { users } = useUsers();
     const [photos, setPhotos] = useState<{ [key: string]: PhotoResponse[] }>({});
     const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
-    const [selectedPhotoUrl, setSelectedPhotoUrl] = useState('');
+    const [selectedPhotoUrl, setSelectedPhotoUrl] = useState<string>(''); // Ensure type is string
+    const [toast, setToast] = useState({ open: false, message: '', severity: '' }); // Define setToast
+
     const handleLogout = async () => {
         try {
             await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
@@ -38,7 +40,6 @@ export default function SignIn() {
         }
     };
 
-
     useEffect(() => {
         // When the component mounts
         document.body.style.backgroundImage = `url(${bgPicture})`;
@@ -46,7 +47,7 @@ export default function SignIn() {
         document.body.style.backgroundPosition = 'center'; // Center the background image
         document.body.style.backgroundAttachment = 'fixed'; // Make background fixed during scrolling
         document.body.style.backgroundRepeat = 'no-repeat'; // Do not repeat the image
-    
+
         // When the component unmounts
         return () => {
             document.body.style.backgroundImage = '';
@@ -56,9 +57,8 @@ export default function SignIn() {
             document.body.style.backgroundRepeat = '';
         };
     }, []);
-    
 
-    const handleOpenPhoto = async (photoId, photoUrl) => {
+    const handleOpenPhoto = async (photoId: number, photoUrl: string) => {
         try {
             setSelectedPhotoId(photoId); // Store the photo ID
             setSelectedPhotoUrl(photoUrl); // Also store the photo URL for delete operation
@@ -67,7 +67,7 @@ export default function SignIn() {
             const reader = new FileReader();
             reader.readAsDataURL(blob);
             reader.onloadend = () => {
-                const base64data = reader.result;
+                const base64data = reader.result as string; // Ensure result is string
                 setSelectedImage(base64data);
                 setOpenImageViewDialog(true);
             }
@@ -92,6 +92,7 @@ export default function SignIn() {
             console.error('Error retrieving photos:', error);
         }
     };
+
     const handleClosePhoto = () => {
         setOpenImageViewDialog(false);
     };
@@ -194,7 +195,7 @@ export default function SignIn() {
                             labelId="user-select-label"
                             value={selectedUserId}
                             label="Select User"
-                            onChange={(e) => setSelectedUserId(e.target.value)}
+                            onChange={(e) => setSelectedUserId(e.target.value as string)}
                             sx={{ flexGrow: 1, mr: 2, minWidth: '190px' }}
                         >
                             {users.map(user => (
@@ -237,9 +238,9 @@ export default function SignIn() {
                                             objectFit: 'cover',
                                             transition: 'transform 0.3s ease'
                                         }}
-                                            onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
-                                            onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-                                            onClick={() => handleOpenPhoto(photo.photoId, photo.photoURL)}
+                                             onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                                             onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                                             onClick={() => handleOpenPhoto(photo.photoId, photo.photoURL)}
                                         />
                                     </Grid>
                                 ))}
