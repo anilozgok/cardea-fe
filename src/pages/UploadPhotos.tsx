@@ -15,6 +15,7 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import axios from 'axios';
 import DeleteIcon from '@mui/icons-material/Delete';
 import bgPicture from '../assets/uploadBg2.png';
+import cryingOnion from '../assets/noPhoto.png';
 
 type PhotoResponse = {
     photoId: number;
@@ -39,6 +40,7 @@ const PhotoUpload: React.FC = () => {
     const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
     const [selectedPhotoUrl, setSelectedPhotoUrl] = useState('');
     const [profilePicture, setProfilePicture] = useState<string>('');
+    const [retrieved, setRetrieved] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchProfilePicture = async () => {
@@ -144,7 +146,6 @@ const PhotoUpload: React.FC = () => {
         setOpenUploadDialog(false);  // Close the upload dialog
     };
 
-
     const handleOpenPhoto = async (photoId: number, photoUrl: string) => {
         try {
             setSelectedPhotoId(photoId); // Store the photo ID
@@ -180,7 +181,7 @@ const PhotoUpload: React.FC = () => {
     };
 
     const handleDeletePhoto = async () => {
-        if (!selectedPhotoId || !selectedPhotoUrl) return; 
+        if (!selectedPhotoId || !selectedPhotoUrl) return;
 
         try {
             const response = await axios.delete('http://localhost:8080/api/v1/user/photo', {
@@ -196,21 +197,27 @@ const PhotoUpload: React.FC = () => {
                     const updatedPhotos = { ...prevPhotos };
                     for (const date in updatedPhotos) {
                         updatedPhotos[date] = updatedPhotos[date].filter(photo => photo.photoId !== selectedPhotoId);
+                        if (updatedPhotos[date].length === 0) {
+                            delete updatedPhotos[date]; // Remove the date if there are no photos left
+                        }
                     }
                     return updatedPhotos;
-                }); // Update the photos state
-                setOpenImageViewDialog(false); // Close the dialog
+                });
+                setOpenImageViewDialog(false);
                 setToast({ open: true, message: 'Photo deleted successfully!', severity: 'success' });
             } else {
                 throw new Error('Failed to delete photo');
             }
         } catch (error) {
             setToast({ open: true, message: `Photo deleted successfully!`, severity: 'success' });
-            setOpenImageViewDialog(false); 
+            setOpenImageViewDialog(false);
             setPhotos((prevPhotos) => {
                 const updatedPhotos = { ...prevPhotos };
                 for (const date in updatedPhotos) {
                     updatedPhotos[date] = updatedPhotos[date].filter(photo => photo.photoId !== selectedPhotoId);
+                    if (updatedPhotos[date].length === 0) {
+                        delete updatedPhotos[date]; // Remove the date if there are no photos left
+                    }
                 }
                 return updatedPhotos;
             });
@@ -248,43 +255,56 @@ const PhotoUpload: React.FC = () => {
             </AppBar>
 
             <Box sx={{ mt: 10, p: 2 }}>
-                {Object.entries(photos).map(([date, photosOnDate]) => (
-                    <div key={date} style={{ marginBottom: '20px' }}>
-                        <div style={{ display: 'flex', alignItems: 'center', margin: '30px 0', position: 'relative' }}>
-                            <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginRight: '40px' }}></div>
-                            <span style={{ whiteSpace: 'nowrap', color: 'black' }}>{date}</span>
-                            <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginLeft: '40px' }}></div>
+                {Object.keys(photos).length === 0 ? (
+                    <Box textAlign="center">
+                        <Typography variant="h6" color="text.secondary" gutterBottom>
+                            You have no uploaded photos.
+                        </Typography>
+                        <Typography variant="body1" color="text.secondary" gutterBottom>
+                            You can use the "Upload Photos" button in the top bar to add your photos.
+                        </Typography>
+                        <img src={cryingOnion} alt="No Photos" style={{ maxWidth: '300px', margin: 'auto' }} />
+                    </Box>
+                ) : (
+                    Object.entries(photos).map(([date, photosOnDate]) => (
+                        <div key={date} style={{ marginBottom: '20px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', margin: '30px 0', position: 'relative' }}>
+                                <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginRight: '40px' }}></div>
+                                <span style={{ whiteSpace: 'nowrap', color: 'black' }}>{date}</span>
+                                <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginLeft: '40px' }}></div>
+                            </div>
+                            <Grid container spacing={3} minWidth={900}>
+                                {photosOnDate.map((photo) => (
+                                    <Grid item xs={12} sm={6} md={4} key={photo.photoId} style={{
+                                        padding: '8px',
+                                        height: '350px', // Increased height for better visibility
+                                        width: '300px', // Fixed width for better visibility
+                                        overflow: 'hidden',
+                                        position: 'relative',
+                                        display: 'flex',
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        border: '1px solid #ddd',
+                                        boxShadow: '0px 2px 10px rgba(0,0,0,0.1)',
+                                        borderRadius: '8px',
+                                        cursor: 'pointer',
+                                    }}>
+                                        <img src={photo.photoURL} alt={`Photo ${photo.photoId}`} style={{
+                                            width: '100%',
+                                            height: '100%',
+                                            objectFit: 'cover',
+                                            transition: 'transform 0.3s ease'
+                                        }}
+                                            onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                                            onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                                            onClick={() => handleOpenPhoto(photo.photoId, photo.photoURL)}
+                                        />
+                                    </Grid>
+                                ))}
+                            </Grid>
                         </div>
-                        <Grid container spacing={3}>
-                            {photosOnDate.map((photo) => (
-                                <Grid item xs={12} sm={6} md={4} key={photo.photoId} style={{
-                                    padding: '8px',
-                                    height: '250px',
-                                    overflow: 'hidden',
-                                    position: 'relative',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    border: '1px solid #ddd',
-                                    boxShadow: '0px 2px 10px rgba(0,0,0,0.1)',
-                                    borderRadius: '8px',
-                                    cursor: 'pointer',
-                                }}>
-                                    <img src={photo.photoURL} alt={`Photo ${photo.photoId}`} style={{
-                                        width: '100%',
-                                        height: '100%',
-                                        objectFit: 'cover',
-                                        transition: 'transform 0.3s ease'
-                                    }}
-                                        onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
-                                        onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-                                        onClick={() => handleOpenPhoto(photo.photoId, photo.photoURL)}
-                                    />
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </div>
-                ))}
+                    ))
+                )}
             </Box>
 
             <Dialog open={openUploadDialog} onClose={handleClose} aria-labelledby="form-dialog-title">

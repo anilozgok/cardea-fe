@@ -84,16 +84,16 @@ const CreateDietPlanPage: React.FC = () => {
 
     const fetchProfilePicture = async () => {
         try {
-          const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
-          if (response.data && response.data.photoURL) {
-            setProfilePicture(response.data.photoURL);
-          }
+            const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+            if (response.data && response.data.photoURL) {
+                setProfilePicture(response.data.photoURL);
+            }
         } catch (error) {
-          console.error('Failed to fetch profile picture:', error);
+            console.error('Failed to fetch profile picture:', error);
         }
-      };
-  
-      fetchProfilePicture();
+    };
+
+    fetchProfilePicture();
 
     const handleLogout = async () => {
         try {
@@ -216,9 +216,14 @@ const CreateDietPlanPage: React.FC = () => {
                                     Workouts
                                 </Typography>
                             </MenuItem>
+                            <MenuItem onClick={() => navigate('/athlete-photos')} sx={{ py: '10px', px: '36px' }}>
+                                <Typography variant="body1" color="text.primary">
+                                    Body Transformations
+                                </Typography>
+                            </MenuItem>
                             <MenuItem onClick={() => navigate('/diet-plan-update')} sx={{ py: '10px', px: '36px' }}>
                                 <Typography variant="body1" color="text.primary">
-                                    Update Diet Plan
+                                    Delete Diet Plan
                                 </Typography>
                             </MenuItem>
 

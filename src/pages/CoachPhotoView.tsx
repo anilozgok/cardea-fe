@@ -11,6 +11,7 @@ import { useState, useEffect } from 'react';
 import useUsers from '../hooks/useUsersOfCoach.ts';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import bgPicture from '../assets/uploadBg.png';
+import cryingOnion from '../assets/noPhoto.png';
 
 type PhotoResponse = {
     photoId: number;
@@ -18,7 +19,7 @@ type PhotoResponse = {
     createdAt: string; // Ensure this exists with full timestamp
 };
 
-export default function SignIn() {
+export default function CoachPhotoView() {
     const [imageDimensions, setImageDimensions] = useState({ width: 'auto', height: 'auto' });
     const user = useUser();
     const navigate = useNavigate();
@@ -30,6 +31,8 @@ export default function SignIn() {
     const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
     const [selectedPhotoUrl, setSelectedPhotoUrl] = useState('');
     const [profilePicture, setProfilePicture] = useState<string>('');
+    const [retrieved, setRetrieved] = useState<boolean>(false);
+
     const handleLogout = async () => {
         try {
             await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
@@ -38,7 +41,6 @@ export default function SignIn() {
             console.error('Error logging out:', error);
         }
     };
-
 
     useEffect(() => {
         const fetchProfilePicture = async () => {
@@ -69,7 +71,6 @@ export default function SignIn() {
         };
     }, []);
     
-
     const handleOpenPhoto = async (photoId, photoUrl) => {
         try {
             setSelectedPhotoId(photoId); // Store the photo ID
@@ -85,11 +86,11 @@ export default function SignIn() {
             }
         } catch (error) {
             console.error('Failed to load photo:', error);
-            setToast({ open: true, message: 'Failed to load photo', severity: 'error' });
         }
     };
 
     const handleGetPhotos = async () => {
+        setRetrieved(true);
         if (!selectedUserId) {
             console.error('Please select a user first.');
             return;
@@ -104,6 +105,7 @@ export default function SignIn() {
             console.error('Error retrieving photos:', error);
         }
     };
+
     const handleClosePhoto = () => {
         setOpenImageViewDialog(false);
     };
@@ -180,11 +182,7 @@ export default function SignIn() {
                                     Workouts
                                 </Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => navigate('/diet-plan-update')} sx={{ py: '10px', px: '36px' }}>
-                                <Typography variant="body1" color="text.primary">
-                                    Update Diet Plan
-                                </Typography>
-                            </MenuItem>
+                            
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
@@ -206,7 +204,11 @@ export default function SignIn() {
                             labelId="user-select-label"
                             value={selectedUserId}
                             label="Select User"
-                            onChange={(e) => setSelectedUserId(e.target.value)}
+                            onChange={(e) => {
+                                setSelectedUserId(e.target.value);
+                                setRetrieved(false); // Reset retrieved state when user changes
+                                setPhotos({});
+                            }}
                             sx={{ flexGrow: 1, mr: 2, minWidth: '190px' }}
                         >
                             {users.map(user => (
@@ -221,43 +223,53 @@ export default function SignIn() {
                     </Box>
                 </FormControl>
                 <Box>
-                    {Object.entries(photos).map(([date, photosOnDate]) => (
-                        <div key={date} style={{ marginBottom: '20px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', margin: '30px 0', position: 'relative' }}>
-                                <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginRight: '40px' }}></div>
-                                <span style={{ whiteSpace: 'nowrap', color: 'black' }}>{date}</span>
-                                <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginLeft: '40px' }}></div>
+                    {retrieved && Object.keys(photos).length === 0 ? (
+                        <Box>
+                            <img src={cryingOnion} alt="No Photos" />
+                            <Typography variant="h6" color="text.secondary">
+                                {`${users.find(user => user.userId === selectedUserId)?.firstName || ''} ${users.find(user => user.userId === selectedUserId)?.lastName || ''} has no photos uploded`}
+                            </Typography>
+                        </Box>
+                    ) : (
+                        Object.entries(photos).map(([date, photosOnDate]) => (
+                            <div key={date} style={{ marginBottom: '20px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', margin: '30px 0', position: 'relative' }}>
+                                    <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginRight: '40px' }}></div>
+                                    <span style={{ whiteSpace: 'nowrap', color: 'black' }}>{date}</span>
+                                    <div style={{ flexGrow: 1, height: '1px', backgroundColor: '#ddd', marginLeft: '40px' }}></div>
+                                </div>
+                                <Grid container spacing={3}>
+                                    {photosOnDate.map((photo) => (
+                                        <Grid item xs={12} sm={6} md={4} key={photo.photoId} style={{
+                                            padding: '8px',
+                                            height: '350px', // Increased height for better visibility
+                                            width: '300px', // Fixed width for better visibility
+                                            overflow: 'hidden',
+                                            position: 'relative',
+                                            display: 'flex',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                            border: '1px solid #ddd',
+                                            boxShadow: '0px 2px 10px rgba(0,0,0,0.1)',
+                                            borderRadius: '8px',
+                                            cursor: 'pointer',
+                                        }}>
+                                            <img src={photo.photoURL} alt={`Photo ${photo.photoId}`} style={{
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'cover',
+                                                transition: 'transform 0.3s ease'
+                                            }}
+                                                onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
+                                                onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
+                                                onClick={() => handleOpenPhoto(photo.photoId, photo.photoURL)}
+                                            />
+                                        </Grid>
+                                    ))}
+                                </Grid>
                             </div>
-                            <Grid container spacing={3}>
-                                {photosOnDate.map((photo) => (
-                                    <Grid item xs={12} sm={6} md={4} key={photo.photoId} style={{
-                                        padding: '8px',
-                                        height: '250px',
-                                        overflow: 'hidden',
-                                        position: 'relative',
-                                        display: 'flex',
-                                        justifyContent: 'center',
-                                        alignItems: 'center',
-                                        border: '1px solid #ddd',
-                                        boxShadow: '0px 2px 10px rgba(0,0,0,0.1)',
-                                        borderRadius: '8px',
-                                        cursor: 'pointer',
-                                    }}>
-                                        <img src={photo.photoURL} alt={`Photo ${photo.photoId}`} style={{
-                                            width: '100%',
-                                            height: '100%',
-                                            objectFit: 'cover',
-                                            transition: 'transform 0.3s ease'
-                                        }}
-                                            onMouseOver={(e) => { e.currentTarget.style.transform = 'scale(1.05)'; }}
-                                            onMouseOut={(e) => { e.currentTarget.style.transform = 'scale(1)'; }}
-                                            onClick={() => handleOpenPhoto(photo.photoId, photo.photoURL)}
-                                        />
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </div>
-                    ))}
+                        ))
+                    )}
                 </Box>
             </Box>
             <Dialog open={openImageViewDialog} onClose={handleClosePhoto} maxWidth="lg">

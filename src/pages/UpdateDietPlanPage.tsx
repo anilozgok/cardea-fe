@@ -30,6 +30,9 @@ import axios from 'axios';
 import { useUser } from '../context/UserContext';
 import useUsers from '../hooks/useUsers';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
+import { ToastContainer, toast } from 'react-toastify';
+import dietBg from '../assets/diet.png';
+import cryingOnion from '../assets/cryOnion.png';
 
 interface DietPlan {
     ID: number;
@@ -57,7 +60,21 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
     const [profilePicture, setProfilePicture] = useState<string>('');
 
     const navigate = useNavigate();
+    useEffect(() => {
+        document.body.style.backgroundImage = `url(${dietBg})`;
+        document.body.style.backgroundSize = 'cover';
+        document.body.style.backgroundPosition = 'center';
+        document.body.style.backgroundAttachment = 'fixed';
+        document.body.style.backgroundRepeat = 'no-repeat';
 
+        return () => {
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundAttachment = '';
+            document.body.style.backgroundRepeat = '';
+        };
+    }, []);
     useEffect(() => {
         if (selectedUserId) {
             fetchDietPlans(selectedUserId);
@@ -75,28 +92,51 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
             setLoading(false);
         }
     };
+
     const fetchProfilePicture = async () => {
         try {
-          const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
-          if (response.data && response.data.photoURL) {
-            setProfilePicture(response.data.photoURL);
-          }
+            const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+            if (response.data && response.data.photoURL) {
+                setProfilePicture(response.data.photoURL);
+            }
         } catch (error) {
-          console.error('Failed to fetch profile picture:', error);
+            console.error('Failed to fetch profile picture:', error);
         }
-      };
-  
-      fetchProfilePicture();
+    };
+
+    useEffect(() => {
+        fetchProfilePicture();
+    }, []);
 
     const handleDeleteDiet = async (dietId: number) => {
         try {
             await axios.delete(`http://localhost:8080/api/v1/diet?diet_id=${dietId}`, { withCredentials: true });
-            setMessage('Diet plan deleted successfully');
+            toastInfo('success', 'Diet plan deleted successfully');
             fetchDietPlans(selectedUserId);
         } catch (error) {
-            console.error('Failed to delete diet plan:', error);
+            toastInfo('error', 'Failed to delete diet plan');
         }
     };
+
+    const toastInfo = (toastMethod: string, messageToShow: string) => {
+        const method = toastMethod === 'error' ? toast.error : toast.success;
+
+        method(messageToShow, {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+        });
+    };
+
+    function capitalizeFirstLetter(string: string): string {
+        if (!string) return '';
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
     const handleLogout = async () => {
         try {
@@ -170,6 +210,11 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
                                     Workouts
                                 </Typography>
                             </MenuItem>
+                            <MenuItem onClick={() => navigate('/athlete-photos')} sx={{ py: '10px', px: '36px' }}>
+                                <Typography variant="body1" color="text.primary">
+                                    Body Transformations
+                                </Typography>
+                            </MenuItem>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
@@ -187,7 +232,7 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
                 <Typography variant="h5" color="black">Delete Diet Plans</Typography>
             </Box>
 
-            <FormControl fullWidth sx={{ mb: 4 }}>
+            <FormControl fullWidth sx={{ mb: 4, minWidth: 500 }}>
                 <InputLabel id="user-select-label">Select User</InputLabel>
                 <Select
                     labelId="user-select-label"
@@ -207,45 +252,66 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
             {message && <Typography color="success" sx={{ mt: 2 }}>{message}</Typography>}
 
             <Box sx={{ mt: 4 }}>
-                {dietPlans.map((plan) => (
-                    <Accordion key={plan.ID} sx={{ mb: 2 }}>
-                        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                            <Typography variant="h6">{plan.name}</Typography>
-                        </AccordionSummary>
-                        <AccordionDetails>
-                            <TableContainer component={Paper}>
-                                <Table>
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell>Food Name</TableCell>
-                                            <TableCell>Description</TableCell>
-                                            <TableCell align="right">Calories</TableCell>
-                                            <TableCell align="right">Protein</TableCell>
-                                            <TableCell align="right">Carbs</TableCell>
-                                            <TableCell align="right">Fat</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {plan.meals.map((meal) => (
-                                            <TableRow key={meal.ID}>
-                                                <TableCell>{meal.name}</TableCell>
-                                                <TableCell>{meal.description}</TableCell>
-                                                <TableCell align="right">{meal.calories}</TableCell>
-                                                <TableCell align="right">{meal.protein}</TableCell>
-                                                <TableCell align="right">{meal.carbs}</TableCell>
-                                                <TableCell align="right">{meal.fat}</TableCell>
+                {selectedUserId && dietPlans.length === 0 ? (
+                    <Box>
+                        <img src={cryingOnion} alt="No diet Plans" />
+                        <Typography variant="h6" color="text.secondary">
+                            {`${users.find(user => user.userId === selectedUserId)?.firstName || ''} ${users.find(user => user.userId === selectedUserId)?.lastName || ''} has no diet plans`}
+                        </Typography>
+                    </Box>
+                ) : (
+                    dietPlans.map((plan) => (
+                        <Accordion key={plan.ID} sx={{ mb: 2 }}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                <Typography variant="h6">{plan.name}</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <TableContainer component={Paper}>
+                                    <Table>
+                                        <TableHead>
+                                            <TableRow>
+                                                <TableCell>Food Name</TableCell>
+                                                <TableCell>Description</TableCell>
+                                                <TableCell align="right">Calories</TableCell>
+                                                <TableCell align="right">Protein</TableCell>
+                                                <TableCell align="right">Carbs</TableCell>
+                                                <TableCell align="right">Fat</TableCell>
                                             </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                            <Button variant="contained" color="secondary" sx={{ mt: 2 }} onClick={() => handleDeleteDiet(plan.ID)}>
-                                Delete Diet
-                            </Button>
-                        </AccordionDetails>
-                    </Accordion>
-                ))}
+                                        </TableHead>
+                                        <TableBody>
+                                            {plan.meals.map((meal) => (
+                                                <TableRow key={meal.ID}>
+                                                    <TableCell>{meal.name}</TableCell>
+                                                    <TableCell>{meal.description}</TableCell>
+                                                    <TableCell align="right">{meal.calories}</TableCell>
+                                                    <TableCell align="right">{meal.protein}</TableCell>
+                                                    <TableCell align="right">{meal.carbs}</TableCell>
+                                                    <TableCell align="right">{meal.fat}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </TableContainer>
+                                <Button variant="contained" sx={{ mt: 2 }} onClick={() => handleDeleteDiet(plan.ID)}>
+                                    Delete Diet
+                                </Button>
+                            </AccordionDetails>
+                        </Accordion>
+                    ))
+                )}
             </Box>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </Container>
     );
 };
