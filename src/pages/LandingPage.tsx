@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Typography, Grid, Button, Card, CardContent, CardMedia, AppBar, Box, Toolbar } from '@mui/material';
+import { Container, Typography, Grid, Button, Card, CardContent, CardMedia, AppBar, Box, Toolbar, Link } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import bmi from '../assets/builder.png'
 import water from '../assets/water.png'
@@ -202,6 +202,16 @@ const LandingPage: React.FC = () => {
                     </Grid>
                 </Grid>
             </section>
+            <Box sx={{ bgcolor: 'background.paper', p: 6, mt: 4, borderTop: '1px solid #e0e0e0' }}>
+                <Container maxWidth="lg">
+                    <Typography variant="body2" color="text.secondary" align="center">
+                        © {new Date().getFullYear()} Cardea Online Coaching. All rights reserved.
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" align="center">
+                        <Link color="inherit" href="/about-us">About Us</Link> 
+                    </Typography>
+                </Container>
+            </Box>
         </Container>
     );
 };

@@ -14,7 +14,9 @@ import {
     Toolbar,
     Avatar,
     Button,
-    CircularProgress, MenuItem,
+    CircularProgress, 
+    MenuItem,
+    TextField
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -23,12 +25,14 @@ import { useUser } from '../context/UserContext';
 import { useDiet, DietProvider } from '../context/DietContext';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import dietBg from '../assets/diet.png';
+import cryingOnion from '../assets/cryOnion.png';
 
 const UserDietPlanPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useUser();
     const { dietPlans, loading, error, fetchDietPlans } = useDiet();
     const [profilePicture, setProfilePicture] = useState<string>('');
+    const [searchTerm, setSearchTerm] = useState<string>('');
 
     useEffect(() => {
         if (user && user.userId) {
@@ -38,32 +42,32 @@ const UserDietPlanPage: React.FC = () => {
 
     useEffect(() => {
         const fetchProfilePicture = async () => {
-          try {
-            const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
-            if (response.data && response.data.photoURL) {
-              setProfilePicture(response.data.photoURL);
+            try {
+                const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+                if (response.data && response.data.photoURL) {
+                    setProfilePicture(response.data.photoURL);
+                }
+            } catch (error) {
+                console.error('Failed to fetch profile picture:', error);
             }
-          } catch (error) {
-            console.error('Failed to fetch profile picture:', error);
-          }
         };
-    
+
         fetchProfilePicture();
-    
+
         document.body.style.backgroundImage = `url(${dietBg})`;
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundPosition = 'center';
         document.body.style.backgroundAttachment = 'fixed';
         document.body.style.backgroundRepeat = 'no-repeat';
-    
+
         return () => {
-          document.body.style.backgroundImage = '';
-          document.body.style.backgroundSize = '';
-          document.body.style.backgroundPosition = '';
-          document.body.style.backgroundAttachment = '';
-          document.body.style.backgroundRepeat = '';
+            document.body.style.backgroundImage = '';
+            document.body.style.backgroundSize = '';
+            document.body.style.backgroundPosition = '';
+            document.body.style.backgroundAttachment = '';
+            document.body.style.backgroundRepeat = '';
         };
-      }, []);
+    }, []);
 
     const handleLogout = async () => {
         try {
@@ -73,6 +77,14 @@ const UserDietPlanPage: React.FC = () => {
             console.error('Error logging out:', error);
         }
     };
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(event.target.value);
+    };
+
+    const filteredDietPlans = dietPlans.filter(dietPlan =>
+        dietPlan.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
         <Container maxWidth="xl" sx={{ mt: 10 }}>
@@ -141,6 +153,15 @@ const UserDietPlanPage: React.FC = () => {
                                 <Typography variant="body1" color="text.primary">Body Transformation</Typography>
                             </MenuItem>
                         </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', flexGrow: 1, mr:2 }}>
+                            <TextField
+                                variant="outlined"
+                                placeholder="Search Diet Plans"
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                                sx={{ flex: 1, maxWidth: 300 }}
+                            />
+                        </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                         </Box>
@@ -152,16 +173,18 @@ const UserDietPlanPage: React.FC = () => {
                     </Toolbar>
                 </Container>
             </AppBar>
-            <Box sx={{ mt: 10, mb: 2 }}>
-                <Typography variant="h5" color="black">Diet Plans</Typography>
-            </Box>
-
             {loading ? (
                 <CircularProgress />
             ) : error ? (
                 <Typography color="error">{error}</Typography>
+            ) : filteredDietPlans.length === 0 ? (
+                <Box sx={{ textAlign: 'center', mt: 5 }}>
+                    <img src={cryingOnion} alt="Crying Onion" />
+                    <Typography variant="h6" color="black">No diet plans assigned for now.</Typography>
+                    <Typography variant="h6" color="black">If you think there is a mistake, you can contact your coach.</Typography>
+                </Box>
             ) : (
-                dietPlans.map((dietPlan) => (
+                filteredDietPlans.map((dietPlan) => (
                     <Box key={dietPlan.id} sx={{ mb: 4 }}>
                         <Typography variant="h6" color="primary">{dietPlan.name}</Typography>
                         <TableContainer component={Paper} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
@@ -181,7 +204,6 @@ const UserDietPlanPage: React.FC = () => {
                                             </TableCell>
                                             <TableCell>{meal.description}</TableCell>
                                             <TableCell align="right">{meal.calories}</TableCell>
-                                            
                                         </TableRow>
                                     ))}
                                 </TableBody>

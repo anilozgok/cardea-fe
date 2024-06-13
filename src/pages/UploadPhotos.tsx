@@ -120,6 +120,11 @@ const PhotoUpload: React.FC = () => {
     };
 
     const handleSave = async () => {
+        console.log(files.length)
+        if (files.length === 0) {
+            setToast({ open: true, message: `Please add at least one photograph to upload zone`, severity: 'error' });
+            return;
+        }
         for (const file of files) {
             const formData = new FormData();
             formData.append('image', file);
@@ -354,7 +359,12 @@ const PhotoUpload: React.FC = () => {
                 </DialogActions>
             </Dialog>
 
-            <Snackbar open={toast.open} autoHideDuration={6000} onClose={handleToastClose}>
+            <Snackbar
+                open={toast.open}
+                autoHideDuration={6000}
+                onClose={handleToastClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'left' }}  
+            >
                 <Alert onClose={handleToastClose} severity={toast.severity} sx={{ width: '100%' }}>
                     {toast.message}
                 </Alert>

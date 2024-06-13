@@ -32,6 +32,7 @@ import MenuItem from '@mui/material/MenuItem';
 import workoutBg from '../assets/realworkbg3.png';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import axios from 'axios';
+import cryingOnion from '../assets/cryDumbell.png';
 
 interface Workout {
   workoutId: number;
@@ -219,107 +220,113 @@ const WorkoutsList: React.FC = () => {
       {loading && <CircularProgress />}
       {error && <Typography color="error">{error}</Typography>}
       {!loading && !error && filteredWorkoutNames.length === 0 && (
-        <Typography>No workouts assigned yet.</Typography>
+        <Box sx={{ textAlign: 'center', mt: 5 }}>
+          <img src={cryingOnion} alt="Crying Onion"  />
+          <Typography variant="h6">No workouts assigned for now.</Typography>
+          <Typography variant="h6">If you think there is a mistake, you can contact your coach.</Typography>
+        </Box>
       )}
-      <TableContainer component={Paper} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
-        <Table sx={{ minWidth: 1100, width: '100%' }} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
-                  Workout
-                </Typography>
-              </TableCell>
-              <TableCell align="right"></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredWorkoutNames.map((workoutName) => (
-              <React.Fragment key={workoutName}>
-                <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-                  <TableCell component="th" scope="row">
-                    <Typography variant="subtitle1" component="div">
-                      {workoutName}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <IconButton
-                      aria-label="expand row"
-                      size="small"
-                      onClick={() => handleClick(workoutName)}
-                    >
-                      {open === workoutName ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={2}>
-                    <Collapse in={open === workoutName} timeout="auto" unmountOnExit>
-                      <Box sx={{ margin: 1 }}>
-                        <Typography variant="subtitle1" gutterBottom component="div" sx={{ fontWeight: 'bold' }}>
-                          Exercises
-                        </Typography>
-                        <Table size="medium" aria-label="exercises">
-                          <TableHead>
-                            <TableRow>
-                              <TableCell sx={{ fontWeight: 'bold' }}>Exercise Name</TableCell>
-                              <TableCell align="right" sx={{ fontWeight: 'bold' }}>Description</TableCell>
-                              <TableCell align="right" sx={{ fontWeight: 'bold' }}>Area</TableCell>
-                              <TableCell align="right" sx={{ fontWeight: 'bold' }}>Reps</TableCell>
-                              <TableCell align="right" sx={{ fontWeight: 'bold' }}>Sets</TableCell>
-                              <TableCell align="right" sx={{ fontWeight: 'bold' }}>Exercise Equipment</TableCell>
-                              <TableCell align="right" sx={{ fontWeight: 'bold' }}>Exercise Video</TableCell>
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {groupedWorkouts[workoutName].map((workout) => (
-                              <TableRow key={workout.workoutId}>
-                                <TableCell component="th" scope="row">
-                                  <Typography variant="body2" component="div">
-                                    {workout.exerciseName}
-                                  </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                  <Typography variant="body2" component="div">
-                                    {workout.description}
-                                  </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                  <Typography variant="body2" component="div">
-                                    {workout.area}
-                                  </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                  <Typography variant="body2" component="div">
-                                    {workout.rep}
-                                  </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                  <Typography variant="body2" component="div">
-                                    {workout.sets}
-                                  </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                  <Typography variant="body2" component="div">
-                                    {workout.equipment}
-                                  </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                  <Button onClick={() => handleGifClick(workout.gifUrl)}>View</Button>
-                                </TableCell>
+      {!loading && !error && filteredWorkoutNames.length > 0 && (
+        <TableContainer component={Paper} sx={{ maxWidth: '100%', overflowX: 'auto' }}>
+          <Table sx={{ minWidth: 1100, width: '100%' }} aria-label="simple table">
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  <Typography variant="h6" component="div" sx={{ fontWeight: 'bold' }}>
+                    Workout
+                  </Typography>
+                </TableCell>
+                <TableCell align="right"></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredWorkoutNames.map((workoutName) => (
+                <React.Fragment key={workoutName}>
+                  <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
+                    <TableCell component="th" scope="row">
+                      <Typography variant="subtitle1" component="div">
+                        {workoutName}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      <IconButton
+                        aria-label="expand row"
+                        size="small"
+                        onClick={() => handleClick(workoutName)}
+                      >
+                        {open === workoutName ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                  <TableRow>
+                    <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={2}>
+                      <Collapse in={open === workoutName} timeout="auto" unmountOnExit>
+                        <Box sx={{ margin: 1 }}>
+                          <Typography variant="subtitle1" gutterBottom component="div" sx={{ fontWeight: 'bold' }}>
+                            Exercises
+                          </Typography>
+                          <Table size="medium" aria-label="exercises">
+                            <TableHead>
+                              <TableRow>
+                                <TableCell sx={{ fontWeight: 'bold' }}>Exercise Name</TableCell>
+                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Description</TableCell>
+                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Area</TableCell>
+                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Reps</TableCell>
+                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Sets</TableCell>
+                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Exercise Equipment</TableCell>
+                                <TableCell align="right" sx={{ fontWeight: 'bold' }}>Exercise Video</TableCell>
                               </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </Box>
-                    </Collapse>
-                  </TableCell>
-                </TableRow>
-              </React.Fragment>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+                            </TableHead>
+                            <TableBody>
+                              {groupedWorkouts[workoutName].map((workout) => (
+                                <TableRow key={workout.workoutId}>
+                                  <TableCell component="th" scope="row">
+                                    <Typography variant="body2" component="div">
+                                      {workout.exerciseName}
+                                    </Typography>
+                                  </TableCell>
+                                  <TableCell align="right">
+                                    <Typography variant="body2" component="div">
+                                      {workout.description}
+                                    </Typography>
+                                  </TableCell>
+                                  <TableCell align="right">
+                                    <Typography variant="body2" component="div">
+                                      {workout.area}
+                                    </Typography>
+                                  </TableCell>
+                                  <TableCell align="right">
+                                    <Typography variant="body2" component="div">
+                                      {workout.rep}
+                                    </Typography>
+                                  </TableCell>
+                                  <TableCell align="right">
+                                    <Typography variant="body2" component="div">
+                                      {workout.sets}
+                                    </Typography>
+                                  </TableCell>
+                                  <TableCell align="right">
+                                    <Typography variant="body2" component="div">
+                                      {workout.equipment}
+                                    </Typography>
+                                  </TableCell>
+                                  <TableCell align="right">
+                                    <Button onClick={() => handleGifClick(workout.gifUrl)}>View</Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))}
+                            </TableBody>
+                          </Table>
+                        </Box>
+                      </Collapse>
+                    </TableCell>
+                  </TableRow>
+                </React.Fragment>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
       <Dialog open={dialogOpen} onClose={handleDialogClose}>
         <DialogTitle>
           Exercise GIF
