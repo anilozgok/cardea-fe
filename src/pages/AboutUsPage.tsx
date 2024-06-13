@@ -17,11 +17,12 @@ import axios from "axios";
 import anil from "../assets/anil.jpg"
 import omer from "../assets/omer.jpg"
 import sadik from "../assets/mert.jpg"
+import { useUser } from '../context/UserContext';
 
 const AboutUsPage: React.FC = () => {
     const navigate = useNavigate();
     const [profilePicture, setProfilePicture] = useState<string>('');
-
+    const { user } = useUser();
     useEffect(() => {
         const fetchProfilePicture = async () => {
             try {
@@ -44,6 +45,24 @@ const AboutUsPage: React.FC = () => {
             console.error('Error logging out:', error);
         }
     };
+
+    const handleNavigate = (operation: string) => {
+        var url = '';
+        const isCoach = user.role === 'coach';
+        switch (operation) {
+            case 'workout':
+                url = isCoach ? '/exercise' : '/workouts'
+                break;
+            case 'diet':
+                url = isCoach ? '/diet-plan' : '/diet-plan-user'
+                break;
+            case 'photo':
+                url = isCoach ? '/athlete-photos' : '/upload-photos'
+                break;
+        }
+        navigate(url)
+    }
+
 
     return (
         <Container>
@@ -98,17 +117,17 @@ const AboutUsPage: React.FC = () => {
                                     Home
                                 </Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => navigate('/diet-plan-user')} sx={{ py: '10px', px: '36px' }}>
+                            <MenuItem onClick={() => handleNavigate('diet')} sx={{ py: '10px', px: '36px' }}>
                                 <Typography variant="body1" color="text.primary">
                                     Diet Plans
                                 </Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => navigate('/workouts')} sx={{ py: '10px', px: '36px' }}>
+                            <MenuItem onClick={() => handleNavigate('workout')} sx={{ py: '10px', px: '36px' }}>
                                 <Typography variant="body1" color="text.primary">
                                     Workouts
                                 </Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => navigate('/upload-photos')}>
+                            <MenuItem onClick={() => handleNavigate('photo')}>
                                 <Typography variant="body1" color="text.primary">Body Transformation</Typography>
                             </MenuItem>
                         </Box>

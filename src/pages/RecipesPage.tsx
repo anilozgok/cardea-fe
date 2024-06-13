@@ -17,6 +17,7 @@ import logo from "../assets/CardeaLogo.png";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import axios from "axios";
 import {useNavigate} from "react-router-dom";
+import { useUser } from '../context/UserContext';
 
 interface Recipe {
     ID: string;
@@ -32,6 +33,7 @@ const RecipesPage: React.FC = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [initialRecipes, setInitialRecipes] = useState<Recipe[]>([]);
     const [profilePicture, setProfilePicture] = useState<string>('');
+    const { user } = useUser();
 
     useEffect(() => {
         const fetchProfilePicture = async () => {
@@ -53,6 +55,24 @@ const RecipesPage: React.FC = () => {
     useEffect(() => {
         fetchRecipes();
     }, []);
+
+
+    const handleNavigate = (operation: string) => {
+        var url = '';
+        const isCoach = user.role === 'coach';
+        switch (operation) {
+            case 'workout':
+                url = isCoach ? '/exercise' : '/workouts'
+                break;
+            case 'diet':
+                url = isCoach ? '/diet-plan' : '/diet-plan-user'
+                break;
+            case 'photo':
+                url = isCoach ? '/athlete-photos' : '/upload-photos'
+                break;
+        }
+        navigate(url)
+    }
 
     const fetchRecipes = async () => {
         try {
@@ -152,12 +172,12 @@ const RecipesPage: React.FC = () => {
                                     Home
                                 </Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => navigate('/diet-plan-user')} sx={{ py: '10px', px: '36px' }}>
+                            <MenuItem onClick={() => handleNavigate('diet')} sx={{ py: '10px', px: '36px' }}>
                                 <Typography variant="body1" color="text.primary">
                                     Diet Plans
                                 </Typography>
                             </MenuItem>
-                            <MenuItem onClick={() => navigate('/workouts')} sx={{ py: '10px', px: '36px' }}>
+                            <MenuItem onClick={() => handleNavigate('workout')} sx={{ py: '10px', px: '36px' }}>
                                 <Typography variant="body1" color="text.primary">
                                     Workouts
                                 </Typography>
