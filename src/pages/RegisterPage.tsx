@@ -310,7 +310,7 @@ export default function Register() {
                                 onChange={(e) => setRole(e.target.value as 'coach' | 'user')}
                             >
                                 <option value="coach">Coach</option>
-                                <option value="user">Student</option>
+                                <option value="user">Athlete</option>
                             </TextField>
                         </Grid>
                     </Grid>
