@@ -150,24 +150,6 @@ export default function EmailVerification() {
           >
             Verify Account
           </button>
-          <div style={{ textAlign: 'center', marginTop: '10px', fontSize: '14px', color: '#999' }}>
-            <p>Didn't receive code?</p>
-            <button
-              style={{
-                color: disable ? '#CCC' : '#4A90E2',
-                cursor: disable ? 'default' : 'pointer',
-                textDecoration: disable ? 'none' : 'underline',
-                background: 'none',
-                border: 'none',
-                padding: '0',
-                fontSize: '14px'
-              }}
-              disabled={disable}
-              onClick={resendOTP}
-            >
-              {disable ? `Resend OTP in ${timerCount}s` : "Resend OTP"}
-            </button>
-          </div>
         </form>
       </div>
     </div>
