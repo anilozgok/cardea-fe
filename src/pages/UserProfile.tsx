@@ -48,6 +48,7 @@ export default function UserProfiles() {
   });
   const [originalProfileData, setOriginalProfileData] = useState<UserProfileProps>(profileData);
   const [isProfileNew, setIsProfileNew] = useState<boolean>(true);
+  const [isValid, setIsValid] = useState<boolean>(true);
 
   const navigate = useNavigate();
 
@@ -76,12 +77,55 @@ export default function UserProfiles() {
     setEditMode(!editMode);
   };
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const numValue = Number(value);
+
+    let valid = true;
+
+    if (name === 'height') {
+      if (numValue < 50 || numValue > 300 || isNaN(numValue)) {
+        valid = false;
+        toast.error('Height must be between 50 cm and 300 cm.', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+    } else if (name === 'weight') {
+      if (numValue < 10 || numValue > 500 || isNaN(numValue)) {
+        valid = false;
+        toast.error('Weight must be between 10 kg and 500 kg.', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      }
+    }
+
+    setIsValid(valid);
+    setProfileData(prevData => ({
+      ...prevData,
+      [name]: valid ? numValue : prevData[name]  // revert if not valid
+    }));
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setProfileData({
-      ...profileData,
-      [name]: name === 'height' || name === 'weight' ? Number(value) : value,
-    });
+    setProfileData(prevData => ({
+      ...prevData,
+      [name]: name === 'height' || name === 'weight' ? Number(value) : value
+    }));
   };
 
   const handleLogout = async () => {
@@ -113,6 +157,19 @@ export default function UserProfiles() {
   };
 
   const handleSave = () => {
+    if (!profileData.height || !profileData.weight || !profileData.specialization || !profileData.experience || !profileData.phone) {
+      toast.error('All required fields must be filled out.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      return;
+    }
     const apiUrl = 'http://localhost:8080/api/v1/profile';
     const method = isProfileNew ? axios.post : axios.put;
 
@@ -282,7 +339,7 @@ export default function UserProfiles() {
                 <Box sx={{ display: 'flex', alignItems: 'center', mr: 4 }}>
                   {editMode ? (
                     <>
-                      <Button variant="contained" color="primary" onClick={handleSave}>
+                      <Button variant="contained" color="primary" onClick={handleSave} disabled={!isValid || !profileData.height || !profileData.weight || !profileData.specialization || !profileData.experience || !profileData.phone}>
                         Save
                       </Button>
                       <Button variant="outlined" sx={{ ml: 2 }} onClick={handleEditModeToggle}>
@@ -377,10 +434,13 @@ export default function UserProfiles() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
+                    required
                     label="Specialization"
                     variant="outlined"
                     name="specialization"
                     value={profileData.specialization || ''}
+                    error={!profileData.specialization}
+                    helperText={!profileData.specialization ? "Specialization is required" : " "}
                     onChange={handleInputChange}
                     select
                     sx={{ mb: 2 }}
@@ -411,10 +471,13 @@ export default function UserProfiles() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
+                    required
                     label="Experience"
                     variant="outlined"
                     name="experience"
                     value={profileData.experience}
+                    error={!profileData.experience}
+                    helperText={!profileData.experience ? "Experience is required" : " "}
                     onChange={handleInputChange}
                     sx={{ mb: 2 }}
                     InputProps={{ readOnly: !editMode }} />
@@ -440,11 +503,14 @@ export default function UserProfiles() {
                 <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
+                    required
                     label="Phone"
                     variant="outlined"
                     name="phone"
                     value={profileData.phone}
                     onChange={handleInputChange}
+                    error={!profileData.phone}
+                    helperText={!profileData.phone ? "Phone is required" : " "}
                     sx={{ mb: 2 }}
                     InputProps={{ readOnly: !editMode }} />
                 </Grid>
@@ -533,23 +599,31 @@ export default function UserProfiles() {
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                required
                 label="Height (cm)"
                 variant="outlined"
                 name="height"
-                value={profileData.height}
+                value={profileData.height || ''}
+                onBlur={handleBlur}
                 onChange={handleInputChange}
                 sx={{ mb: 2 }}
+                error={!profileData.height}
+                helperText={!profileData.height ? "Height is required" : " "}
                 InputProps={{ readOnly: !editMode }}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 fullWidth
+                required
                 label="Weight (kg)"
                 variant="outlined"
                 name="weight"
                 value={profileData.weight}
+                onBlur={handleBlur}
                 onChange={handleInputChange}
+                error={!profileData.weight}
+                helperText={!profileData.weight ? "Weight is required" : " "}
                 sx={{ mb: 2 }}
                 InputProps={{ readOnly: !editMode }}
               />
