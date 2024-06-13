@@ -21,7 +21,7 @@ export default function ForgotPassword() {
 
         if (email) {
             try {
-                const response = await axios.get(`http://localhost:8080/api/v1/auth/check-user?email=${email}`, { withCredentials: true });
+                const response = await axios.get(`http://34.116.133.84:8080/api/v1/auth/check-user?email=${email}`, { withCredentials: true });
                 if (response.status === 200) {
                     navigate('/otp', { state: { email } });
                 } else if (response.status >= 400 && response.status < 600) {

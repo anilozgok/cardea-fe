@@ -33,7 +33,7 @@ export default function CoachPhotoView() {
 
     const handleLogout = async () => {
         try {
-            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+            await axios.post('http://34.116.133.84:8080/api/v1/auth/logout', {}, { withCredentials: true });
             navigate('/');
         } catch (error) {
             console.error('Error logging out:', error);
@@ -43,7 +43,7 @@ export default function CoachPhotoView() {
     useEffect(() => {
         const fetchProfilePicture = async () => {
             try {
-              const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+              const response = await axios.get('http://34.116.133.84:8080/api/v1/user/profile-picture', { withCredentials: true });
               if (response.data && response.data.photoURL) {
                 setProfilePicture(response.data.photoURL);
               }
@@ -98,7 +98,7 @@ export default function CoachPhotoView() {
         }
 
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/user/student-photos/${selectedUserId}`, { withCredentials: true });
+            const response = await axios.get(`http://34.116.133.84:8080/api/v1/user/student-photos/${selectedUserId}`, { withCredentials: true });
             const data: { photos: PhotoResponse[] } = response.data;
             const groupedPhotos = groupPhotosByDate(data.photos);
             setPhotos(groupedPhotos);

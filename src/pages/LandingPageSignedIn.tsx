@@ -39,7 +39,7 @@ const LandingPage: React.FC = () => {
     useEffect(() => {
         const fetchProfilePicture = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+                const response = await axios.get('http://34.116.133.84:8080/api/v1/user/profile-picture', { withCredentials: true });
                 if (response.data) {
                     setProfilePicture(response.data.photoURL); // Assuming the response contains a URL in the `url` field
                 }
@@ -53,7 +53,7 @@ const LandingPage: React.FC = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+            await axios.post('http://34.116.133.84:8080/api/v1/auth/logout', {}, { withCredentials: true });
             navigate('/'); // Redirect to the landing page after logout
         } catch (error) {
             console.error('Error logging out:', error);

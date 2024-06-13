@@ -39,7 +39,7 @@ export const DietProvider: React.FC<DietProviderProps> = ({ children }) => {
     const fetchDietPlans = useCallback(async (userId: number) => {
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:8080/api/v1/diet?user_id=${userId}`, { withCredentials: true });
+            const response = await axios.get(`http://34.116.133.84:8080/api/v1/diet?user_id=${userId}`, { withCredentials: true });
             setDietPlans(response.data);
             setLoading(false);
         } catch (err) {
@@ -51,7 +51,7 @@ export const DietProvider: React.FC<DietProviderProps> = ({ children }) => {
     const addDietPlan = useCallback(async (dietPlan: DietPlan) => {
         setLoading(true);
         try {
-            await axios.post(`http://localhost:8080/api/v1/diet`, dietPlan, { withCredentials: true });
+            await axios.post(`http://34.116.133.84:8080/api/v1/diet`, dietPlan, { withCredentials: true });
             setDietPlans(prev => [...prev, dietPlan]); // Optionally add to local state
             setLoading(false);
         } catch (err) {

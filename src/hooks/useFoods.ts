@@ -20,7 +20,7 @@ const useFoods = () => {
         const fetchFoods = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('http://localhost:8080/api/v1/foods', { withCredentials: true });
+                const response = await axios.get('http://34.116.133.84:8080/api/v1/foods', { withCredentials: true });
                 setFoods(response.data);
             } catch (err) {
                 setError('Failed to fetch foods');

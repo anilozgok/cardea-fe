@@ -47,7 +47,7 @@ const DeleteWorkoutPage: React.FC = () => {
         try {
             const workoutsToDelete = workouts.filter(workout => workout.name === workoutName && workout.userId === parseInt(selectedUserId, 10));
             for (const workout of workoutsToDelete) {
-                await axios.delete(`http://localhost:8080/api/v1/workout?workoutId=${workout.workoutId}`, { withCredentials: true });
+                await axios.delete(`http://34.116.133.84:8080/api/v1/workout?workoutId=${workout.workoutId}`, { withCredentials: true });
             }
             setMessage('Workout deleted successfully');
             setSelectedUserId(selectedUserId); // Trigger useEffect
@@ -59,7 +59,7 @@ const DeleteWorkoutPage: React.FC = () => {
     };
     const handleLogout = async () => {
         try {
-            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+            await axios.post('http://34.116.133.84:8080/api/v1/auth/logout', {}, { withCredentials: true });
             navigate('/');
         } catch (error) {
             console.error('Error logging out:', error);
@@ -68,7 +68,7 @@ const DeleteWorkoutPage: React.FC = () => {
     useEffect(() => {
         const fetchProfilePicture = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+                const response = await axios.get('http://34.116.133.84:8080/api/v1/user/profile-picture', { withCredentials: true });
                 if (response.data && response.data.photoURL) {
                     setProfilePicture(response.data.photoURL);
                 }

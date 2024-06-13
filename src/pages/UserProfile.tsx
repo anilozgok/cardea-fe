@@ -130,7 +130,7 @@ export default function UserProfiles() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+      await axios.post('http://34.116.133.84:8080/api/v1/auth/logout', {}, { withCredentials: true });
       navigate('/');
     } catch (error) {
       console.error('Error logging out:', error);
@@ -170,7 +170,7 @@ export default function UserProfiles() {
       });
       return;
     }
-    const apiUrl = 'http://localhost:8080/api/v1/profile';
+    const apiUrl = 'http://34.116.133.84:8080/api/v1/profile';
     const method = isProfileNew ? axios.post : axios.put;
 
     const inputElement = document.getElementById('profile-picture-input') as HTMLInputElement;
@@ -179,7 +179,7 @@ export default function UserProfiles() {
       const formData = new FormData();
       formData.append('image', file, file.name);
 
-      const apiPictureUrl = 'http://localhost:8080/api/v1/profile/upload-photo?is_pp=true';
+      const apiPictureUrl = 'http://34.116.133.84:8080/api/v1/profile/upload-photo?is_pp=true';
       fetch(apiPictureUrl, {
         method: 'POST',
         body: formData,
@@ -193,7 +193,7 @@ export default function UserProfiles() {
         })
         .then(data => {
           if (typeof data === 'string' && data.startsWith('./')) {
-            const newProfilePictureUrl = `http://localhost:8080${data.substring(1)}`;
+            const newProfilePictureUrl = `http://34.116.133.84:8080${data.substring(1)}`;
             setProfileData(prevData => ({
               ...prevData,
               profilePicture: newProfilePictureUrl
@@ -254,7 +254,7 @@ export default function UserProfiles() {
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/v1/profile', { withCredentials: true });
+        const response = await axios.get('http://34.116.133.84:8080/api/v1/profile', { withCredentials: true });
         if (response.status === 200 && response.data) {
           setProfileData(response.data);
           setOriginalProfileData(response.data);
@@ -264,7 +264,7 @@ export default function UserProfiles() {
         console.error("No profile data found. Attempting to fetch minimal user data.");
         setIsProfileNew(true);
         try {
-          const userResponse = await axios.get('http://localhost:8080/api/v1/user/get-user-info', { withCredentials: true });
+          const userResponse = await axios.get('http://34.116.133.84:8080/api/v1/user/get-user-info', { withCredentials: true });
           if (userResponse.status === 200) {
             const userData = {
               firstName: userResponse.data.firstName,

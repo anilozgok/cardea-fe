@@ -61,7 +61,7 @@ export default function ResetPassword() {
         }
 
         try {
-            const res = await axios.put("http://localhost:8080/api/v1/auth/update-password", {
+            const res = await axios.put("http://34.116.133.84:8080/api/v1/auth/update-password", {
                 email: state.email,
                 password: password
             }, { withCredentials: true });

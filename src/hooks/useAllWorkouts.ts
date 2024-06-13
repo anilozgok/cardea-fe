@@ -12,7 +12,7 @@ const useAllWorkouts = () => {
         const fetchWorkouts = async () => {
             setLoading(true);
             try {
-                const response = await axios.get('http://localhost:8080/api/v1/workout', { withCredentials: true });
+                const response = await axios.get('http://34.116.133.84:8080/api/v1/workout', { withCredentials: true });
                 if (response.data && Array.isArray(response.data.workouts)) {
                     setWorkouts(response.data.workouts);
                 } else {

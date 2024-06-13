@@ -82,7 +82,7 @@ const CreateDietPlanPage: React.FC = () => {
 
     const fetchProfilePicture = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+            const response = await axios.get('http://34.116.133.84:8080/api/v1/user/profile-picture', { withCredentials: true });
             if (response.data && response.data.photoURL) {
                 setProfilePicture(response.data.photoURL);
             }
@@ -95,7 +95,7 @@ const CreateDietPlanPage: React.FC = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+            await axios.post('http://34.116.133.84:8080/api/v1/auth/logout', {}, { withCredentials: true });
             navigate('/'); // Redirect to the landing page after logout
         } catch (error) {
             console.error('Error logging out:', error);
@@ -109,7 +109,7 @@ const CreateDietPlanPage: React.FC = () => {
         }
         setCreating(true);
         try {
-            await axios.post('http://localhost:8080/api/v1/diet', {
+            await axios.post('http://34.116.133.84:8080/api/v1/diet', {
                 user_id: parseInt(selectedUserId),
                 name: mealName,
                 meals: mealItems.map(item => ({

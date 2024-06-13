@@ -59,7 +59,7 @@ export default function SignIn() {
 
     async function request(loginRequest: loginRequest) {
         try {
-            const res = await axios.post("http://localhost:8080/api/v1/auth/login", loginRequest, { withCredentials: true });
+            const res = await axios.post("http://34.116.133.84:8080/api/v1/auth/login", loginRequest, { withCredentials: true });
 
             if (res.status === 200) {
                 await user.refetchAfterLogin();

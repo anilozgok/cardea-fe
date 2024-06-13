@@ -16,7 +16,7 @@ export function UserContextProvider(props: { children: React.ReactNode }) {
     const [user, setUser] = useState<User>({} as User)
 
     async function me() {
-        const res = await axios.get("http://localhost:8080/api/v1/user/me", {withCredentials: true})
+        const res = await axios.get("http://34.116.133.84:8080/api/v1/user/me", {withCredentials: true})
 
         if (res.status === 200) {
             setIsLoggedIn(true)

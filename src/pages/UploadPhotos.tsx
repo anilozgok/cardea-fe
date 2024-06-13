@@ -45,7 +45,7 @@ const PhotoUpload: React.FC = () => {
     useEffect(() => {
         const fetchProfilePicture = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+                const response = await axios.get('http://34.116.133.84:8080/api/v1/user/profile-picture', { withCredentials: true });
                 if (response.data && response.data.photoURL) {
                     setProfilePicture(response.data.photoURL);
                 }
@@ -83,7 +83,7 @@ const PhotoUpload: React.FC = () => {
 
     const fetchPhotos = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/v1/user/my-photos', {
+            const response = await fetch('http://34.116.133.84:8080/api/v1/user/my-photos', {
                 credentials: 'include'
             });
             if (!response.ok) {
@@ -108,7 +108,7 @@ const PhotoUpload: React.FC = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+            await axios.post('http://34.116.133.84:8080/api/v1/auth/logout', {}, { withCredentials: true });
             navigate('/');
         } catch (error) {
             console.error('Error logging out:', error);
@@ -130,7 +130,7 @@ const PhotoUpload: React.FC = () => {
             formData.append('image', file);
 
             try {
-                const response = await fetch('http://localhost:8080/api/v1/profile/upload-photo', {
+                const response = await fetch('http://34.116.133.84:8080/api/v1/profile/upload-photo', {
                     method: 'POST',
                     body: formData,
                     credentials: 'include'
@@ -189,7 +189,7 @@ const PhotoUpload: React.FC = () => {
         if (!selectedPhotoId || !selectedPhotoUrl) return;
 
         try {
-            const response = await axios.delete('http://localhost:8080/api/v1/user/photo', {
+            const response = await axios.delete('http://34.116.133.84:8080/api/v1/user/photo', {
                 data: {
                     photoId: selectedPhotoId,
                     photoUrl: selectedPhotoUrl

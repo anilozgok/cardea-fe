@@ -52,7 +52,7 @@ const UserDietPlanPage: React.FC = () => {
         // Fetch profile picture on component mount
         const fetchProfilePicture = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+                const response = await axios.get('http://34.116.133.84:8080/api/v1/user/profile-picture', { withCredentials: true });
                 if (response.data && response.data.photoURL) {
                     setProfilePicture(response.data.photoURL);
                 }
@@ -82,7 +82,7 @@ const UserDietPlanPage: React.FC = () => {
     const handleLogout = async () => {
         // Logout function
         try {
-            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+            await axios.post('http://34.116.133.84:8080/api/v1/auth/logout', {}, { withCredentials: true });
             navigate('/');
         } catch (error) {
             console.error('Error logging out:', error);
@@ -100,8 +100,90 @@ const UserDietPlanPage: React.FC = () => {
     // Render the component UI
     return (
         <Container maxWidth="xl" sx={{ mt: 10 }}>
-            <AppBar position="fixed" sx={{ boxShadow: 0, bgcolor: 'transparent', backgroundImage: 'none', mt: 2 }}>
-                {/* AppBar setup, similar to previous */}
+            <AppBar
+                position="fixed"
+                sx={{
+                    boxShadow: 0,
+                    bgcolor: 'transparent',
+                    backgroundImage: 'none',
+                    mt: 2,
+                }}
+            >
+                <Container maxWidth="lg">
+                    <Toolbar
+                        variant="regular"
+                        sx={(theme) => ({
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            flexShrink: 0,
+                            borderRadius: '999px',
+                            bgcolor:
+                                theme.palette.mode === 'light'
+                                    ? 'rgba(255, 255, 255, 0.4)'
+                                    : 'rgba(0, 0, 0, 0.4)',
+                            backdropFilter: 'blur(24px)',
+                            maxHeight: 56,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            boxShadow:
+                                theme.palette.mode === 'light'
+                                    ? `0 0 1px rgba(85, 166, 246, 0.1), 1px 1.5px 2px -1px rgba(85, 166, 246, 0.15), 4px 4px 12px -2.5px rgba(85, 166, 246, 0.15)`
+                                    : '0 0 1px rgba(2, 31, 59, 0.7), 1px 1.5px 2px -1px rgba(2, 31, 59, 0.65), 4px 4px 12px -2.5px rgba(2, 31, 59, 0.65)',
+                        })}
+                    >
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                            }}
+                        >
+                            <img
+                                src={logo}
+                                alt="logo of Cardea"
+                                style={{ width: 80, height: 80, borderRadius: '50%' }}
+                                onClick={() => navigate('/landing')}
+                            />
+                        </Box>
+                        <Box sx={{ display: 'flex', flexGrow: 1, justifyContent: 'center' }}>
+                            <MenuItem onClick={() => navigate('/landing')} sx={{ py: '10px', px: '36px' }}>
+                                <Typography variant="body1" color="text.primary">
+                                    Home
+                                </Typography>
+                            </MenuItem>
+                            <MenuItem onClick={() => navigate('/diet-plan-user')} sx={{ py: '10px', px: '36px' }}>
+                                <Typography variant="body1" color="text.primary">
+                                    Diet Plans
+                                </Typography>
+                            </MenuItem>
+                            <MenuItem onClick={() => navigate('/workouts')} sx={{ py: '10px', px: '36px' }}>
+                                <Typography variant="body1" color="text.primary">
+                                    Workouts
+                                </Typography>
+                            </MenuItem>
+                            <MenuItem onClick={() => navigate('/upload-photos')}>
+                                <Typography variant="body1" color="text.primary">Body Transformation</Typography>
+                            </MenuItem>
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', flexGrow: 1, mr:2 }}>
+                            <TextField
+                                variant="outlined"
+                                placeholder="Search Diet Plans"
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                                sx={{ flex: 1, maxWidth: 300 }}
+                            />
+                        </Box>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                            <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+                        </Box>
+                        <Button
+                            onClick={handleLogout}
+                            startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft: '20px' }} />}
+                        >
+                        </Button>
+                    </Toolbar>
+                </Container>
             </AppBar>
             {loading ? (
                 <CircularProgress />

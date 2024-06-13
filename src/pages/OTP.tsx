@@ -30,7 +30,7 @@ export default function EmailVerification() {
 
     function verifyOTP() {
         const passcode = parseInt(OTPinput.join(""));
-        axios.put("http://localhost:8080/api/v1/auth/verify-passcode", {
+        axios.put("http://34.116.133.84:8080/api/v1/auth/verify-passcode", {
             passcode: passcode
         })
             .then((response) => {

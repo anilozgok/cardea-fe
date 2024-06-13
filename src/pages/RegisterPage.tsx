@@ -79,7 +79,7 @@ export default function Register() {
     async function request(registerRequest: registerRequest) {
         try {
             const res = await axios.post(
-                "http://localhost:8080/api/v1/auth/register", registerRequest, { withCredentials: true }
+                "http://34.116.133.84:8080/api/v1/auth/register", registerRequest, { withCredentials: true }
             );
             if (res.status === 200) {
                 notify();

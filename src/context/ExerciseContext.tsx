@@ -16,7 +16,7 @@ export const ExerciseProvider = ({ children }: { children: ReactNode }) => {
 
     async function loadExercises() {
         try {
-            const response = await axios.get("http://localhost:8080/api/v1/workout/exercises", {
+            const response = await axios.get("http://34.116.133.84:8080/api/v1/workout/exercises", {
                 withCredentials: true
             });
             setExercises(response.data.exercises); // Ensure the correct path based on API response
