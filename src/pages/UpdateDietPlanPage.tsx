@@ -47,6 +47,7 @@ interface Meal {
     protein: number;
     carbs: number;
     fat: number;
+    gram: number;
 }
 
 const UpdateDeleteDietPlanPage: React.FC = () => {
@@ -266,10 +267,7 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
                                             <TableRow>
                                                 <TableCell>Food Name</TableCell>
                                                 <TableCell>Description</TableCell>
-                                                <TableCell align="right">Calories</TableCell>
-                                                <TableCell align="right">Protein</TableCell>
-                                                <TableCell align="right">Carbs</TableCell>
-                                                <TableCell align="right">Fat</TableCell>
+                                                <TableCell align="right">Gram</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
@@ -277,10 +275,7 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
                                                 <TableRow key={meal.ID}>
                                                     <TableCell>{meal.name}</TableCell>
                                                     <TableCell>{meal.description}</TableCell>
-                                                    <TableCell align="right">{meal.calories}</TableCell>
-                                                    <TableCell align="right">{meal.protein}</TableCell>
-                                                    <TableCell align="right">{meal.carbs}</TableCell>
-                                                    <TableCell align="right">{meal.fat}</TableCell>
+                                                    <TableCell align="right">{meal.gram}</TableCell>
                                                 </TableRow>
                                             ))}
                                         </TableBody>

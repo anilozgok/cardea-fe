@@ -8,10 +8,11 @@ interface Meal {
     protein: number;
     carbs: number;
     fat: number;
+    gram: number; // Include gram in the interface
 }
 
 interface DietPlan {
-    id: number;
+    id?: number; // Optional since it might not exist for new plans
     name: string;
     meals: Meal[];
 }
@@ -21,6 +22,7 @@ interface DietContextType {
     loading: boolean;
     error: string | null;
     fetchDietPlans: (userId: number) => Promise<void>;
+    addDietPlan: (dietPlan: DietPlan) => Promise<void>;
 }
 
 interface DietProviderProps {
@@ -46,8 +48,20 @@ export const DietProvider: React.FC<DietProviderProps> = ({ children }) => {
         }
     }, []);
 
+    const addDietPlan = useCallback(async (dietPlan: DietPlan) => {
+        setLoading(true);
+        try {
+            await axios.post(`http://localhost:8080/api/v1/diet`, dietPlan, { withCredentials: true });
+            setDietPlans(prev => [...prev, dietPlan]); // Optionally add to local state
+            setLoading(false);
+        } catch (err) {
+            setError('Failed to add diet plan');
+            setLoading(false);
+        }
+    }, []);
+
     return (
-        <DietContext.Provider value={{ dietPlans, loading, error, fetchDietPlans }}>
+        <DietContext.Provider value={{ dietPlans, loading, error, fetchDietPlans, addDietPlan }}>
             {children}
         </DietContext.Provider>
     );

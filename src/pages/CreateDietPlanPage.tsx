@@ -119,6 +119,7 @@ const CreateDietPlanPage: React.FC = () => {
                     protein: item.protein,
                     carbs: item.carbs,
                     fat: item.fat,
+                    gram: item.quantity // Ensure this field is correctly mapped from the quantity
                 })),
             }, { withCredentials: true });
             setMessage('Diet plan created successfully');
@@ -135,6 +136,7 @@ const CreateDietPlanPage: React.FC = () => {
             setCreating(false);
         }
     };
+
     useEffect(() => {
         document.body.style.backgroundImage = `url(${dietBg})`;
         document.body.style.backgroundSize = 'cover';
