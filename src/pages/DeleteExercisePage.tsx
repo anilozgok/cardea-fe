@@ -30,6 +30,7 @@ import workoutBg from '../assets/realworkbg3.png';
 import cryingOnion from '../assets/cryDumbell.png';
 import { ToastContainer, toast } from 'react-toastify';
 import { Workout } from '../types/Workout';
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 const DeleteWorkoutPage: React.FC = () => {
     const { user } = useUser();
@@ -56,7 +57,14 @@ const DeleteWorkoutPage: React.FC = () => {
             setLoading(false);
         }
     };
-
+    const handleLogout = async () => {
+        try {
+            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+            navigate('/');
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
     useEffect(() => {
         const fetchProfilePicture = async () => {
             try {
@@ -68,7 +76,7 @@ const DeleteWorkoutPage: React.FC = () => {
                 console.error('Failed to fetch profile picture:', error);
             }
         };
-
+        
         fetchProfilePicture();
         document.body.style.backgroundImage = `url(${workoutBg})`;
         document.body.style.backgroundSize = 'cover';
@@ -187,6 +195,11 @@ const DeleteWorkoutPage: React.FC = () => {
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                         </Box>
+                        <Button
+                            onClick={handleLogout}
+                            startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft: '20px' }} />}
+                        >
+                        </Button>
                     </Toolbar>
                 </Container>
             </AppBar>
