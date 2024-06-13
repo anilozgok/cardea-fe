@@ -13,9 +13,12 @@ import {
     Box,
     MenuItem,
     CircularProgress,
-    AppBar, Toolbar,
-    Avatar
+    AppBar,
+    Toolbar,
+    Avatar,
+    Fab
 } from '@mui/material';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { useExercises } from '../context/ExerciseContext';
 import { useUser } from '../context/UserContext';
 import useUsers from '../hooks/useUsers';
@@ -24,6 +27,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import workoutBg from '../assets/realworkbg3.png';
 import { ToastContainer, toast } from 'react-toastify';
+import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 
 interface Exercise {
     exerciseId?: string | null;
@@ -58,6 +62,7 @@ const ExerciseList: React.FC = () => {
     const [showWorkoutDetails, setShowWorkoutDetails] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const navigate = useNavigate();
+    const [profilePicture, setProfilePicture] = useState<string>('');
 
     const handleExerciseSelect = (id: string) => {
         setSelectedExercises((prevSelected) => {
@@ -71,6 +76,18 @@ const ExerciseList: React.FC = () => {
     };
 
     useEffect(() => {
+        const fetchProfilePicture = async () => {
+            try {
+              const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+              if (response.data && response.data.photoURL) {
+                setProfilePicture(response.data.photoURL);
+              }
+            } catch (error) {
+              console.error('Failed to fetch profile picture:', error);
+            }
+          };
+      
+          fetchProfilePicture();
         document.body.style.backgroundImage = `url(${workoutBg})`;
         document.body.style.backgroundSize = 'cover';
         document.body.style.backgroundPosition = 'center';
@@ -126,6 +143,7 @@ const ExerciseList: React.FC = () => {
                     };
                     await axios.post('http://localhost:8080/api/v1/workout', workout, { withCredentials: true });
                 }
+                console.log('gello')
                 toastInfo('success', 'Workouts created successfully');
                 setWorkoutName('');
                 setSelectedUserId('');
@@ -147,6 +165,19 @@ const ExerciseList: React.FC = () => {
     const filteredExercises = exercises.filter(exercise =>
         exercise.exerciseName && exercise.exerciseName.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const handleLogout = async () => {
+        try {
+            await axios.post('http://localhost:8080/api/v1/auth/logout', {}, { withCredentials: true });
+            navigate('/'); // Redirect to the landing page after logout
+        } catch (error) {
+            console.error('Error logging out:', error);
+        }
+    };
+
+    const handleScrollToBottom = () => {
+        window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+    };
 
     return (
         <Container sx={{
@@ -224,8 +255,13 @@ const ExerciseList: React.FC = () => {
                             </MenuItem>
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+                            <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                         </Box>
+                        <Button
+                            onClick={handleLogout}
+                            startIcon={<ExitToAppIcon style={{ fontSize: '48px', marginLeft: '20px' }} />}
+                        >
+                        </Button>
                     </Toolbar>
                 </Container>
             </AppBar>
@@ -318,18 +354,7 @@ const ExerciseList: React.FC = () => {
                         </Card>
                     </Grid>
                 ))}
-            </Grid>
-
-            {user.role === 'coach' && !showWorkoutForm && (
-                <Box sx={{ mt: 4 }}>
-                    <Button variant="contained" color="primary" onClick={() => setShowWorkoutForm(true)}>
-                        New Workout
-                    </Button>
-                </Box>
-            )}
-            {showWorkoutForm && (
-                <Box sx={{ mt: 4 }}>
-                    <ToastContainer
+                <ToastContainer
                         position="top-right"
                         autoClose={5000}
                         hideProgressBar={false}
@@ -341,6 +366,18 @@ const ExerciseList: React.FC = () => {
                         pauseOnHover
                         theme="light"
                     />
+            </Grid>
+
+            {user.role === 'coach' && !showWorkoutForm && (
+                <Box sx={{ mt: 4 }}>
+                    <Button variant="contained" color="primary" onClick={() => setShowWorkoutForm(true)}>
+                        New Workout
+                    </Button>
+                </Box>
+            )}
+            {showWorkoutForm && (
+                <Box sx={{ mt: 4 }}>
+                    
 
                     <Typography variant="h5" sx={{ mb: 2 }}>Create Workout</Typography>
                     <TextField
@@ -385,6 +422,19 @@ const ExerciseList: React.FC = () => {
                     <Typography variant="body1">Workout Name: {workoutName}</Typography>
                 </Box>
             )}
+
+            <Fab
+                color="primary"
+                aria-label="go down"
+                sx={{
+                    position: 'fixed',
+                    bottom: 16,
+                    right: 16,
+                }}
+                onClick={handleScrollToBottom}
+            >
+                <KeyboardArrowDownIcon />
+            </Fab>
         </Container>
     );
 };

@@ -44,6 +44,7 @@ const CreateDietPlanPage: React.FC = () => {
     const [mealItems, setMealItems] = useState<any[]>([]);
     const [creating, setCreating] = useState<boolean>(false);
     const [message, setMessage] = useState<string>('');
+    const [profilePicture, setProfilePicture] = useState<string>('');
 
     const navigate = useNavigate();
 
@@ -80,6 +81,19 @@ const CreateDietPlanPage: React.FC = () => {
             setSearchTerm('');
         }
     };
+
+    const fetchProfilePicture = async () => {
+        try {
+            const response = await axios.get('http://localhost:8080/api/v1/user/profile-picture', { withCredentials: true });
+            if (response.data && response.data.photoURL) {
+                setProfilePicture(response.data.photoURL);
+            }
+        } catch (error) {
+            console.error('Failed to fetch profile picture:', error);
+        }
+    };
+
+    fetchProfilePicture();
 
     const handleLogout = async () => {
         try {
@@ -202,16 +216,21 @@ const CreateDietPlanPage: React.FC = () => {
                                     Workouts
                                 </Typography>
                             </MenuItem>
+                            <MenuItem onClick={() => navigate('/athlete-photos')} sx={{ py: '10px', px: '36px' }}>
+                                <Typography variant="body1" color="text.primary">
+                                    Body Transformations
+                                </Typography>
+                            </MenuItem>
                             <MenuItem onClick={() => navigate('/diet-plan-update')} sx={{ py: '10px', px: '36px' }}>
                                 <Typography variant="body1" color="text.primary">
-                                    Update Diet Plan
+                                    Delete Diet Plan
                                 </Typography>
                             </MenuItem>
 
 
                         </Box>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                            <Avatar src={user.name} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
+                            <Avatar src={profilePicture} sx={{ width: 40, height: 40, mr: 2 }} onClick={() => navigate('/profile')} />
                         </Box>
 
                         <Button
