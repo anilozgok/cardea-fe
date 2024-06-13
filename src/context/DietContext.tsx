@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import axios from 'axios';
 
 interface Meal {
@@ -23,9 +23,13 @@ interface DietContextType {
     fetchDietPlans: (userId: number) => Promise<void>;
 }
 
+interface DietProviderProps {
+    children: ReactNode;
+}
+
 const DietContext = createContext<DietContextType | undefined>(undefined);
 
-export const DietProvider: React.FC = ({ children }) => {
+export const DietProvider: React.FC<DietProviderProps> = ({ children }) => {
     const [dietPlans, setDietPlans] = useState<DietPlan[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);

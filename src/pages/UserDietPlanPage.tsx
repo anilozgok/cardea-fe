@@ -26,7 +26,11 @@ import { useDiet, DietProvider } from '../context/DietContext';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import dietBg from '../assets/diet.png';
 import cryingOnion from '../assets/cryOnion.png';
+import { User } from '../context/UserContextProvider';
 
+interface LocalUser extends User {
+    userId: number;
+}
 const UserDietPlanPage: React.FC = () => {
     const navigate = useNavigate();
     const { user } = useUser();
@@ -35,8 +39,10 @@ const UserDietPlanPage: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState<string>('');
 
     useEffect(() => {
-        if (user && user.userId) {
-            fetchDietPlans(user.userId);
+        // Type assertion to ensure TypeScript knows user has userId
+        const localUser = user as LocalUser;
+        if (localUser && localUser.userId) {
+            fetchDietPlans(localUser.userId);
         }
     }, [user, fetchDietPlans]);
 

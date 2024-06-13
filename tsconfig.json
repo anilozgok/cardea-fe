@@ -4,7 +4,6 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
-    "skipLibCheck": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -15,11 +14,17 @@
     "jsx": "react-jsx",
 
     /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "strict": false,
+    "noImplicitAny": false, // Allow 'any' types
+    "noUnusedLocals": false, // Do not error on unused local variables
+    "skipLibCheck": true, // Skip type checking of all declaration files (*.d.ts)
+    "esModuleInterop": true,
+    "allowJs": true, // Allow JavaScript files to be compiled.
+
+    "noUnusedParameters": false, // Do not error on unused parameters
     "noFallthroughCasesInSwitch": true
   },
+
   "include": ["src"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

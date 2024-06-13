@@ -21,7 +21,6 @@ import {
     Toolbar,
     Avatar,
 } from '@mui/material';
-import { useUser } from '../context/UserContext';
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/CardeaLogo.png";
@@ -33,7 +32,6 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import dietBg from '../assets/diet.png';
 
 const CreateDietPlanPage: React.FC = () => {
-    const { user } = useUser();
     const { users, loading: usersLoading, error: usersError } = useUsers();
     const { foods, loading: foodsLoading, error: foodsError } = useFoods();
     const [selectedUserId, setSelectedUserId] = useState<string>('');

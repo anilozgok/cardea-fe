@@ -3,7 +3,6 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import axios from "axios";
-import { useUser } from "../context/UserContext.tsx";
 import { useNavigate } from "react-router-dom";
 import logo from '../assets/CardeaLogo.png';
 import { FormControl, InputLabel, Select, MenuItem, AppBar, Avatar, Toolbar, Grid, Dialog, DialogActions, DialogContent } from '@mui/material';
@@ -20,16 +19,15 @@ type PhotoResponse = {
 };
 
 export default function CoachPhotoView() {
-    const [imageDimensions, setImageDimensions] = useState({ width: 'auto', height: 'auto' });
-    const user = useUser();
+    const [imageDimensions] = useState({ width: 'auto', height: 'auto' });
     const navigate = useNavigate();
     const [selectedUserId, setSelectedUserId] = useState<string>('');
     const [openImageViewDialog, setOpenImageViewDialog] = useState(false);
     const [selectedImage, setSelectedImage] = useState('');
-    const { users, loading: usersLoading, error: usersError } = useUsers();
+    const { users } = useUsers();
     const [photos, setPhotos] = useState<{ [key: string]: PhotoResponse[] }>({});
-    const [selectedPhotoId, setSelectedPhotoId] = useState<number | null>(null);
-    const [selectedPhotoUrl, setSelectedPhotoUrl] = useState('');
+    const [, setSelectedPhotoId] = useState<number | null>(null);
+    const [, setSelectedPhotoUrl] = useState('');
     const [profilePicture, setProfilePicture] = useState<string>('');
     const [retrieved, setRetrieved] = useState<boolean>(false);
 
@@ -70,25 +68,28 @@ export default function CoachPhotoView() {
             document.body.style.backgroundRepeat = '';
         };
     }, []);
-    
-    const handleOpenPhoto = async (photoId, photoUrl) => {
+
+    const handleOpenPhoto = async (photoId:number, photoUrl:string) => {
         try {
-            setSelectedPhotoId(photoId); // Store the photo ID
-            setSelectedPhotoUrl(photoUrl); // Also store the photo URL for delete operation
+            setSelectedPhotoId(photoId);
+            setSelectedPhotoUrl(photoUrl);
             const response = await fetch(photoUrl);
             const blob = await response.blob();
             const reader = new FileReader();
             reader.readAsDataURL(blob);
             reader.onloadend = () => {
                 const base64data = reader.result;
-                setSelectedImage(base64data);
-                setOpenImageViewDialog(true);
-            }
+                if (typeof base64data === 'string') {
+                    setSelectedImage(base64data);
+                    setOpenImageViewDialog(true);
+                } else {
+                    console.error('Failed to convert blob to base64 string');
+                }
+            };
         } catch (error) {
             console.error('Failed to load photo:', error);
         }
     };
-
     const handleGetPhotos = async () => {
         setRetrieved(true);
         if (!selectedUserId) {

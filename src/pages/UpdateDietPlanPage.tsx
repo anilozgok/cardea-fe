@@ -27,7 +27,6 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router-dom';
 import logo from '../assets/CardeaLogo.png';
 import axios from 'axios';
-import { useUser } from '../context/UserContext';
 import useUsers from '../hooks/useUsers';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import { ToastContainer, toast } from 'react-toastify';
@@ -51,12 +50,11 @@ interface Meal {
 }
 
 const UpdateDeleteDietPlanPage: React.FC = () => {
-    const { user } = useUser() as { user: { role: string; name: string } };
     const { users, loading: usersLoading, error: usersError } = useUsers() as { users: { userId: string, firstName: string, lastName: string }[]; loading: boolean; error: string };
     const [selectedUserId, setSelectedUserId] = useState<string>('');
     const [dietPlans, setDietPlans] = useState<DietPlan[]>([]);
     const [loading, setLoading] = useState(false);
-    const [message, setMessage] = useState('');
+    const [message] = useState('');
     const [profilePicture, setProfilePicture] = useState<string>('');
 
     const navigate = useNavigate();
@@ -133,10 +131,6 @@ const UpdateDeleteDietPlanPage: React.FC = () => {
         });
     };
 
-    function capitalizeFirstLetter(string: string): string {
-        if (!string) return '';
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
 
     const handleLogout = async () => {
         try {
